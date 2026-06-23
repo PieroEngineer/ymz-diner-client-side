@@ -87,6 +87,7 @@ dependencies {
 
     // Image Loading
     implementation(libs.coil.compose) // 🌟 Added Coil library execution block
+    implementation(libs.coil.network.okhttp)
 }
 
 configurations.all {
