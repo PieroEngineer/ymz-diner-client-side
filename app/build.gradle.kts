@@ -21,6 +21,13 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        // Tells Room where to export its database schemas securely for migrations
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments(mapOf("room.schemaLocation" to "$projectDir/schemas"))
+            }
+        }
     }
 
     buildTypes {
@@ -36,6 +43,20 @@ android {
     }
     buildFeatures {
         compose = true
+        // Required to cleanly bridge compiled metadata across Kotlin 2.x compilation blocks
+        buildConfig = true
+    }
+
+    sourceSets {
+        named("debug") {
+            kotlin.directories += "build/generated/ksp/debug/kotlin"
+        }
+        named("release") {
+            kotlin.directories += "build/generated/ksp/release/kotlin"
+        }
+        named("main") {
+            kotlin.directories += "build/generated/ksp/main/kotlin"
+        }
     }
 }
 
@@ -57,4 +78,10 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     debugImplementation(libs.androidx.compose.ui.tooling)
+
+    // Room Runtime and Coroutine Extensions
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    // Use KSP instead of KAPT for ultra-fast, modern compilation
+    ksp(libs.androidx.room.compiler)
 }
