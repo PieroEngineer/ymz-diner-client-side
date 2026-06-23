@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.hilt)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -84,4 +85,11 @@ dependencies {
     implementation(libs.androidx.room.ktx)
     // Use KSP instead of KAPT for ultra-fast, modern compilation
     ksp(libs.androidx.room.compiler)
+
+    // Networking & Serialization
+    implementation(libs.retrofit.core)
+    implementation(libs.retrofit.kotlinx.serialization)
+    implementation(libs.okhttp.core)
+    implementation(libs.okhttp.logging.interceptor)
+    implementation(libs.kotlinx.serialization.json)
 }
