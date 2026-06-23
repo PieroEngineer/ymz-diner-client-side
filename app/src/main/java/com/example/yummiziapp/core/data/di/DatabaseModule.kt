@@ -1,54 +1,48 @@
 package com.example.yummiziapp.core.data.di
 
 import android.content.Context
-import androidx.room.Database
 import androidx.room.Room
-import androidx.room.TypeConverters
-import com.example.yummiziapp.core.data.local.converters.YummiziConverters
-import com.example.yummiziapp.core.data.local.entities.Dish
-import com.example.yummiziapp.core.data.local.entities.LoggedUser
-import com.example.yummiziapp.core.data.local.entities.MenuPage
-import com.example.yummiziapp.core.data.local.entities.Preference
-import com.example.yummiziapp.core.data.local.entities.Request
-import com.example.yummiziapp.core.data.local.entities.Restaurant
-import com.yummizi.core.data.local.YummiziDatabase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
+import com.example.yummiziapp.core.data.local.dao.RestaurantDao
+import com.example.yummiziapp.core.data.local.dao.LoggedUserDao
+import com.example.yummiziapp.core.data.local.dao.RequestDao
+import com.example.yummiziapp.core.data.local.dao.MenuDao
+import com.example.yummiziapp.core.data.local.dao.PreferenceDao
+import com.example.yummiziapp.core.data.local.db.YummiziDatabase
 
 @Module
 @InstallIn(SingletonComponent::class)
-@Database(
-    entities = [
-        LoggedUser::class,
-        Restaurant::class,
-        Request::class,
-        MenuPage::class,
-        Dish::class,
-        Preference::class
-    ],
-    version = 1,
-    exportSchema = true
-)
-@TypeConverters(YummiziConverters::class)
 object DatabaseModule {
-
-    private const val DATABASE_NAME = "yummizi_db"
 
     @Provides
     @Singleton
-    fun provideYummiziDatabase(
-        @ApplicationContext context: Context
-    ): YummiziDatabase {
+    fun provideDatabase(@ApplicationContext context: Context): YummiziDatabase {
         return Room.databaseBuilder(
             context,
             YummiziDatabase::class.java,
-            DATABASE_NAME
+            "yummizi_db"
         )
-            // .fallbackToDestructiveMigration() // Use ONLY during initial dev; remove before production release!
+            //X.fallbackToDestructiveMigration(dropAllTables = true)   //TODO: Remove in production
             .build()
     }
+
+    @Provides
+    fun provideRestaurantDao(db: YummiziDatabase): RestaurantDao = db.restaurantDao()
+
+    @Provides
+    fun provideLoggedUserDao(db: YummiziDatabase): LoggedUserDao = db.loggedUserDao()
+
+    @Provides
+    fun provideRequestDao(db: YummiziDatabase): RequestDao = db.requestDao()
+
+    @Provides
+    fun provideMenuDao(db: YummiziDatabase): MenuDao = db.menuDao()
+
+    @Provides
+    fun providePreferenceDao(db: YummiziDatabase): PreferenceDao = db.preferenceDao()
 }
