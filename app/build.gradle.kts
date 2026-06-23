@@ -29,6 +29,8 @@ android {
                 arguments(mapOf("room.schemaLocation" to "$projectDir/schemas"))
             }
         }
+
+        buildConfigField("String", "BASE_URL", "\"https://api.yummizi.com/\"")
     }
 
     buildTypes {
@@ -38,27 +40,18 @@ android {
             }
         }
     }
+
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        // 🌟 Upgraded to Java 17 for absolute compatibility with Kotlin 2.4.0 / AGP 9 graphs
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
+
     buildFeatures {
         compose = true
-        // Required to cleanly bridge compiled metadata across Kotlin 2.x compilation blocks
         buildConfig = true
     }
 
-    sourceSets {
-        named("debug") {
-            kotlin.directories += "build/generated/ksp/debug/kotlin"
-        }
-        named("release") {
-            kotlin.directories += "build/generated/ksp/release/kotlin"
-        }
-        named("main") {
-            kotlin.directories += "build/generated/ksp/main/kotlin"
-        }
-    }
 }
 
 dependencies {
@@ -83,7 +76,6 @@ dependencies {
     // Room Runtime and Coroutine Extensions
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
-    // Use KSP instead of KAPT for ultra-fast, modern compilation
     ksp(libs.androidx.room.compiler)
 
     // Networking & Serialization
@@ -92,4 +84,14 @@ dependencies {
     implementation(libs.okhttp.core)
     implementation(libs.okhttp.logging.interceptor)
     implementation(libs.kotlinx.serialization.json)
+
+    // Image Loading
+    implementation(libs.coil.compose) // 🌟 Added Coil library execution block
+}
+
+configurations.all {
+    resolutionStrategy {
+        // Enforces the correct 2.4.0 metadata parser across all app module compiler tasks (like KSP)
+        force("org.jetbrains.kotlin:kotlin-metadata-jvm:2.4.0")
+    }
 }

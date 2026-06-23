@@ -1,8 +1,7 @@
 package com.example.yummiziapp.core.data.di
 
-import com.yummizi.BuildConfig
-import com.yummizi.core.data.remote.TokenInterceptor
-import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
+import com.example.yummiziapp.BuildConfig
+import com.example.yummiziapp.core.data.remote.TokenInterceptor
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -12,6 +11,7 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
+import retrofit2.converter.kotlinx.serialization.asConverterFactory
 import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
