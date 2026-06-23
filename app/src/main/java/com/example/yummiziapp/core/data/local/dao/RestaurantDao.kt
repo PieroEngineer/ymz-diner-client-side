@@ -1,5 +1,14 @@
 package com.example.yummiziapp.core.data.local.dao
 
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
+import com.example.yummiziapp.core.data.local.entities.Restaurant
+import com.example.yummiziapp.core.data.local.model.RestaurantWithStatus
+import kotlinx.coroutines.flow.Flow
+import kotlin.uuid.Uuid
+
 @Dao
 interface RestaurantDao {
 

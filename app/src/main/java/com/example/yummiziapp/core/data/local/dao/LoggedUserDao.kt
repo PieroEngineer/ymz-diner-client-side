@@ -1,5 +1,15 @@
 package com.example.yummiziapp.core.data.local.dao
 
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
+import androidx.room.Update
+import androidx.room.Upsert
+import com.example.yummiziapp.core.data.local.entities.LoggedUser
+import kotlinx.coroutines.flow.Flow
+import kotlin.uuid.Uuid
+
 @Dao
 interface LoggedUserDao {
 
