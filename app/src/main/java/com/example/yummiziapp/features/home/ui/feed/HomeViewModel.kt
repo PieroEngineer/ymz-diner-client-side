@@ -1,0 +1,140 @@
+package com.example.yummiziapp.features.home.ui.feed
+
+import android.util.Log
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
+import javax.inject.Inject
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
+
+// Idea: don't search every new character, but every 2 or 3 characters (when the word is small or big enought)
+@HiltViewModel
+class HomeViewModel @Inject constructor(
+    private val getCategorizedFeed: GetCategorizedFeedUseCase,
+    private val restaurantRepository: RestaurantRepository,
+    private val userRepository: UserRepository,
+    private val requestRepository: RequestRepositorl
+) : ViewModel() {
+
+    // Navigation handler
+    private val _effect = Channel<HomeScreenUiEvents>(Channel.BUFFERED)
+    val navEffect = _effect.receiveAsFlow()
+
+    private val _uiState = MutableStateFlow<HomeUiState>(HomeUiState.Loading)
+    val uiState = _uiState.asStateFlow()
+
+    init {
+        viewModelScope.launch {
+
+            // Clean all reastaurants
+            Log.d("MyActivity", "🧹  Cleaning all restaurants...\n")
+            clearFeed() //TODO: Consider that the cleaning is when the user doesn't enter after a long while
+
+
+            Log.d("MyActivity", "🎨  Trying to initialize data for user and restaurant...\n")
+            userRepository.seedMockUser() // Make this a suspend call
+            //TODO: Update the existing requests in the cloud, so the orange frame will be received, but we already made a logic to avoid it asks for all request every time the user enters from the same phone
+            syncFeed()
+            observeFeed()
+        }
+    }
+
+    private fun observeFeed() {
+        viewModelScope.launch {
+            getCategorizedFeed().collect { categoryMap ->
+                Log.d("MyActivity", "🗺️  categoryMap received in the view model from use case\n$categoryMap\n")
+
+                val sections = categoryMap.entries.mapIndexed { index, entry ->
+                    val type = entry.key
+                    val restaurants = entry.value
+                    SectionUiModel(
+                        id = index,
+                        title = type,
+                        restaurants = restaurants,
+                        restaurantBlockHeight = 120
+                    )
+                }
+                _uiState.value = HomeUiState.Success(sections)
+            }
+        }
+    }
+
+    // TODO
+    // The current logic that I think know is that the pending states are "QUEUED", "ACCEPTED" and "DENIED".
+    // On the other hand, if there is at least one "PAID", the restaurant selection screen only show that
+    // restaurant in the white frame as with stated in Canva
+
+    // This is to update the orange frame
+    val pendingRestaurants: StateFlow<List<Restaurant>> = restaurantRepository
+        .observePendingRestaurants()
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
+
+    private fun clearFeed() {
+        viewModelScope.launch {
+            try {
+                Log.d("MyActivity", "🧹  Cleaning all restaurants...\n")
+                restaurantRepository.clearAllRestaurants()
+            }
+            catch (e: Exception) {
+                Log.d("MyActivity", "🚩🧹 There was an error while trying to clean the feed  | $e\n")
+            }
+        }
+    }
+
+    private fun syncFeed() {
+        viewModelScope.launch {
+            try {
+                Log.d("MyActivity", "🔁 Refreshing restaurant feed\n")
+                restaurantRepository.syncFeedRestaurants()
+            }
+            catch (e: Exception) {
+                Log.d("MyActivity", "🚩🔁 There was an error while trying to refresh the feed  | $e\n")
+            }
+        }
+    }
+
+
+    fun onRestaurantClicked(id: Uuid) {
+//        Log.d("MainActivity", "🔎  Starting coroutine with this ID: $id")
+        viewModelScope.launch {
+            // "I've decided we need to move to the next screen"
+            _effect.send(HomeScreenUiEvents.NavigateToRestaurantMenuPreview(id))
+        }
+    }
+
+    fun onSelectionFrameClicked(){
+        viewModelScope.launch {
+            _effect.send(HomeScreenUiEvents.NavigateToRestaurantSelectionFrame)
+        }
+    }
+
+    fun onYouClicked(){
+        viewModelScope.launch {
+            _effect.send(HomeScreenUiEvents.NavigateToPreferences)
+        }
+    }
+
+
+    ///Maybe it also need a NonCancelable
+    fun onRestaurantDropped(restaurant: Restaurant) {
+        // We use viewModelScope because writing to a database
+        // is a 'suspend' (heavy) operation.
+        viewModelScope.launch {
+            requestRepository.createQueueRequest(restaurant.id)
+
+        }
+    }
+}
