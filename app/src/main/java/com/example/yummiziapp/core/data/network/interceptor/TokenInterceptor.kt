@@ -1,4 +1,4 @@
-package com.example.yummiziapp.core.data.remote
+package com.example.yummiziapp.core.data.network.interceptor
 
 import okhttp3.Interceptor
 import okhttp3.Response
@@ -6,7 +6,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class TokenInterceptor @Inject constructor() : Interceptor {
+class TokenInterceptor @Inject constructor() : Interceptor {    // Continue here: change "remote" for "network" and follow Gemini instructions
     override fun intercept(chain: Interceptor.Chain): Response {
         val originalRequest = chain.request()
 

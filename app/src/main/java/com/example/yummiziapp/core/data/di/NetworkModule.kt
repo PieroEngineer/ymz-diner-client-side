@@ -1,7 +1,10 @@
 package com.example.yummiziapp.core.data.di
 
 import com.example.yummiziapp.BuildConfig
-import com.example.yummiziapp.core.data.remote.TokenInterceptor
+import com.example.yummiziapp.core.data.network.api.PreferenceApi
+import com.example.yummiziapp.core.data.network.api.RequestApi
+import com.example.yummiziapp.core.data.network.api.RestaurantApi
+import com.example.yummiziapp.core.data.network.interceptor.TokenInterceptor
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -18,6 +21,24 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
+
+    @Provides
+    @Singleton
+    fun provideRestaurantApi(retrofit: Retrofit): RestaurantApi {
+        return retrofit.create(RestaurantApi::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideRequestApi(retrofit: Retrofit): RequestApi {
+        return retrofit.create(RequestApi::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun providePreferenceApi(retrofit: Retrofit): PreferenceApi {
+        return retrofit.create(PreferenceApi::class.java)
+    }
 
     @Provides
     @Singleton
