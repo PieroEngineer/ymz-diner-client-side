@@ -9,7 +9,7 @@ import com.example.yummiziapp.core.data.repository.RestaurantRepositoryImpl
 import com.example.yummiziapp.core.data.repository.UserRepositoryImpl
 import com.example.yummiziapp.core.data.repository.RequestRepositoryImpl
 import com.example.yummiziapp.features.restaurant.domain.repository.RestaurantRepository
-import com.example.yummiziapp.features.auth.domain.repository.UserRepository
+import com.example.yummiziapp.features.user.domain.repository.UserRepository
 import com.example.yummiziapp.features.request.domain.repository.RequestRepository
 
 @Module

@@ -3,6 +3,12 @@ package com.example.yummiziapp.features.home.ui.feed
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.yummiziapp.core.data.local.entities.Restaurant
+import com.example.yummiziapp.features.user.domain.repository.UserRepository
+import com.example.yummiziapp.features.home.domain.usecase.GetCategorizedFeedUseCase
+import com.example.yummiziapp.features.home.ui.model.SectionUiModel
+import com.example.yummiziapp.features.request.domain.repository.RequestRepository
+import com.example.yummiziapp.features.restaurant.domain.repository.RestaurantRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,7 +19,6 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 // Idea: don't search every new character, but every 2 or 3 characters (when the word is small or big enought)
@@ -22,7 +27,7 @@ class HomeViewModel @Inject constructor(
     private val getCategorizedFeed: GetCategorizedFeedUseCase,
     private val restaurantRepository: RestaurantRepository,
     private val userRepository: UserRepository,
-    private val requestRepository: RequestRepositorl
+    private val requestRepository: RequestRepository
 ) : ViewModel() {
 
     // Navigation handler

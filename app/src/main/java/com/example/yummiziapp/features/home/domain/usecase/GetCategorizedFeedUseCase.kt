@@ -1,13 +1,15 @@
 package com.example.yummiziapp.features.home.domain.usecase
 
 import android.util.Log
+import com.example.yummiziapp.core.data.local.entities.Restaurant
+import com.example.yummiziapp.features.restaurant.domain.repository.RestaurantRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 // Domain/UseCase/GetCategorizedFeedUseCase.kt
 class GetCategorizedFeedUseCase @Inject constructor(
-    private val repository: RestaurantRepositoryImpl
+    private val repository: RestaurantRepository
 ) {
     operator fun invoke(): Flow<Map<String, List<Restaurant>>> {
         return repository.observeRestaurantsInUserScope().map { list ->

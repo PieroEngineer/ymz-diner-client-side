@@ -8,7 +8,7 @@ import com.example.yummiziapp.core.data.local.entities.LoggedUser
 import com.example.yummiziapp.core.data.local.entities.Preference
 import com.example.yummiziapp.core.data.network.api.PreferenceApi
 import com.example.yummiziapp.core.data.network.model.toDto
-import com.example.yummiziapp.features.auth.domain.repository.UserRepository
+import com.example.yummiziapp.features.user.domain.repository.UserRepository
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext

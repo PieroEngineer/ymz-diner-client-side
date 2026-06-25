@@ -1,4 +1,4 @@
-package com.example.yummiziapp.features.auth.domain.repository
+package com.example.yummiziapp.features.user.domain.repository
 
 import com.example.yummiziapp.core.data.local.entities.LoggedUser
 import com.example.yummiziapp.core.data.local.entities.Preference
