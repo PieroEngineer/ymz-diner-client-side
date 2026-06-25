@@ -1,4 +1,4 @@
-package com.example.yummiziapp.features.restaurant.ui.specification
+package com.example.yummiziapp.features.user.ui.specification
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
