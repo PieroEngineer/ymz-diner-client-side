@@ -15,6 +15,7 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import kotlin.random.Random
 import kotlin.uuid.Uuid
+import kotlinx.coroutines.NonCancellable
 
 class RequestRepositoryImpl @Inject constructor(
     private val yummiziApi: RequestApi,

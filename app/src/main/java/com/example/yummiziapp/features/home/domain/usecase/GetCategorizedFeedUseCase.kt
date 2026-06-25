@@ -15,10 +15,7 @@ class GetCategorizedFeedUseCase @Inject constructor(
         return repository.observeRestaurantsInUserScope().map { list ->
             Log.d("MyActivity", "🗺️  List of restaurant received from the repo before groupBy\n$list\n")
 
-            list.groupBy { it.sectionType}
-//            list.groupBy { it.sectionType }
-            // Code the safe version of this previous line
-
+            list.filterNotNull().groupBy { it.sectionType}  // Removing nulls and grouping by section
         }
     }
 }
