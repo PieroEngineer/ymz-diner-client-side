@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.toSize
 import com.example.yummiziapp.core.data.local.entities.Restaurant
 import com.example.yummiziapp.core.designsystem.theme.YummiziTheme
 import com.example.yummiziapp.R
+import com.example.yummiziapp.core.ui.components.DiffRoundedCornersRect
 
 @Composable
 fun SelectionFrame(

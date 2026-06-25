@@ -39,7 +39,7 @@ import kotlin.uuid.Uuid
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.yummiziapp.core.ui.components.NavigationBar
 import com.example.yummiziapp.core.ui.components.SearchingArea
-import com.example.yummiziapp.features.home.ui.components.DiffRoundedCornersRect
+import com.example.yummiziapp.core.ui.components.DiffRoundedCornersRect
 import com.example.yummiziapp.features.home.ui.components.DragOverlay
 import com.example.yummiziapp.features.home.ui.components.FeedSection
 import com.example.yummiziapp.features.home.ui.components.RestaurantBlock
