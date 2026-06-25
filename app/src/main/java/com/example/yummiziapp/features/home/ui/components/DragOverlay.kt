@@ -18,9 +18,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.Dp
-import coil3.compose.AsyncImage
 import com.example.yummiziapp.core.data.local.entities.Restaurant
 import com.example.yummiziapp.core.designsystem.theme.YummiziTheme
+import com.example.yummiziapp.core.designsystem.theme.YummiziImage
 
 @Composable
 // This composable represents the visual feedback for the restaurant being dragged
@@ -53,7 +53,7 @@ fun DragOverlay(
                 .padding(spacing.regularPadding),
             verticalAlignment = Alignment.CenterVertically
         ){
-            AsyncImage(
+            YummiziImage(
                 model = restaurant.logoUrl,
                 contentDescription = null,
                 modifier = Modifier

@@ -25,7 +25,7 @@ import androidx.compose.ui.unit.DpOffset
 import com.example.yummiziapp.core.data.local.entities.Restaurant
 import com.example.yummiziapp.core.designsystem.theme.YummiziTheme
 import androidx.compose.ui.unit.dp
-import coil3.compose.AsyncImage
+import com.example.yummiziapp.core.designsystem.theme.YummiziImage
 
 //@Preview
 @Composable
@@ -90,7 +90,7 @@ fun RestaurantBlock(
             ImageReel(restaurant.dishesToShowLink, reelActivated)
 
             Log.d("MyActivity", "🖼️  Link of the logo images ${restaurant.logoUrl}\n")
-            AsyncImage(
+            YummiziImage(
                 model = restaurant.logoUrl,
                 contentDescription = null,
                 modifier = Modifier

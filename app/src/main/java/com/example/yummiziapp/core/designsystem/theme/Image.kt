@@ -1,6 +1,7 @@
 package com.example.yummiziapp.core.designsystem.theme
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -17,7 +18,8 @@ fun YummiziImage(
     model: String?,
     contentDescription: String?,
     modifier: Modifier = Modifier,
-    contentScale: ContentScale = ContentScale.Crop
+    contentScale: ContentScale = ContentScale.Crop,
+    alignment: Alignment = Alignment.Center,
 ) {
     // Construct the isolated request model attached cleanly to the local lifecycle context
     val imageRequest = ImageRequest.Builder(LocalContext.current)
@@ -29,8 +31,7 @@ fun YummiziImage(
         model = imageRequest,
         contentDescription = contentDescription,
         modifier = modifier,
-        contentScale = contentScale
-        // Future global rules (like placeholder = painterResource(...) or error fallback states)
-        // can be easily assigned right here down the road!
+        contentScale = contentScale,
+        alignment = alignment
     )
 }

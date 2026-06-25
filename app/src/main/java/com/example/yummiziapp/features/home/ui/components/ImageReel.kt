@@ -19,8 +19,8 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.layout.ContentScale
 import com.example.yummiziapp.core.designsystem.theme.YummiziTheme
-import coil3.compose.AsyncImage
 import coil3.compose.rememberAsyncImagePainter
+import com.example.yummiziapp.core.designsystem.theme.YummiziImage
 
 //@Preview
 @Composable
@@ -91,13 +91,13 @@ fun ImageReel(
         )
     }
     else{
-        if (imageUrls.size>0){
+        if (imageUrls.isNotEmpty()){
             Box(
                 modifier = Modifier
                     .fillMaxSize()
             ) {
 
-                AsyncImage(
+                YummiziImage(
                     model = imageUrls[0],
                     contentDescription = null,
                     modifier = Modifier
