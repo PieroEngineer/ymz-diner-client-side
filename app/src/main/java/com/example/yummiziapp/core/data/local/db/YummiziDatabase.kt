@@ -26,7 +26,7 @@ import com.example.yummiziapp.core.data.local.entities.Restaurant
         Preference::class
     ],
     version = 1,
-    exportSchema = true
+    exportSchema = false // TODO: Activate it when the app is ready to be released
 )
 @TypeConverters(YummiziConverters::class)
 abstract class YummiziDatabase : RoomDatabase() {

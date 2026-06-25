@@ -4,7 +4,10 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -22,19 +25,16 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             YummiziAppTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    // Testing your design system access pattern:
-                    Text(
-                        text = "Welcome to Yummizi!",
-                        style = YummiziTheme.typography.teacherFontVar2,
-                        color = YummiziTheme.colors.yummziziDarkOrange
-                    )
-
-                    // Invoking the wrapped image component completely separated from Coil calls
-                    YummiziImage(
-                        model = "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=500", // Sample Pizza Asset
-                        contentDescription = "App Architecture Smoke Test Pizza Asset",
-                        modifier = Modifier.size(200.dp)
+                Scaffold(
+                    modifier = Modifier.fillMaxSize(),
+                    // 🛡️ Automatically detects top status bar, bottom navigation pill, and camera notches!
+                    contentWindowInsets = WindowInsets.safeDrawing
+                ) { innerPadding ->
+                    // Hook your centralized router engine up to the structural padding coordinates
+                    YummiziNavHost(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(innerPadding) // 🚀 This shields EVERY screen in your app automatically!
                     )
                 }
             }

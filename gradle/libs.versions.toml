@@ -1,13 +1,16 @@
 [versions]
 agp = "9.2.1"
-coreKtx = "1.15.0" # 🌟 Upgraded to stay compatible with AGP 9 compilation graphs
+coreKtx = "1.15.0"
 junit = "4.13.2"
-junitVersion = "1.2.1" # 🌟 Small bump for testing compatibility
-espressoCore = "3.6.1" # 🌟 Small bump for testing compatibility
-lifecycleRuntimeKtx = "2.8.7" # 🌟 Upgraded to prevent internal serialization mismatches
-activityCompose = "1.10.0" # 🌟 Modernized to prevent UI lifecycle crashes with Kotlin 2.x
+junitVersion = "1.2.1"
+espressoCore = "3.6.1"
+lifecycleRuntimeKtx = "2.8.7"
+activityCompose = "1.10.0"
 composeBom = "2026.02.01"
 kotlin = "2.4.0"
+
+# Compose navigation
+navigationCompose = "2.8.5"
 
 # Hilts
 hilt = "2.59.2"
@@ -25,7 +28,7 @@ okhttp = "4.12.0"
 kotlinx-serialization = "1.6.3"
 
 # Coil Image Loader
-coil = "3.0.4" # 🌟 Added stable version for modern Jetpack Compose
+coil = "3.0.4"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -42,6 +45,9 @@ androidx-compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "u
 androidx-compose-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 androidx-compose-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3" }
+
+# Compose navigation
+androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
 
 # Hilt
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
@@ -61,7 +67,7 @@ okhttp-logging-interceptor = { group = "com.squareup.okhttp3", name = "logging-i
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 
 # Coil
-coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coil" } # 🌟 Added clean Coil library definition
+coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coil" }
 coil-network-okhttp = { group = "io.coil-kt.coil3", name = "coil-network-okhttp", version.ref = "coil" }
 
 [plugins]
