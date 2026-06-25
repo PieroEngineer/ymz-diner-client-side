@@ -222,9 +222,9 @@ fun HomeScreen(
                                                 if (bounds != null && bounds.contains(dragPosition)) {
                                                     draggingRestaurant?.let {
 
-                                                        if (it != null){
-                                                            viewModel.onRestaurantDropped(it)
-                                                        }
+                                                        viewModel.onRestaurantDropped(it)
+//X                                                        if (it != null){
+//                                                        }
                                                     }
                                                 }
                                                 draggingRestaurant = null
