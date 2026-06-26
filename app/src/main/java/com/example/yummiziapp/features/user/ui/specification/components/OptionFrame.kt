@@ -1,4 +1,4 @@
-package com.example.yummiziapp.features.user.ui.components
+package com.example.yummiziapp.features.user.ui.specification.components
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth

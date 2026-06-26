@@ -35,8 +35,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.yummiziapp.core.designsystem.theme.YummiziTheme
 import com.example.yummiziapp.R
 import com.example.yummiziapp.core.ui.components.NavigationBar
-import com.example.yummiziapp.features.user.ui.components.PreferenceCustomizationFrame
-import com.example.yummiziapp.features.user.ui.components.PreferenceList
+import com.example.yummiziapp.features.user.ui.preferences.components.PreferenceCustomizationFrame
+import com.example.yummiziapp.features.user.ui.preferences.components.PreferenceList
 
 
 //@Preview(showBackground = true)

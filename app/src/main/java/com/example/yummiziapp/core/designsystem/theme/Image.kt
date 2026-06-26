@@ -18,7 +18,7 @@ fun YummiziImage(
     model: String?,
     contentDescription: String?,
     modifier: Modifier = Modifier,
-    contentScale: ContentScale = ContentScale.Crop,
+    contentScale: ContentScale = ContentScale.Fit,
     alignment: Alignment = Alignment.Center,
 ) {
     // Construct the isolated request model attached cleanly to the local lifecycle context

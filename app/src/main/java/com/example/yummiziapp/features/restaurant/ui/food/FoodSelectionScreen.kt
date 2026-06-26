@@ -22,10 +22,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.yummiziapp.core.designsystem.theme.YummiziTheme
-import com.example.yummiziapp.features.restaurant.ui.components.MenuArea
+import com.example.yummiziapp.features.restaurant.ui.food.components.MenuArea
 import com.example.yummiziapp.features.restaurant.ui.menu.MenuUiState
 import com.example.yummiziapp.R
-import com.example.yummiziapp.features.restaurant.ui.components.MenuSettingArea
+import com.example.yummiziapp.features.restaurant.ui.food.components.MenuSettingArea
 import com.example.yummiziapp.features.restaurant.ui.model.MenuSetting
 
 //import androidx.compose.ui.tooling.preview.Preview

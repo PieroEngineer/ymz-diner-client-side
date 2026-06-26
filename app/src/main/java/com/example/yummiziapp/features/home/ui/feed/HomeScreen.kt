@@ -34,17 +34,17 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.yummiziapp.core.data.local.entities.Restaurant
 import com.example.yummiziapp.core.designsystem.theme.YummiziTheme
-import com.example.yummiziapp.features.home.ui.components.SelectionFrame
+import com.example.yummiziapp.features.home.ui.feed.components.SelectionFrame
 import kotlin.uuid.Uuid
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.yummiziapp.core.ui.components.NavigationBar
 import com.example.yummiziapp.core.ui.components.SearchingArea
 import com.example.yummiziapp.core.ui.components.DiffRoundedCornersRect
-import com.example.yummiziapp.features.home.ui.components.DragOverlay
-import com.example.yummiziapp.features.home.ui.components.FeedSection
-import com.example.yummiziapp.features.home.ui.components.RestaurantBlock
-import com.example.yummiziapp.features.home.ui.components.RestaurantScrollable
-import com.example.yummiziapp.features.home.ui.components.SectionArea
+import com.example.yummiziapp.features.home.ui.feed.components.DragOverlay
+import com.example.yummiziapp.features.home.ui.feed.components.FeedSection
+import com.example.yummiziapp.features.home.ui.feed.components.RestaurantBlock
+import com.example.yummiziapp.features.home.ui.feed.components.RestaurantScrollable
+import com.example.yummiziapp.features.home.ui.feed.components.SectionArea
 
 
 //@Preview(showBackground = true)

@@ -1,4 +1,4 @@
-package com.example.yummiziapp.features.restaurant.ui.components
+package com.example.yummiziapp.features.restaurant.ui.preview.components
 
 
 import androidx.compose.foundation.background

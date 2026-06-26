@@ -92,8 +92,11 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
 
     // Image Loading
-    implementation(libs.coil.compose) // 🌟 Added Coil library execution block
+    implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
+
+    // Inmutable lists
+    implementation(libs.kotlinx.collections.immutable)
 }
 
 configurations.all {

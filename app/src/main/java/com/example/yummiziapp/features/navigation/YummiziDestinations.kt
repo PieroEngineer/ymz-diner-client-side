@@ -1,4 +1,4 @@
-package com.example.yummiziapp.features
+package com.example.yummiziapp.features.navigation
 
 import kotlinx.serialization.Serializable
 

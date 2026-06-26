@@ -1,4 +1,4 @@
-package com.example.yummiziapp.features.home.ui.components
+package com.example.yummiziapp.features.home.ui.feed.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -39,7 +39,8 @@ fun FeedSection(
         ){
             Text(
                 text = title,
-                style = YummiziTheme.typography.leaguespartanFontVar3
+                style = YummiziTheme.typography.leaguespartanFontVar3,
+                color = YummiziTheme.colors.yummziziBlack
             )
 
             Spacer(

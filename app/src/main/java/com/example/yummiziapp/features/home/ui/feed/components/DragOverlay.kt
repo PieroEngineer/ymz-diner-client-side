@@ -1,4 +1,4 @@
-package com.example.yummiziapp.features.home.ui.components
+package com.example.yummiziapp.features.home.ui.feed.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box

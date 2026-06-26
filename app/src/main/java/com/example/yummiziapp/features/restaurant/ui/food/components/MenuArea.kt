@@ -1,4 +1,4 @@
-package com.example.yummiziapp.features.restaurant.ui.components
+package com.example.yummiziapp.features.restaurant.ui.food.components
 
 import android.util.Log
 import androidx.compose.foundation.Image
@@ -18,6 +18,7 @@ import com.example.yummiziapp.core.designsystem.theme.YummiziTheme
 import com.example.yummiziapp.features.restaurant.ui.model.MenuUiModel
 import kotlin.uuid.Uuid
 import com.example.yummiziapp.R
+import com.example.yummiziapp.features.restaurant.ui.components.PageIndicator
 
 @Composable
 fun MenuArea(

@@ -20,8 +20,8 @@ import com.example.yummiziapp.core.designsystem.theme.YummiziTheme
 import com.example.yummiziapp.features.restaurant.ui.preview.MenuPreviewViewModel
 import com.example.yummiziapp.core.ui.components.NavigationBar
 import com.example.yummiziapp.core.ui.components.SearchingArea
-import com.example.yummiziapp.features.restaurant.ui.components.ControlBar
-import com.example.yummiziapp.features.restaurant.ui.components.MenuViewer
+import com.example.yummiziapp.features.restaurant.ui.menu.components.ControlBar
+import com.example.yummiziapp.features.restaurant.ui.preview.components.MenuViewer
 import com.example.yummiziapp.features.restaurant.ui.components.PageIndicator
 import com.example.yummiziapp.features.restaurant.ui.preview.MenuPreviewUiState
 

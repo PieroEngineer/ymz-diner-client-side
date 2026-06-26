@@ -1,4 +1,4 @@
-package com.example.yummiziapp.features.user.ui.components
+package com.example.yummiziapp.features.user.ui.preferences.components
 
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.material3.HorizontalDivider

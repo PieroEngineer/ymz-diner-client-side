@@ -5,7 +5,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.yummiziapp.features.YummiziRoute
+import com.example.yummiziapp.features.navigation.YummiziRoute
 import com.example.yummiziapp.features.home.ui.feed.HomeScreen
 import com.example.yummiziapp.features.restaurant.ui.food.FoodSelectionScreen
 import com.example.yummiziapp.features.restaurant.ui.menu.MenuPreviewScreen

@@ -1,4 +1,4 @@
-package com.example.yummiziapp.features.restaurant.ui.components
+package com.example.yummiziapp.features.restaurant.ui.food.components
 
 import android.util.Log
 import androidx.compose.foundation.Image

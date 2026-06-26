@@ -16,7 +16,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.yummiziapp.core.designsystem.theme.YummiziTheme
 import com.example.yummiziapp.core.ui.components.NavigationBar
 import com.example.yummiziapp.core.ui.components.SearchingArea
-import com.example.yummiziapp.features.user.ui.components.OptionFrame
+import com.example.yummiziapp.features.user.ui.specification.components.OptionFrame
 import kotlin.uuid.Uuid
 //import androidx.compose.ui.tooling.preview.Preview
 
