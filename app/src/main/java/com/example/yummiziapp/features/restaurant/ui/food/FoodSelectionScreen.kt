@@ -23,7 +23,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.yummiziapp.core.designsystem.theme.YummiziTheme
 import com.example.yummiziapp.features.restaurant.ui.food.components.MenuArea
-import com.example.yummiziapp.features.restaurant.ui.menu.MenuUiState
 import com.example.yummiziapp.R
 import com.example.yummiziapp.features.restaurant.ui.food.components.MenuSettingArea
 import com.example.yummiziapp.features.restaurant.ui.model.MenuSetting
@@ -50,7 +49,7 @@ fun FoodSelectionScreen(    // TODO: Correct the prop-drilling of this and other
     ){
         // Professional State Switching
         when (val result = menuUiState) {
-            is MenuUiState.Loading -> {
+            is FoodSelectionUiState.Loading -> {
                 //MenuShimmerLoading() // Your placeholder animation
                 Text(
                     text = "Loading data...",
@@ -59,7 +58,7 @@ fun FoodSelectionScreen(    // TODO: Correct the prop-drilling of this and other
                     style = YummiziTheme.typography.teacherFontVar3
                 )
             }
-            is MenuUiState.Success -> {
+            is FoodSelectionUiState.Success -> {
                 MenuArea(
                     modifier = Modifier
                         .weight(5f),
@@ -69,7 +68,7 @@ fun FoodSelectionScreen(    // TODO: Correct the prop-drilling of this and other
                     }
                 )
             }
-            is MenuUiState.Error -> {
+            is FoodSelectionUiState.Error -> {
                 //ErrorView(message = result.message) // A "Retry" button and error text
                 Text(
                     text = "Error: ${result.message}",

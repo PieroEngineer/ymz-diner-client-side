@@ -1,5 +1,6 @@
 package com.example.yummiziapp
 
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
@@ -8,7 +9,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.yummiziapp.features.navigation.YummiziRoute
 import com.example.yummiziapp.features.home.ui.feed.HomeScreen
 import com.example.yummiziapp.features.restaurant.ui.food.FoodSelectionScreen
-import com.example.yummiziapp.features.restaurant.ui.menu.MenuPreviewScreen
+import com.example.yummiziapp.features.restaurant.ui.preview.MenuPreviewScreen
 import com.example.yummiziapp.features.user.ui.preferences.PreferencesScreen
 import com.example.yummiziapp.features.user.ui.specification.SpecificationScreen
 
@@ -26,8 +27,10 @@ fun YummiziNavHost(
         composable<YummiziRoute.Home> {
             HomeScreen(
                 modifier = modifier,
-                onRestaurantSelectionNavigation = {
-                    navController.navigate(YummiziRoute.Specification)
+                onRestaurantSelectionNavigation = { id ->
+                    Log.d("MyActivity", "🔎🪪  Is there an ID? $id")
+                    navController.navigate(YummiziRoute.Specification(restaurantId = id?.toString()))
+                    Log.d("MyActivity", "🔎📌  Checkpoint after navigation")
                 },
                 onRestaurantSelected = { id ->
                     navController.navigate(YummiziRoute.MenuPreview(restaurantId = id.toString()))

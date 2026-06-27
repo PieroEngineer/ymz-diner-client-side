@@ -6,7 +6,6 @@ import androidx.lifecycle.viewModelScope
 import com.example.yummiziapp.core.data.local.entities.Dish
 import com.example.yummiziapp.core.data.local.entities.MenuPage
 import com.example.yummiziapp.features.restaurant.domain.repository.RestaurantRepository
-import com.example.yummiziapp.features.restaurant.ui.menu.MenuUiState
 import com.example.yummiziapp.features.restaurant.ui.model.CoordinatesInPage
 import com.example.yummiziapp.features.restaurant.ui.model.FoodSelectionUiModel
 import com.example.yummiziapp.features.restaurant.ui.model.MenuUiModel
@@ -49,20 +48,20 @@ class FoodSelectionViewModel @Inject constructor(   //TODO: Change the way of ho
     // High-Performance StateFlow
     // We observe the database. If the network refresh succeeds later,
     // this Flow automatically emits the new data.
-    val menuUiState: StateFlow<MenuUiState> = restaurantRepository
+    val menuUiState: StateFlow<FoodSelectionUiState> = restaurantRepository
         .observeRestaurantMenuWithItsDishes(restaurantId)
         .map { map ->
             // Transform the map to the UI model list
             val uiModels = map.toUiModels()
 
-            if (uiModels.isEmpty()) MenuUiState.Loading
-            else MenuUiState.Success(uiModels)
+            if (uiModels.isEmpty()) FoodSelectionUiState.Loading
+            else FoodSelectionUiState.Success(uiModels)
         }
-        .catch { e -> emit(MenuUiState.Error(e.message ?: "Unknown Error")) }
+        .catch { e -> emit(FoodSelectionUiState.Error(e.message ?: "Unknown Error")) }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
-            initialValue = MenuUiState.Loading
+            initialValue = FoodSelectionUiState.Loading
         )
     /// Possible improve here to be safe over coroutines
     //fun updateQuantity(dishId: Uuid, delta: Int) {

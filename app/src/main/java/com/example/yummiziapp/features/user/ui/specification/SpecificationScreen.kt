@@ -1,5 +1,6 @@
 package com.example.yummiziapp.features.user.ui.specification
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -9,10 +10,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.yummiziapp.core.designsystem.theme.YummiziTheme
 import com.example.yummiziapp.core.ui.components.NavigationBar
 import com.example.yummiziapp.core.ui.components.SearchingArea
@@ -42,7 +43,8 @@ fun SpecificationScreen(
         }
     }
 
-    val currentListedRestaurants by viewModel.queuedRestaurants.collectAsStateWithLifecycle()
+//X    val currentListedRestaurants by viewModel.queuedRestaurants.collectAsStateWithLifecycle()
+    val uiState by viewModel.uiState.collectAsState()
 
     // Screen content
     Column(
@@ -59,18 +61,47 @@ fun SpecificationScreen(
 
         Spacer(Modifier.height(spacing.regularSeparation))
 
-        // Option frame
-        OptionFrame(
-            Modifier.weight(1f),
 
-            onRestaurantSelected = { id ->
-                viewModel.onRestaurantClicked(id)
-            },
-            onRemoveRestaurant = { id ->
-                viewModel.leaveQueue(id)
-            },
-            listedRestaurants = currentListedRestaurants
-        )
+        when (val state = uiState) {
+            is SpecificationUiState.Loading -> {
+                // Loading UI
+            }
+            is SpecificationUiState.ListingRestaurants -> {
+                OptionFrame(
+                    Modifier.weight(1f),
+
+                    onRestaurantSelected = { id ->
+                        viewModel.onRestaurantClicked(id)
+                    },
+                    onRemoveRestaurant = { id ->
+                        viewModel.leaveQueue(id)
+                    },
+                    listedRestaurants = state.restaurants,
+
+                    focusedRestaurant = null
+                )
+            }
+            is SpecificationUiState.FocusingRestaurant -> {
+                OptionFrame(
+                    Modifier.weight(1f),
+
+                    onRestaurantSelected = { id ->
+                        viewModel.onRestaurantClicked(id)
+                    },
+                    onRemoveRestaurant = { id ->
+                        viewModel.leaveQueue(id)
+                    },
+                    listedRestaurants = emptyList(),
+
+                    focusedRestaurant = state.restaurant
+                )
+            }
+            is SpecificationUiState.Error -> {
+                Log.d("MyActivity", "🚩👉  Error when trying to see the specifications: ${state.errorMessage}")
+            }
+
+        }
+
 
         Spacer(Modifier.height(spacing.regularSeparation))
 
@@ -88,4 +119,5 @@ fun SpecificationScreen(
         )
 
     }
+
 }

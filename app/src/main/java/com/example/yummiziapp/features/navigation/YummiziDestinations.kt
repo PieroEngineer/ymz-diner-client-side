@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 
 sealed interface YummiziRoute {
     @Serializable data object Home : YummiziRoute
-    @Serializable data object Specification : YummiziRoute
+    @Serializable data class Specification(val restaurantId: String?) : YummiziRoute
     @Serializable data object Preferences : YummiziRoute
 
     // 🚀 Look here: No strings, no templates! Just pure compile-safe variables.

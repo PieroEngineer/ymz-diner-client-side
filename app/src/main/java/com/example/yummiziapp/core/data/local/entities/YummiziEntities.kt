@@ -28,6 +28,7 @@ data class Restaurant(
     // Keeping raw primitives (Double) or creating a simple embedded @Embedded data class remains the industry standard.
     val latitude: Double?,
     val longitude: Double?
+    // val maxWaitingTimeInMinutes: Int,
     //val description: String,
 )
 

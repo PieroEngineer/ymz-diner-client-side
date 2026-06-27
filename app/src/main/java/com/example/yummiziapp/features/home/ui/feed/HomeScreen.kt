@@ -51,7 +51,7 @@ import com.example.yummiziapp.features.home.ui.feed.components.SectionArea
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
-    onRestaurantSelectionNavigation: () -> Unit,
+    onRestaurantSelectionNavigation: (Uuid?) -> Unit,
     onRestaurantSelected: (Uuid) -> Unit,
     onPreferenceNavigation: () -> Unit,
     viewModel: HomeViewModel = hiltViewModel()
@@ -61,10 +61,9 @@ fun HomeScreen(
     LaunchedEffect(Unit) {
         viewModel.navEffect.collect { effect ->
             when (effect) {
-                is HomeScreenUiEvents.NavigateToRestaurantSelectionFrame -> { onRestaurantSelectionNavigation() }
+                is HomeScreenUiEvents.NavigateToRestaurantSelectionFrame -> { onRestaurantSelectionNavigation(effect.restaurantId) }
                 is HomeScreenUiEvents.NavigateToRestaurantMenuPreview -> { onRestaurantSelected(effect.restaurantId) }
                 is HomeScreenUiEvents.NavigateToPreferences -> { onPreferenceNavigation() }
-
                 is HomeScreenUiEvents.ShowConnectionError -> { /* ... */ }
             }
         }

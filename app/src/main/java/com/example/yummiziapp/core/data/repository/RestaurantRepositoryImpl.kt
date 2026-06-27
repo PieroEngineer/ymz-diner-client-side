@@ -94,12 +94,17 @@ class RestaurantRepositoryImpl @Inject constructor(
     }
 
     // In UserRepository / RestaurantRepository
-    override fun observePendingRestaurantsWithStatus(): Flow<List<RestaurantWithStatus>> {
+    override fun observePendingRestaurantsWithStatus(): Flow<List<RestaurantWithStatus>> {  // "Pending" means "QUEUED" and "ACCEPTED"
         // 1. Get current ID (keeping your mock for now, but using the DAO)
         val currentUserId = Uuid.parse("00000000-0000-4000-a000-000000000000")
 
         // 2. Return the direct stream from the DAO
         return restaurantDao.observePendingRestaurantsWithStatus(currentUserId)
+    }
+
+    override fun observePendingRestaurantWithStatusById(restaurantId: Uuid): Flow<RestaurantWithStatus> {
+        val currentUserId = Uuid.parse("00000000-0000-4000-a000-000000000000")
+        return restaurantDao.observePendingRestaurantWithStatusById(currentUserId, restaurantId)
     }
 
     override fun observePendingRestaurants(): Flow<List<Restaurant>> {

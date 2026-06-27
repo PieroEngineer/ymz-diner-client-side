@@ -7,7 +7,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.zIndex
 import com.example.yummiziapp.core.designsystem.theme.YummiziTheme
-import com.example.yummiziapp.features.restaurant.ui.model.SelectableUiModel
+import com.example.yummiziapp.features.restaurant.ui.model.SelectedRestaurantUiModel
+import com.example.yummiziapp.features.user.ui.model.FocusedRestaurantUiModel
 import kotlin.uuid.Uuid
 
 @Composable
@@ -15,7 +16,8 @@ fun OptionFrame(
     modifier: Modifier = Modifier,
     onRestaurantSelected: (Uuid) -> Unit,
     onRemoveRestaurant: (Uuid) -> Unit,
-    listedRestaurants: List<SelectableUiModel>
+    listedRestaurants: List<SelectedRestaurantUiModel>,
+    focusedRestaurant: FocusedRestaurantUiModel?
 ) {
 
     val spacing = YummiziTheme.spacing
@@ -58,26 +60,36 @@ fun OptionFrame(
         )
 
 
-        // "Current queue in restaurants" section
-        SelectionSection(
-            Modifier
-                .padding(horizontal = spacing.mediumPadding)
-                .fillMaxWidth()
-                .zIndex(1f)
-                .weight(1f),
+        if (focusedRestaurant != null) {
+            SelectedRestaurant(
+                Modifier
+                    .padding(horizontal = spacing.mediumPadding)
+                    .fillMaxWidth()
+                    .zIndex(1f),
+                focusedRestaurant
+            )
+        }
+        else{
+            // "Current queue in restaurants" section
+            SelectionSection(
+                Modifier
+                    .padding(horizontal = spacing.mediumPadding)
+                    .fillMaxWidth()
+                    .zIndex(1f)
+                    .weight(1f),
 
-            listedRestaurants,
+                listedRestaurants,
 
-            onRemoveRestaurant = { id ->
-                //XviewModel.leaveQueue(id)
-                onRemoveRestaurant(id)
-            },
+                onRemoveRestaurant = { id ->
+                    onRemoveRestaurant(id)
+                },
 
-            onRestaurantSelected = { id ->
-                //XviewModel.onRestaurantClicked(id)
-                onRestaurantSelected(id)
+                onRestaurantSelected = { id ->
+                    onRestaurantSelected(id)
 
-            }
-        )
+                }
+            )
+        }
+
     }
 }

@@ -24,9 +24,9 @@ import kotlin.uuid.Uuid
 class PreferenceViewModel @Inject constructor(
     private val userRepository: UserRepository
 ): ViewModel() {
-    var titleInput by mutableStateOf("")
-    var descInput by mutableStateOf("")
-    var colorInput by mutableStateOf("#FFFFFF")
+    var titleInput by mutableStateOf("")                             // TODO: move them to a Ui state
+    var descInput by mutableStateOf("")                         //
+    var colorInput by mutableStateOf("#FFFFFF")         //
 
     val preferences: StateFlow<List<PreferenceUiModel>> = userRepository
         .observePreferences()

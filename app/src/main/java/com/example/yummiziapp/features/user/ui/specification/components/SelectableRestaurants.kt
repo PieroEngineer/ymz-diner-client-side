@@ -27,13 +27,13 @@ import androidx.compose.ui.text.style.TextAlign
 import com.example.yummiziapp.R
 import com.example.yummiziapp.core.designsystem.theme.YummiziImage
 import com.example.yummiziapp.features.request.data.model.QueueStatus
-import com.example.yummiziapp.features.restaurant.ui.model.SelectableUiModel
+import com.example.yummiziapp.features.restaurant.ui.model.SelectedRestaurantUiModel
 import kotlin.uuid.Uuid
 
 
 @Composable
 fun SelectableRestaurants(
-    listedRestaurants: List<SelectableUiModel>,
+    listedRestaurants: List<SelectedRestaurantUiModel>,
     onRemoveRestaurant: (Uuid) -> Unit,
     onRestaurantSelected: (Uuid) -> Unit,
 ){

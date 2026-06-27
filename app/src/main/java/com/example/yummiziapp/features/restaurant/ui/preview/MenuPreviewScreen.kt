@@ -1,4 +1,4 @@
-package com.example.yummiziapp.features.restaurant.ui.menu
+package com.example.yummiziapp.features.restaurant.ui.preview
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -17,13 +17,11 @@ import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.yummiziapp.core.designsystem.theme.YummiziTheme
-import com.example.yummiziapp.features.restaurant.ui.preview.MenuPreviewViewModel
 import com.example.yummiziapp.core.ui.components.NavigationBar
 import com.example.yummiziapp.core.ui.components.SearchingArea
-import com.example.yummiziapp.features.restaurant.ui.menu.components.ControlBar
+import com.example.yummiziapp.features.restaurant.ui.preview.components.ControlBar
 import com.example.yummiziapp.features.restaurant.ui.preview.components.MenuViewer
 import com.example.yummiziapp.features.restaurant.ui.components.PageIndicator
-import com.example.yummiziapp.features.restaurant.ui.preview.MenuPreviewUiState
 
 
 //@Preview(showBackground = false)

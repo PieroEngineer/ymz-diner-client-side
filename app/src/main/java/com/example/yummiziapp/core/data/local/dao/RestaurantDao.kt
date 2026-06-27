@@ -35,6 +35,16 @@ interface RestaurantDao {
     """)
     fun observePendingRestaurantsWithStatus(userId: Uuid): Flow<List<RestaurantWithStatus>>
 
+    @Query("""
+        SELECT restaurants.*, requests.status as requestStatus 
+        FROM restaurants 
+        JOIN requests ON restaurants.id = requests.restaurantId 
+        WHERE requests.userId = :userId 
+        AND restaurants.id = :restaurantId
+        AND requests.status IN ('QUEUED', 'ACCEPTED')
+    """)
+    fun observePendingRestaurantWithStatusById(userId: Uuid, restaurantId: Uuid): Flow<RestaurantWithStatus>    /// Should I include safety checks?
+
     /**
      * Even though we JOIN with the requests table to filter the results,
      * we only SELECT restaurants.*, so Room maps it directly to a List<Restaurant>.

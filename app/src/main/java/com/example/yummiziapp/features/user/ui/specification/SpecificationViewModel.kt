@@ -2,16 +2,19 @@ package com.example.yummiziapp.features.user.ui.specification
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.example.yummiziapp.core.data.local.entities.Restaurant
 import com.example.yummiziapp.features.request.data.model.QueueStatus
 import com.example.yummiziapp.features.request.domain.repository.RequestRepository
 import com.example.yummiziapp.features.restaurant.domain.repository.RestaurantRepository
-import com.example.yummiziapp.features.restaurant.ui.model.SelectableUiModel
+import com.example.yummiziapp.features.restaurant.ui.model.SelectedRestaurantUiModel
+import com.example.yummiziapp.features.user.ui.model.FocusedRestaurantUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
@@ -22,38 +25,99 @@ import kotlin.uuid.Uuid
 @HiltViewModel
 class SpecificationViewModel @Inject constructor(
     private val restaurantRepository: RestaurantRepository,
-    private val requestRepository: RequestRepository
+    private val requestRepository: RequestRepository,
+    savedStateHandle: SavedStateHandle
 ) : ViewModel() {
+
+    private val restaurantIdString: String? = savedStateHandle["restaurantId"]
+    private val restaurantId = restaurantIdString?.let { Uuid.parseOrNull(it) }
+
+    init{
+        Log.d("MyActivity", "🍽️  Focused restaurant $restaurantId")
+    }
+
+    val uiState: StateFlow<SpecificationUiState> = if (restaurantId != null) {
+            restaurantRepository.observePendingRestaurantWithStatusById(restaurantId)
+            .map{ currentRestaurant ->
+
+                SpecificationUiState.FocusingRestaurant(currentRestaurant.restaurant.toFocusedRestaurantUiModel((currentRestaurant.status)))
+            }
+    }
+    else{
+        Log.d("MyActivity", "🔎👉  There is no focused restaurant, so showing the list of restaurants")
+        restaurantRepository.observePendingRestaurantsWithStatus()
+            .map{ currentSelectedRestaurants ->
+
+                SpecificationUiState.ListingRestaurants(currentSelectedRestaurants.map {
+                    it.restaurant.toSelectableRestaurantUiModel(
+                        it.status
+                    )
+                })
+            }
+    }
+        // Catch errors safely from either stream path
+        .catch { error ->
+            emit(SpecificationUiState.Error(error.message ?: "It's possible that the id of the restaurant wasn't found"))
+        }
+        // Convert the cold stream flow to a hot StateFlow cleanly
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = SpecificationUiState.Loading
+        )
+
+    private fun Restaurant.toFocusedRestaurantUiModel(status: QueueStatus) = FocusedRestaurantUiModel(
+        restaurantLogoUrl = logoUrl,
+        waitingState = status,
+        distanceKm = 10,
+        name = name,
+        maxWaitingTimeInMinutes = 15
+    )
 
     // Extension function for clean mapping
     // Updated Mapper
-    private fun Restaurant.toUiModel(status: QueueStatus) = SelectableUiModel(
+    private fun Restaurant.toSelectableRestaurantUiModel(status: QueueStatus) = SelectedRestaurantUiModel(
         restaurantId = id,
         distanceKm = 10,
         restaurantLogoUrl = logoUrl,
         waitingState = status // Dynamic status from the DB!
     )
 
-    val queuedRestaurants: StateFlow<List<SelectableUiModel>> = restaurantRepository
-        .observePendingRestaurantsWithStatus() // Now returning Flow<List<RestaurantWithStatus>>
-        .map { list ->
-            list.map { item ->
-                // Use an extension or helper to convert
-                item.restaurant.toUiModel(item.status)
-            }
-        }
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = emptyList()
-        )
+
+    //X
+//    val queuedRestaurants: StateFlow<List<SelectedRestaurantUiModel>> = restaurantRepository
+//        .observePendingRestaurantsWithStatus() // Now returning Flow<List<RestaurantWithStatus>>
+//        .map { list ->
+//            list.map { item ->
+//                // Use an extension or helper to convert
+//                item.restaurant.toUiModel(item.status)
+//            }
+//        }
+//        .stateIn(
+//            scope = viewModelScope,
+//            started = SharingStarted.WhileSubscribed(5000),
+//            initialValue = emptyList()
+//        )
 
 
     private val _effect = Channel<SpecificationUiEvents>(Channel.BUFFERED)
     val navEffect = _effect.receiveAsFlow()
 
+
+    /// fun onGoBackClicked() {
+    //      /// Unfocus the state of the focused restaurant
+    // }
+
     fun onRestaurantClicked(id: Uuid) {
 //        Log.d("MainActivity", "🔎  Starting coroutine with this ID: $id")
+
+        /// If the restaurant is still in "QUEUED", go to the focused restaurant details (arrival control)
+
+        /// If the restaurant accepted the table request, open the confirmation pop-up
+
+        /// If the restaurant is "PAID", this "onRestaurantClicked" doesn't have any sense because the app
+        //  will show the focused restaurant directly with the confirmed arrival details
+
         viewModelScope.launch {
             // "I've decided we need to move to the next screen"
             _effect.send(SpecificationUiEvents.NavigateToRestaurantMenu(id))

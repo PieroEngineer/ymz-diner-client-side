@@ -10,7 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import com.example.yummiziapp.core.designsystem.theme.YummiziTheme
-import com.example.yummiziapp.features.restaurant.ui.model.SelectableUiModel
+import com.example.yummiziapp.features.restaurant.ui.model.SelectedRestaurantUiModel
 import kotlin.uuid.Uuid
 
 
@@ -18,7 +18,7 @@ import kotlin.uuid.Uuid
 fun SelectionSection(
     modifier: Modifier = Modifier,
 
-    listedRestaurants: List<SelectableUiModel>,
+    listedRestaurants: List<SelectedRestaurantUiModel>,
 
     onRemoveRestaurant : (Uuid) -> Unit = {},
 

@@ -27,14 +27,13 @@ class HomeViewModel @Inject constructor(
     private val getCategorizedFeed: GetCategorizedFeedUseCase,
     private val restaurantRepository: RestaurantRepository,
     private val userRepository: UserRepository,
-    private val requestRepository: RequestRepository
 ) : ViewModel() {
 
     // Navigation handler
     private val _effect = Channel<HomeScreenUiEvents>(Channel.BUFFERED)
     val navEffect = _effect.receiveAsFlow()
 
-    private val _uiState = MutableStateFlow<HomeUiState>(HomeUiState.Loading)
+    private val _uiState = MutableStateFlow<HomeUiState>(HomeUiState.Loading)   /// Is this way a bad practice?
     val uiState = _uiState.asStateFlow()
 
     init {
@@ -113,16 +112,15 @@ class HomeViewModel @Inject constructor(
 
 
     fun onRestaurantClicked(id: Uuid) {
-//        Log.d("MainActivity", "🔎  Starting coroutine with this ID: $id")
         viewModelScope.launch {
-            // "I've decided we need to move to the next screen"
             _effect.send(HomeScreenUiEvents.NavigateToRestaurantMenuPreview(id))
         }
     }
 
     fun onSelectionFrameClicked(){
         viewModelScope.launch {
-            _effect.send(HomeScreenUiEvents.NavigateToRestaurantSelectionFrame)
+            Log.d("MyActivity", "🔎🟧  Frame was clicked")
+            _effect.send(HomeScreenUiEvents.NavigateToRestaurantSelectionFrame(null))
         }
     }
 
@@ -133,12 +131,12 @@ class HomeViewModel @Inject constructor(
     }
 
 
-    ///Maybe it also need a NonCancelable
     fun onRestaurantDropped(restaurant: Restaurant) {
         // We use viewModelScope because writing to a database
         // is a 'suspend' (heavy) operation.
         viewModelScope.launch {
-            requestRepository.createQueueRequest(restaurant.id)
+//X            requestRepository.createQueueRequest(restaurant.id)
+            _effect.send(HomeScreenUiEvents.NavigateToRestaurantSelectionFrame(restaurant.id))
 
         }
     }
