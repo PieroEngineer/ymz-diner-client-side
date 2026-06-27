@@ -39,7 +39,7 @@ class HomeViewModel @Inject constructor(
     init {
         viewModelScope.launch {
 
-            // Clean all reastaurants
+            // Clean all restaurants
             Log.d("MyActivity", "🧹  Cleaning all restaurants...\n")
             clearFeed() //TODO: Consider that the cleaning is when the user doesn't enter after a long while
 

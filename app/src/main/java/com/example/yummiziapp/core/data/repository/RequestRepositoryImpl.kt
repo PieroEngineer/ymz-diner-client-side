@@ -5,10 +5,11 @@ import com.example.yummiziapp.core.data.di.IoDispatcher
 import com.example.yummiziapp.core.data.local.dao.LoggedUserDao
 import com.example.yummiziapp.core.data.local.dao.RequestDao
 import com.example.yummiziapp.core.data.local.entities.Request
+import com.example.yummiziapp.core.data.local.model.QueueStatusToken
 import com.example.yummiziapp.core.data.network.api.RequestApi
 import com.example.yummiziapp.core.data.network.model.LeaveQueueDto
 import com.example.yummiziapp.core.data.network.model.toDto
-import com.example.yummiziapp.features.request.data.model.QueueStatus
+//import com.example.yummiziapp.features.request.data.model.QueueStatus
 import com.example.yummiziapp.features.request.domain.repository.RequestRepository
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
@@ -42,7 +43,7 @@ class RequestRepositoryImpl @Inject constructor(
             id = requestId,
             restaurantId = restaurantId,
             userId = userId,
-            status = if (Random.nextDouble() < 0.7) QueueStatus.ACCEPTED else QueueStatus.QUEUED, //TODO: Remove the MockUp acceptation
+            status = if (Random.nextDouble() < 0.7) QueueStatusToken.ACCEPTED else QueueStatusToken.QUEUED, //TODO: Remove the MockUp acceptation
             localCreationTimestamp = ""//TODO: System.currentTimeMillis()
         )
 

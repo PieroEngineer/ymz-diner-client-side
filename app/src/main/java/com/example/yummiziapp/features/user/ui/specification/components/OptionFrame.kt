@@ -1,5 +1,6 @@
 package com.example.yummiziapp.features.user.ui.specification.components
 
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -37,6 +38,7 @@ fun OptionFrame(
         val currentFriends = listOf(diner1, diner2, diner3, diner4, diner5, diner6)
 
         // "Your selection" section
+        Log.d("MyActivity", "🔎📱  Just before Specification section")
         SpecificationSection(
             Modifier
                 .padding(horizontal = spacing.mediumPadding)
@@ -61,11 +63,13 @@ fun OptionFrame(
 
 
         if (focusedRestaurant != null) {
+            Log.d("MyActivity", "🔎📱  Just before Selection section")
             SelectedRestaurant(
                 Modifier
                     .padding(horizontal = spacing.mediumPadding)
                     .fillMaxWidth()
                     .zIndex(1f),
+
                 focusedRestaurant
             )
         }

@@ -3,7 +3,7 @@ package com.example.yummiziapp.core.data.local.converters
 import androidx.room.TypeConverter
 import kotlin.uuid.Uuid
 import kotlinx.serialization.encodeToString
-import com.example.yummiziapp.features.request.data.model.QueueStatus
+//X import com.example.yummiziapp.features.request.data.model.QueueStatus
 import kotlinx.serialization.json.Json
 
 class YummiziConverters {
@@ -36,19 +36,19 @@ class YummiziConverters {
     @TypeConverter
     fun toUuid(value: String?): Uuid? = value?.let { Uuid.parse(it) }
 
-    // --- Enums ---
-    @TypeConverter
-    fun fromQueueStatus(status: QueueStatus): String = status.name
-
-    @TypeConverter
-    fun toQueueStatus(value: String): QueueStatus {
-        // 💡 Pro-Tip: You can use runCatching to automatically handle unexpected string entries dynamically,
-        // but keeping your clean fallback strategy is perfect for database resilience:
-        return when (value) {
-            "QUEUED" -> QueueStatus.QUEUED
-            "ACCEPTED" -> QueueStatus.ACCEPTED
-            "DECLINED" -> QueueStatus.DECLINED
-            else -> QueueStatus.IDLE // Default fallback
-        }
-    }
+    //X
+//    // --- Enums ---
+//    @TypeConverter
+//    fun fromQueueStatus(status: QueueStatus): String = status.name
+//
+//    @TypeConverter
+//    fun toQueueStatus(value: String): QueueStatus {
+//        return when (value) {
+//            "QUEUED" -> QueueStatus.QUEUED
+//            "ACCEPTED" -> QueueStatus.ACCEPTED
+//            "DECLINED" -> QueueStatus.DECLINED
+//            "PAID" -> QueueStatus.PAID
+//            else -> QueueStatus.IDLE // Default fallback
+//        }
+//    }
 }

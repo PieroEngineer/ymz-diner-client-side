@@ -21,7 +21,7 @@ interface RequestRepository {
 //    suspend fun updateRestaurantStatus(
 //        restaurantId: Uuid,
 //        requestId: Uuid,
-//        newStatus: QueueStatus
+//        newStatus: QueueStatusToken
 //    )
 
     suspend fun leaveQueue(restaurantId: Uuid)

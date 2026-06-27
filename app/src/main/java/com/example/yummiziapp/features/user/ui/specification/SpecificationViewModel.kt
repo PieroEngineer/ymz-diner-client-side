@@ -5,11 +5,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.example.yummiziapp.core.data.local.entities.Restaurant
-import com.example.yummiziapp.features.request.data.model.QueueStatus
+import com.example.yummiziapp.core.data.local.model.QueueStatusToken
 import com.example.yummiziapp.features.request.domain.repository.RequestRepository
 import com.example.yummiziapp.features.restaurant.domain.repository.RestaurantRepository
 import com.example.yummiziapp.features.restaurant.ui.model.SelectedRestaurantUiModel
 import com.example.yummiziapp.features.user.ui.model.FocusedRestaurantUiModel
+import com.example.yummiziapp.features.user.ui.model.QueueUiStatus
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.SharingStarted
@@ -37,11 +38,14 @@ class SpecificationViewModel @Inject constructor(
     }
 
     val uiState: StateFlow<SpecificationUiState> = if (restaurantId != null) {
-            restaurantRepository.observePendingRestaurantWithStatusById(restaurantId)
-            .map{ currentRestaurant ->
+        Log.d("MyActivity", "🔎👉  There is a focused restaurant. This restaurant is $restaurantId")
+        restaurantRepository.observePendingRestaurantWithStatusById(restaurantId)
+        .map{ currentRestaurant ->
 
-                SpecificationUiState.FocusingRestaurant(currentRestaurant.restaurant.toFocusedRestaurantUiModel((currentRestaurant.status)))
-            }
+            Log.d("MyActivity", "🔎👉  That focused restaurant. is this \n$currentRestaurant")
+
+            SpecificationUiState.FocusingRestaurant(currentRestaurant.restaurant.toFocusedRestaurantUiModel((currentRestaurant.requestStatus.toUiStatus())))
+        }
     }
     else{
         Log.d("MyActivity", "🔎👉  There is no focused restaurant, so showing the list of restaurants")
@@ -50,7 +54,7 @@ class SpecificationViewModel @Inject constructor(
 
                 SpecificationUiState.ListingRestaurants(currentSelectedRestaurants.map {
                     it.restaurant.toSelectableRestaurantUiModel(
-                        it.status
+                        it.requestStatus.toUiStatus()
                     )
                 })
             }
@@ -66,7 +70,7 @@ class SpecificationViewModel @Inject constructor(
             initialValue = SpecificationUiState.Loading
         )
 
-    private fun Restaurant.toFocusedRestaurantUiModel(status: QueueStatus) = FocusedRestaurantUiModel(
+    private fun Restaurant.toFocusedRestaurantUiModel(status: QueueUiStatus) = FocusedRestaurantUiModel(
         restaurantLogoUrl = logoUrl,
         waitingState = status,
         distanceKm = 10,
@@ -76,28 +80,21 @@ class SpecificationViewModel @Inject constructor(
 
     // Extension function for clean mapping
     // Updated Mapper
-    private fun Restaurant.toSelectableRestaurantUiModel(status: QueueStatus) = SelectedRestaurantUiModel(
+    private fun Restaurant.toSelectableRestaurantUiModel(status: QueueUiStatus) = SelectedRestaurantUiModel(
         restaurantId = id,
         distanceKm = 10,
         restaurantLogoUrl = logoUrl,
         waitingState = status // Dynamic status from the DB!
     )
 
-
-    //X
-//    val queuedRestaurants: StateFlow<List<SelectedRestaurantUiModel>> = restaurantRepository
-//        .observePendingRestaurantsWithStatus() // Now returning Flow<List<RestaurantWithStatus>>
-//        .map { list ->
-//            list.map { item ->
-//                // Use an extension or helper to convert
-//                item.restaurant.toUiModel(item.status)
-//            }
-//        }
-//        .stateIn(
-//            scope = viewModelScope,
-//            started = SharingStarted.WhileSubscribed(5000),
-//            initialValue = emptyList()
-//        )
+    // 🚀 High-Performance Pattern Matrix: Extension Mapper
+    private fun QueueStatusToken.toUiStatus(): QueueUiStatus = when (this) {
+        QueueStatusToken.IDLE -> QueueUiStatus.Idle
+        QueueStatusToken.QUEUED -> QueueUiStatus.Queued
+        QueueStatusToken.ACCEPTED -> QueueUiStatus.Accepted
+        QueueStatusToken.PAID -> QueueUiStatus.Paid
+        QueueStatusToken.DECLINED -> QueueUiStatus.Declined
+    }
 
 
     private val _effect = Channel<SpecificationUiEvents>(Channel.BUFFERED)

@@ -82,6 +82,7 @@ fun SpecificationScreen(
                 )
             }
             is SpecificationUiState.FocusingRestaurant -> {
+                Log.d("MyActivity", "🔎📱  Arrive to the screen with the focused restaurant")
                 OptionFrame(
                     Modifier.weight(1f),
 

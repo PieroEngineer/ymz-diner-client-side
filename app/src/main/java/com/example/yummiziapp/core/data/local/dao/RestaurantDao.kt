@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.example.yummiziapp.core.data.local.entities.Restaurant
+import com.example.yummiziapp.core.data.local.model.QueueStatusToken
 import com.example.yummiziapp.core.data.local.model.RestaurantWithStatus
 import kotlinx.coroutines.flow.Flow
 import kotlin.uuid.Uuid
@@ -30,20 +31,29 @@ interface RestaurantDao {
         FROM restaurants 
         JOIN requests ON restaurants.id = requests.restaurantId 
         WHERE requests.userId = :userId 
-        AND requests.status IN ('QUEUED', 'ACCEPTED')
+        AND requests.status IN (:pendingStatuses)
         ORDER BY requests.localCreationTimestamp ASC
     """)
-    fun observePendingRestaurantsWithStatus(userId: Uuid): Flow<List<RestaurantWithStatus>>
+    fun observePendingRestaurantsWithStatus(
+        userId: Uuid,
+        pendingStatuses: List<QueueStatusToken> = listOf(QueueStatusToken.QUEUED, QueueStatusToken.ACCEPTED)
+    ): Flow<List<RestaurantWithStatus>>
 
     @Query("""
-        SELECT restaurants.*, requests.status as requestStatus 
+        SELECT 
+            restaurants.*, 
+            COALESCE(requests.status, 'IDLE') as requestStatus 
         FROM restaurants 
-        JOIN requests ON restaurants.id = requests.restaurantId 
-        WHERE requests.userId = :userId 
-        AND restaurants.id = :restaurantId
-        AND requests.status IN ('QUEUED', 'ACCEPTED')
+        LEFT JOIN requests ON restaurants.id = requests.restaurantId 
+            AND requests.userId = :userId
+        WHERE restaurants.id = :restaurantId
+        AND (requests.status IS NULL OR requests.status IN (:pendingStatuses))
     """)
-    fun observePendingRestaurantWithStatusById(userId: Uuid, restaurantId: Uuid): Flow<RestaurantWithStatus>    /// Should I include safety checks?
+    fun observePendingRestaurantWithStatusById(
+        userId: Uuid,
+        restaurantId: Uuid,
+        pendingStatuses: List<QueueStatusToken> = listOf(QueueStatusToken.QUEUED, QueueStatusToken.ACCEPTED)
+        ): Flow<RestaurantWithStatus>    /// Should I include safety checks?
 
     /**
      * Even though we JOIN with the requests table to filter the results,
