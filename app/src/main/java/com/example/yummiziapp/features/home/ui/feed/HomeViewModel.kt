@@ -41,7 +41,7 @@ class HomeViewModel @Inject constructor(
 
             // Clean all restaurants
             Log.d("MyActivity", "🧹  Cleaning all restaurants...\n")
-            clearFeed() //TODO: Consider that the cleaning is when the user doesn't enter after a long while
+            //clearFeed() /// Commented for testing purposes   //TODO: Consider that the cleaning is when the user doesn't enter after a long while
 
 
             Log.d("MyActivity", "🎨  Trying to initialize data for user and restaurant...\n")

@@ -5,7 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.example.yummiziapp.core.data.local.entities.Request
-import com.example.yummiziapp.core.data.local.model.QueueStatusToken
+import com.example.yummiziapp.core.data.local.model.RequestStatusToken
 //X import com.example.yummiziapp.features.request.data.model.QueueStatus
 import kotlinx.coroutines.flow.Flow
 import kotlin.uuid.Uuid
@@ -22,7 +22,7 @@ interface RequestDao {
     suspend fun deleteRequestById(requestId: Uuid)
 
     @Query("UPDATE requests SET status = :status WHERE id = :requestId")
-    suspend fun updateRequestStatus(requestId: Uuid, status: QueueStatusToken)
+    suspend fun updateRequestStatus(requestId: Uuid, status: RequestStatusToken)
 
     // --- UI OBSERVATION (REACTIVE) ---
 

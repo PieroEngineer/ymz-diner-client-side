@@ -5,12 +5,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.example.yummiziapp.core.data.local.entities.Restaurant
-import com.example.yummiziapp.core.data.local.model.QueueStatusToken
+import com.example.yummiziapp.core.data.local.model.RequestStatusToken
 import com.example.yummiziapp.features.request.domain.repository.RequestRepository
 import com.example.yummiziapp.features.restaurant.domain.repository.RestaurantRepository
 import com.example.yummiziapp.features.restaurant.ui.model.SelectedRestaurantUiModel
 import com.example.yummiziapp.features.user.ui.model.FocusedRestaurantUiModel
-import com.example.yummiziapp.features.user.ui.model.QueueUiStatus
+import com.example.yummiziapp.features.user.ui.model.RequestUiStatus
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.SharingStarted
@@ -70,7 +70,7 @@ class SpecificationViewModel @Inject constructor(
             initialValue = SpecificationUiState.Loading
         )
 
-    private fun Restaurant.toFocusedRestaurantUiModel(status: QueueUiStatus) = FocusedRestaurantUiModel(
+    private fun Restaurant.toFocusedRestaurantUiModel(status: RequestUiStatus) = FocusedRestaurantUiModel(
         restaurantLogoUrl = logoUrl,
         waitingState = status,
         distanceKm = 10,
@@ -80,7 +80,7 @@ class SpecificationViewModel @Inject constructor(
 
     // Extension function for clean mapping
     // Updated Mapper
-    private fun Restaurant.toSelectableRestaurantUiModel(status: QueueUiStatus) = SelectedRestaurantUiModel(
+    private fun Restaurant.toSelectableRestaurantUiModel(status: RequestUiStatus) = SelectedRestaurantUiModel(
         restaurantId = id,
         distanceKm = 10,
         restaurantLogoUrl = logoUrl,
@@ -88,12 +88,12 @@ class SpecificationViewModel @Inject constructor(
     )
 
     // 🚀 High-Performance Pattern Matrix: Extension Mapper
-    private fun QueueStatusToken.toUiStatus(): QueueUiStatus = when (this) {
-        QueueStatusToken.IDLE -> QueueUiStatus.Idle
-        QueueStatusToken.QUEUED -> QueueUiStatus.Queued
-        QueueStatusToken.ACCEPTED -> QueueUiStatus.Accepted
-        QueueStatusToken.PAID -> QueueUiStatus.Paid
-        QueueStatusToken.DECLINED -> QueueUiStatus.Declined
+    private fun RequestStatusToken.toUiStatus(): RequestUiStatus = when (this) {
+        RequestStatusToken.IDLE -> RequestUiStatus.Idle
+        RequestStatusToken.QUEUED -> RequestUiStatus.Queued
+        RequestStatusToken.ACCEPTED -> RequestUiStatus.Accepted
+        RequestStatusToken.PAID -> RequestUiStatus.Paid
+        RequestStatusToken.DECLINED -> RequestUiStatus.Declined
     }
 
 

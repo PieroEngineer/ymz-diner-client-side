@@ -1,6 +1,5 @@
 package com.example.yummiziapp.features.user.ui.specification.components
 
-import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -31,7 +30,7 @@ import com.example.yummiziapp.R
 import com.example.yummiziapp.core.designsystem.theme.YummiziImage
 import com.example.yummiziapp.core.designsystem.theme.YummiziTheme
 import com.example.yummiziapp.features.restaurant.ui.model.SelectedRestaurantUiModel
-import com.example.yummiziapp.features.user.ui.model.QueueUiStatus
+import com.example.yummiziapp.features.user.ui.model.RequestUiStatus
 import kotlin.uuid.Uuid
 
 
@@ -97,7 +96,7 @@ fun SelectionSection(
                         modifier = Modifier
                             .weight(1f)
                             .then(  // Use .then() to conditionally chain modifiers
-                                if (selection.waitingState is QueueUiStatus.Accepted) {
+                                if (selection.waitingState is RequestUiStatus.Accepted) {
                                     // If the condition is true, apply the border modifier.
                                     Modifier.border(
                                         BorderStroke(

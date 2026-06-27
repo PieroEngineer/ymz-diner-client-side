@@ -64,7 +64,7 @@ fun OptionFrame(
 
         if (focusedRestaurant != null) {
             Log.d("MyActivity", "🔎📱  Just before Selection section")
-            SelectedRestaurant(
+            SelectedRestaurantFrame(
                 Modifier
                     .padding(horizontal = spacing.mediumPadding)
                     .fillMaxWidth()

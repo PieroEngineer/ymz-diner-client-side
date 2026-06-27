@@ -5,7 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.example.yummiziapp.core.data.local.entities.Restaurant
-import com.example.yummiziapp.core.data.local.model.QueueStatusToken
+import com.example.yummiziapp.core.data.local.model.RequestStatusToken
 import com.example.yummiziapp.core.data.local.model.RestaurantWithStatus
 import kotlinx.coroutines.flow.Flow
 import kotlin.uuid.Uuid
@@ -36,7 +36,7 @@ interface RestaurantDao {
     """)
     fun observePendingRestaurantsWithStatus(
         userId: Uuid,
-        pendingStatuses: List<QueueStatusToken> = listOf(QueueStatusToken.QUEUED, QueueStatusToken.ACCEPTED)
+        pendingStatuses: List<RequestStatusToken> = listOf(RequestStatusToken.QUEUED, RequestStatusToken.ACCEPTED)
     ): Flow<List<RestaurantWithStatus>>
 
     @Query("""
@@ -52,7 +52,7 @@ interface RestaurantDao {
     fun observePendingRestaurantWithStatusById(
         userId: Uuid,
         restaurantId: Uuid,
-        pendingStatuses: List<QueueStatusToken> = listOf(QueueStatusToken.QUEUED, QueueStatusToken.ACCEPTED)
+        pendingStatuses: List<RequestStatusToken> = listOf(RequestStatusToken.QUEUED, RequestStatusToken.ACCEPTED)
         ): Flow<RestaurantWithStatus>    /// Should I include safety checks?
 
     /**

@@ -4,7 +4,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import com.example.yummiziapp.core.data.local.model.QueueStatusToken
+import com.example.yummiziapp.core.data.local.model.RequestStatusToken
 //X import com.example.yummiziapp.features.request.data.model.QueueStatus
 import kotlin.uuid.Uuid
 import kotlinx.serialization.Serializable
@@ -43,7 +43,7 @@ data class Restaurant(
 data class Request(
     @PrimaryKey val id: Uuid,
     val restaurantId: Uuid,
-    val status: QueueStatusToken,
+    val status: RequestStatusToken,
     val userId: Uuid,
     val localCreationTimestamp: String //TODO: Change it to Long type
 )

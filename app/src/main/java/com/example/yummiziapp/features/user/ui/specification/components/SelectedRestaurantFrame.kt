@@ -34,12 +34,12 @@ import com.example.yummiziapp.core.designsystem.theme.YummiziTheme
 import com.example.yummiziapp.features.user.ui.model.FocusedRestaurantUiModel
 import com.example.yummiziapp.R
 import com.example.yummiziapp.core.designsystem.theme.YummiziImage
-import com.example.yummiziapp.features.user.ui.model.QueueUiStatus
+import com.example.yummiziapp.features.user.ui.model.RequestUiStatus
 
 
 @Preview(showBackground = true)
 @Composable
-fun SelectedRestaurant(
+fun SelectedRestaurantFrame(
     modifier: Modifier = Modifier,
 
     selectedRestaurant: FocusedRestaurantUiModel = mockupFocusedRestaurant
@@ -78,7 +78,7 @@ fun SelectedRestaurant(
                 )
                 .background(YummiziTheme.colors.yummziziWhite)
                 .padding(horizontal = spacing.mediumPadding)
-                .padding(vertical = spacing.tinyPadding),
+                .padding(vertical = spacing.smallPadding),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
@@ -204,62 +204,44 @@ fun SelectedRestaurant(
             Spacer(Modifier.height(spacing.smallSeparation))
 
 
-            Row(    // Request state
-                modifier = Modifier
-                    .fillMaxWidth(.85f)
-                    .padding(bottom = spacing.mediumPadding)
-                    .padding(horizontal = spacing.bigPadding)
-                    .then(
-                        if (selectedRestaurant.waitingState is QueueUiStatus.Accepted) {
-                            // If the condition is true, apply the border modifier.
-                            Modifier.border(
-                                BorderStroke(
-                                    spacing.bigLineThickness,
-                                    YummiziTheme.colors.yummziziLightOrange2
-                                ),
-                                shape = RoundedCornerShape(spacing.regularSeparation)
-                            )
-                        } else {
-                            Modifier
-                        }
-                    )
-                    .clip(RoundedCornerShape(15.dp))
-                    .background(Color.Transparent),
-                verticalAlignment = Alignment.CenterVertically
-            ){
-
-                Text(
-                    text = selectedRestaurant.waitingState.phrase,
-                    textAlign = TextAlign.Start,
-                    color = YummiziTheme.colors.yummziziLightOrange2,
-                    style = YummiziTheme.typography.teacherFontVar1,
-                    modifier = Modifier
-                        .padding(vertical = spacing.smallSeparation)
-                        .padding(start = spacing.regularSeparation)
-                )
-
-                Spacer(Modifier.weight(1f))
-
-                when (selectedRestaurant.waitingState) {
-                    is QueueUiStatus.Idle -> {}
-                    is QueueUiStatus.Queued -> {}
-                    is QueueUiStatus.Accepted -> {}
-                    is QueueUiStatus.Paid -> {}
-                    is QueueUiStatus.Declined -> {}
-                }
-
-                if (selectedRestaurant.waitingState.iconRes != 0){
-                    Image(
-                        painter = painterResource(selectedRestaurant.waitingState.iconRes),
-                        contentDescription = null,
-                        colorFilter = ColorFilter.tint(color = YummiziTheme.colors.yummziziLightOrange2),
+            when (selectedRestaurant.waitingState) {    /// Should I include it within a box?
+                is RequestUiStatus.Idle -> {
+                    ConfirmationButton(
                         modifier = Modifier
-                            .size(spacing.smallImageSize)
-                            .padding(vertical = spacing.smallSeparation)
-                            .padding(end = spacing.regularSeparation)
+                            .fillMaxWidth(.6f),
+                        onClick = {},
+                        text = "Unirse a la cola"
                     )
                 }
-
+                is RequestUiStatus.Queued -> {
+                    StatusNotice(
+                        modifier = Modifier
+                            .fillMaxWidth(.85f),
+                        selectedRestaurant = selectedRestaurant
+                    )
+                }
+                is RequestUiStatus.Accepted -> {
+                    ConfirmationButton(
+                        modifier = Modifier
+                            .fillMaxWidth(.6f),
+                                onClick = {},
+                                text = "Elegir\nrestaurante"
+                    )
+                }
+                is RequestUiStatus.Paid -> {
+                    StatusNotice(
+                        modifier = Modifier
+                            .fillMaxWidth(.85f),
+                        selectedRestaurant = selectedRestaurant
+                    )
+                }
+                is RequestUiStatus.Declined -> {
+                    StatusNotice(
+                        modifier = Modifier
+                            .fillMaxWidth(.85f),
+                        selectedRestaurant = selectedRestaurant
+                    )
+                }
             }
 
         }
@@ -271,7 +253,7 @@ fun SelectedRestaurant(
 // A mockup FocusedRestaurantUiModel
 val mockupFocusedRestaurant = FocusedRestaurantUiModel(
     restaurantLogoUrl = "https://picsum.photos/200",
-    waitingState = QueueUiStatus.Queued,
+    waitingState = RequestUiStatus.Queued,
     distanceKm = 10,
     name = "Restaurante 1",
     maxWaitingTimeInMinutes = 15
