@@ -4,6 +4,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -17,13 +18,15 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults.shape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.dropShadow
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
@@ -45,6 +48,9 @@ fun SelectedRestaurantFrame(
     selectedRestaurant: FocusedRestaurantUiModel = mockupFocusedRestaurant
 ){
     val spacing = YummiziTheme.spacing
+
+    val maxTimeByRestaurant = selectedRestaurant.maxWaitingTimeInMinutes
+    var arrivalTimeInMinutes by rememberSaveable { mutableIntStateOf(maxTimeByRestaurant) }
 
     Column(
         modifier = modifier
@@ -155,13 +161,14 @@ fun SelectedRestaurantFrame(
                                 .padding(vertical = spacing.smallPadding)
                                 .size(spacing.regularIconSize)
                                 .rotate(180f)
+                                .clickable {if (arrivalTimeInMinutes > 1) arrivalTimeInMinutes--} //TODO: Include bouncing effect
 
                         )
 
                         Spacer(Modifier.width(spacing.mediumSeparation))
 
                         Text(
-                            text = selectedRestaurant.maxWaitingTimeInMinutes.toString(), //TODO: This start with the max time, but it should be modifiable
+                            text = arrivalTimeInMinutes.toString(),
                             textAlign = TextAlign.Center,
                             color = YummiziTheme.colors.yummziziDarkOrange,
                             style = YummiziTheme.typography.comfortaaFontVar1,
@@ -178,6 +185,7 @@ fun SelectedRestaurantFrame(
                                 .padding(end = spacing.mediumPadding)
                                 .padding(vertical = spacing.smallPadding)
                                 .size(spacing.regularIconSize)
+                                .clickable {if (arrivalTimeInMinutes < maxTimeByRestaurant) arrivalTimeInMinutes++}
                         )
                     }
 
@@ -194,6 +202,16 @@ fun SelectedRestaurantFrame(
 
             Spacer(Modifier.weight(2f))
 
+            if (selectedRestaurant.waitingState == RequestUiStatus.Queued){
+                /// Include a text with "teacher" font with color "yummziziLightOrange2"
+                Text(
+                    text = "Puedes llegar antes si deseas",
+                    textAlign = TextAlign.Center,
+                    color = YummiziTheme.colors.yummziziLightOrange2,
+                    style = YummiziTheme.typography.teacherFontVar3
+                )
+            }
+
             HorizontalDivider(
                 modifier = Modifier
                     .padding(horizontal = spacing.bigPadding),
@@ -204,7 +222,7 @@ fun SelectedRestaurantFrame(
             Spacer(Modifier.height(spacing.smallSeparation))
 
 
-            when (selectedRestaurant.waitingState) {    /// Should I include it within a box?
+            when (selectedRestaurant.waitingState) {    // Lower area
                 is RequestUiStatus.Idle -> {
                     ConfirmationButton(
                         modifier = Modifier
