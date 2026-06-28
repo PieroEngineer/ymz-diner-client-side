@@ -67,7 +67,7 @@ fun OptionFrame(    // TODO: Clear the Prop-Drilling
 
         if (focusedRestaurant != null) {
             Log.d("MyActivity", "🔎📱  Just before Selection section")
-            SelectedRestaurantFrame(
+            FocusedRestaurantFrame(
                 Modifier
                     .padding(horizontal = spacing.mediumPadding)
                     .fillMaxWidth()
