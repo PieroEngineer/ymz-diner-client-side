@@ -71,6 +71,7 @@ class SpecificationViewModel @Inject constructor(
         )
 
     private fun Restaurant.toFocusedRestaurantUiModel(status: RequestUiStatus) = FocusedRestaurantUiModel(
+        restaurantId = id,
         restaurantLogoUrl = logoUrl,
         waitingState = status,
         distanceKm = 10,
@@ -118,6 +119,15 @@ class SpecificationViewModel @Inject constructor(
         viewModelScope.launch {
             // "I've decided we need to move to the next screen"
             _effect.send(SpecificationUiEvents.NavigateToRestaurantMenu(id))
+        }
+    }
+
+    fun onQueueJoiningClicked(arrivalTimeInMinutes: Int, restaurantId: Uuid) {  //TODO: Later include here their company and specifics
+
+        Log.d("MyActivity", "✅👥  Request made for $restaurantId with $arrivalTimeInMinutes minutes")
+
+        viewModelScope.launch {
+            requestRepository.createQueueRequest(restaurantId)
         }
     }
 

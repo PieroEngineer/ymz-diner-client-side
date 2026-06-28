@@ -38,14 +38,17 @@ import com.example.yummiziapp.features.user.ui.model.FocusedRestaurantUiModel
 import com.example.yummiziapp.R
 import com.example.yummiziapp.core.designsystem.theme.YummiziImage
 import com.example.yummiziapp.features.user.ui.model.RequestUiStatus
+import kotlin.uuid.Uuid
 
 
-@Preview(showBackground = true)
+//@Preview(showBackground = true)
 @Composable
 fun SelectedRestaurantFrame(
     modifier: Modifier = Modifier,
 
-    selectedRestaurant: FocusedRestaurantUiModel = mockupFocusedRestaurant
+    selectedRestaurant: FocusedRestaurantUiModel,
+
+    onQueueJoiningClicked: (Int, Uuid) -> Unit,
 ){
     val spacing = YummiziTheme.spacing
 
@@ -227,7 +230,7 @@ fun SelectedRestaurantFrame(
                     ConfirmationButton(
                         modifier = Modifier
                             .fillMaxWidth(.6f),
-                        onClick = {},
+                        onClick = {onQueueJoiningClicked(arrivalTimeInMinutes, selectedRestaurant.restaurantId)},
                         text = "Unirse a la cola"
                     )
                 }
@@ -268,11 +271,11 @@ fun SelectedRestaurantFrame(
 }
 
 
-// A mockup FocusedRestaurantUiModel
-val mockupFocusedRestaurant = FocusedRestaurantUiModel(
-    restaurantLogoUrl = "https://picsum.photos/200",
-    waitingState = RequestUiStatus.Queued,
-    distanceKm = 10,
-    name = "Restaurante 1",
-    maxWaitingTimeInMinutes = 15
-)
+//X A mockup FocusedRestaurantUiModel
+//val mockupFocusedRestaurant = FocusedRestaurantUiModel(
+//    restaurantLogoUrl = "https://picsum.photos/200",
+//    waitingState = RequestUiStatus.Queued,
+//    distanceKm = 10,
+//    name = "Restaurante 1",
+//    maxWaitingTimeInMinutes = 15
+//)

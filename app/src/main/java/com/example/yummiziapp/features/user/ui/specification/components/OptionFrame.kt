@@ -13,12 +13,15 @@ import com.example.yummiziapp.features.user.ui.model.FocusedRestaurantUiModel
 import kotlin.uuid.Uuid
 
 @Composable
-fun OptionFrame(
+fun OptionFrame(    // TODO: Clear the Prop-Drilling
     modifier: Modifier = Modifier,
-    onRestaurantSelected: (Uuid) -> Unit,
-    onRemoveRestaurant: (Uuid) -> Unit,
-    listedRestaurants: List<SelectedRestaurantUiModel>,
-    focusedRestaurant: FocusedRestaurantUiModel?
+    onRestaurantSelected: (Uuid) -> Unit = { _ -> },
+    onRemoveRestaurant: (Uuid) -> Unit = { _ -> },
+    listedRestaurants: List<SelectedRestaurantUiModel> = emptyList(),
+    focusedRestaurant: FocusedRestaurantUiModel? = null,
+
+    onQueueJoiningClicked: (Int, Uuid) -> Unit = { _, _ -> }
+
 ) {
 
     val spacing = YummiziTheme.spacing
@@ -70,7 +73,9 @@ fun OptionFrame(
                     .fillMaxWidth()
                     .zIndex(1f),
 
-                focusedRestaurant
+                focusedRestaurant,
+
+                onQueueJoiningClicked
             )
         }
         else{

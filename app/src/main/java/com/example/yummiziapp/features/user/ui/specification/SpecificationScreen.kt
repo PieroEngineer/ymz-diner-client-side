@@ -67,7 +67,7 @@ fun SpecificationScreen(
                 // Loading UI
             }
             is SpecificationUiState.ListingRestaurants -> {
-                OptionFrame(
+                OptionFrame(    // TODO: Move the customer's specifics and company out of this and convert these "OptionFrame" into 2 different components
                     Modifier.weight(1f),
 
                     onRestaurantSelected = { id ->
@@ -77,8 +77,6 @@ fun SpecificationScreen(
                         viewModel.leaveQueue(id)
                     },
                     listedRestaurants = state.restaurants,
-
-                    focusedRestaurant = null
                 )
             }
             is SpecificationUiState.FocusingRestaurant -> {
@@ -86,15 +84,11 @@ fun SpecificationScreen(
                 OptionFrame(
                     Modifier.weight(1f),
 
-                    onRestaurantSelected = { id ->
-                        viewModel.onRestaurantClicked(id)
-                    },
-                    onRemoveRestaurant = { id ->
-                        viewModel.leaveQueue(id)
-                    },
-                    listedRestaurants = emptyList(),
+                    focusedRestaurant = state.restaurant,
 
-                    focusedRestaurant = state.restaurant
+                    onQueueJoiningClicked = { arrivalTimeInMinutes, restaurantId -> // TODO: Include some kind of confirmation when the restaurant was queued even if the orange frame already does it.
+                        viewModel.onQueueJoiningClicked(arrivalTimeInMinutes, restaurantId)
+                    }
                 )
             }
             is SpecificationUiState.Error -> {
