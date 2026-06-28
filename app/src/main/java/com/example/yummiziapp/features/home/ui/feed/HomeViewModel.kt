@@ -41,7 +41,7 @@ class HomeViewModel @Inject constructor(
 
             // Clean all restaurants
             Log.d("MyActivity", "🧹  Cleaning all restaurants...\n")
-            //clearFeed() /// Commented for testing purposes   //TODO: Consider that the cleaning is when the user doesn't enter after a long while
+            clearFeed() /// Commented for testing purposes   //TODO: Consider that the cleaning is when the user doesn't enter after a long while
 
 
             Log.d("MyActivity", "🎨  Trying to initialize data for user and restaurant...\n")
@@ -135,7 +135,7 @@ class HomeViewModel @Inject constructor(
         // We use viewModelScope because writing to a database
         // is a 'suspend' (heavy) operation.
         viewModelScope.launch {
-//X            requestRepository.createQueueRequest(restaurant.id)
+            // TODO: Handle the situation when the user tries to drop a restaurant that is already in the queue
             _effect.send(HomeScreenUiEvents.NavigateToRestaurantSelectionFrame(restaurant.id))
 
         }

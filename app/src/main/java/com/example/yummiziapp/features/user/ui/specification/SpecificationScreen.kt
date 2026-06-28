@@ -122,10 +122,16 @@ fun SpecificationScreen(
                             viewModel.leaveQueue(id)
                         },
 
-                        onRestaurantSelected = { id ->
-                            viewModel.onRestaurantClicked(id)
+                        onQueuedRestaurantClicked = {
+                            viewModel.onQueuedRestaurantClicked(it)
+                        },
+                        onAcceptedRestaurantClicked = {
+                            viewModel.onAcceptedRestaurantClicked(it)
+                        },
+                        onDeclinedRestaurantClicked = {
+                            viewModel.onDeclinedRestaurantClicked(it)
+                        },
 
-                        }
                     )
                 }
                 is SpecificationUiState.FocusingRestaurant -> {

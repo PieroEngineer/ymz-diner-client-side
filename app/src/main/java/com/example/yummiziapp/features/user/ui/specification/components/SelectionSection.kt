@@ -42,7 +42,9 @@ fun SelectionSection(
 
     onRemoveRestaurant : (Uuid) -> Unit = {},
 
-    onRestaurantSelected: (Uuid) -> Unit,
+    onQueuedRestaurantClicked : (Uuid) -> Unit,
+    onAcceptedRestaurantClicked : (Uuid) -> Unit,
+    onDeclinedRestaurantClicked : (Uuid) -> Unit
 ){
     val spacing = YummiziTheme.spacing
     val listState = rememberLazyListState()
@@ -75,16 +77,35 @@ fun SelectionSection(
             items(
                 items = listedRestaurants,
                 key = { selection -> selection.restaurantId }
-            ) { selection ->
+            ) { restaurantInList ->
 
                 Row(    // TODO: Convert it in a component
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clickable { onRestaurantSelected(selection.restaurantId) },
+                        .clickable {
+                            when (restaurantInList.waitingState) {  // These are the only states that can be in the list of restaurants in specifications
+                                is RequestUiStatus.Queued -> onQueuedRestaurantClicked(
+                                    restaurantInList.restaurantId
+                                )
+
+                                is RequestUiStatus.Accepted -> onAcceptedRestaurantClicked(
+                                    restaurantInList.restaurantId
+                                )
+
+                                is RequestUiStatus.Declined -> onDeclinedRestaurantClicked(
+                                    restaurantInList.restaurantId
+                                )
+
+                                is RequestUiStatus.Paid -> {} // TODO // This shouldn't be here theoretically, but I place it here just in case so it works even if the screen is bugged
+                                else -> {}
+                            }
+                        },
+
+//X                            onRestaurantSelected(restaurantInList.restaurantId, restaurantInList.waitingState) },  /// Should I avoid to pass the waiting state because it's a UI state?
                     verticalAlignment = Alignment.CenterVertically
                 ){
                     Text(
-                        text = "A\n${selection.distanceKm}km",
+                        text = "A\n${restaurantInList.distanceKm}km",
                         textAlign = TextAlign.Center,
                         color = YummiziTheme.colors.yummziziWhite,
                         style = YummiziTheme.typography.teacherFontVar3
@@ -96,7 +117,7 @@ fun SelectionSection(
                         modifier = Modifier
                             .weight(1f)
                             .then(  // Use .then() to conditionally chain modifiers
-                                if (selection.waitingState is RequestUiStatus.Accepted) {
+                                if (restaurantInList.waitingState is RequestUiStatus.Accepted) {
                                     // If the condition is true, apply the border modifier.
                                     Modifier.border(
                                         BorderStroke(
@@ -115,7 +136,7 @@ fun SelectionSection(
                     ){
 
                         YummiziImage(
-                            model = selection.restaurantLogoUrl,
+                            model = restaurantInList.restaurantLogoUrl,
                             contentDescription = null,
                             modifier = Modifier
                                 .size(spacing.smallImageSize)
@@ -127,7 +148,7 @@ fun SelectionSection(
                         Spacer(Modifier.weight(1f))
 
                         Text(   /// Perhaps it looks better if the text is aligned to the right side
-                            text = selection.waitingState.phrase,
+                            text = restaurantInList.waitingState.phrase,
                             textAlign = TextAlign.Start,
                             color = YummiziTheme.colors.yummziziWhite,
                             style = YummiziTheme.typography.teacherFontVar1,
@@ -138,7 +159,7 @@ fun SelectionSection(
                         Spacer(Modifier.weight(1f))
 
                         Image(
-                            painter = painterResource(selection.waitingState.iconRes),
+                            painter = painterResource(restaurantInList.waitingState.iconRes),
                             contentDescription = null,
                             modifier = Modifier
                                 .size(spacing.enormousIconSize)
@@ -155,7 +176,7 @@ fun SelectionSection(
                         contentDescription = null,
                         modifier = Modifier
                             .size(spacing.smallIconSize)
-                            .clickable{ onRemoveRestaurant(selection.restaurantId) }
+                            .clickable{ onRemoveRestaurant(restaurantInList.restaurantId) }
                     )
                 }
             }

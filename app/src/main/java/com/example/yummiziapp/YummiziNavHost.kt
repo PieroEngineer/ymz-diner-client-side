@@ -49,7 +49,8 @@ fun YummiziNavHost(
                 },
                 onHomeClickedNav = {
                     // Pops back safely or routes cleanly
-                    navController.navigate(YummiziRoute.Home)
+                    navController.popBackStack()
+//X                    navController.navigate(YummiziRoute.Home)
                 },
                 onYouClickedNav = {
                     navController.navigate(YummiziRoute.Preferences)
