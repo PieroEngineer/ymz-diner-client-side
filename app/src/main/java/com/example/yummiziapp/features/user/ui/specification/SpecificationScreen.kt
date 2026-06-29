@@ -139,7 +139,8 @@ fun SpecificationScreen(
                         Modifier
                             .padding(horizontal = spacing.mediumPadding)
                             .fillMaxWidth()
-                            .zIndex(1f),
+                            .zIndex(1f)
+                            .weight(1f),
 
                         selectedRestaurant = state.restaurant,
 

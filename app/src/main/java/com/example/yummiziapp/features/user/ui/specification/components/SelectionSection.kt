@@ -49,7 +49,6 @@ fun SelectionSection(
     val spacing = YummiziTheme.spacing
     val listState = rememberLazyListState()
 
-
     Column(
         modifier = modifier
             .clip(
