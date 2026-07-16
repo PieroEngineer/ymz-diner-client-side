@@ -1,9 +1,10 @@
 package com.example.yummiziapp.core.data.local.converters
 
 import androidx.room.TypeConverter
+import com.example.yummiziapp.core.data.local.model.AvailableSpecificsToken
+import com.example.yummiziapp.core.data.local.model.RequestStatusToken
 import kotlin.uuid.Uuid
 import kotlinx.serialization.encodeToString
-//X import com.example.yummiziapp.features.request.data.model.QueueStatus
 import kotlinx.serialization.json.Json
 
 class YummiziConverters {
@@ -36,19 +37,17 @@ class YummiziConverters {
     @TypeConverter
     fun toUuid(value: String?): Uuid? = value?.let { Uuid.parse(it) }
 
-    //X
-//    // --- Enums ---
-//    @TypeConverter
-//    fun fromQueueStatus(status: QueueStatus): String = status.name
-//
-//    @TypeConverter
-//    fun toQueueStatus(value: String): QueueStatus {
-//        return when (value) {
-//            "QUEUED" -> QueueStatus.QUEUED
-//            "ACCEPTED" -> QueueStatus.ACCEPTED
-//            "DECLINED" -> QueueStatus.DECLINED
-//            "PAID" -> QueueStatus.PAID
-//            else -> QueueStatus.IDLE // Default fallback
-//        }
-//    }
+    // --- Enums ---
+    @TypeConverter
+    fun fromRequestStatusToken(value: RequestStatusToken): String = value.name
+
+    @TypeConverter
+    fun toRequestStatusToken(value: String): RequestStatusToken = RequestStatusToken.valueOf(value)
+
+    // --- AvailableSpecificsToken Lists ---
+    @TypeConverter
+    fun fromAvailableSpecificsTokenList(value: List<AvailableSpecificsToken>): String = json.encodeToString(value)
+
+    @TypeConverter
+    fun toAvailableSpecificsTokenList(value: String): List<AvailableSpecificsToken> = json.decodeFromString(value)
 }

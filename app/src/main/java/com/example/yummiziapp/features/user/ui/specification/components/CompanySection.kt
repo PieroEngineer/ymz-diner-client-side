@@ -2,7 +2,7 @@ package com.example.yummiziapp.features.user.ui.specification.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,8 +12,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -21,19 +19,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import com.example.yummiziapp.core.designsystem.theme.YummiziTheme
-import androidx.compose.foundation.lazy.items
 import androidx.compose.ui.res.painterResource
 import com.example.yummiziapp.R
+import com.example.yummiziapp.features.user.ui.model.UserDetailsUiModel
 
 
 @Composable
 fun CompanySection(
     modifier: Modifier = Modifier,
-
-    currentCompanyInTable: List<Diner>
+    details: UserDetailsUiModel,
+    onCompanySizeUpdated: (Boolean) -> Unit
 ) {
     val spacing = YummiziTheme.spacing
-    val listState = rememberLazyListState()
 
     Box(
         modifier = modifier
@@ -61,7 +58,7 @@ fun CompanySection(
 
 
             Text(    // Its header
-                text = "${currentCompanyInTable.size+1} en mesa",
+                text = "${details.companySize+1} en mesa",
                 color = YummiziTheme.colors.yummziziWhite,
                 style = YummiziTheme.typography.leaguespartanFontVar2
             )
@@ -74,64 +71,113 @@ fun CompanySection(
                     .padding(horizontal = spacing.mediumPadding),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Box(
-                    modifier = Modifier
-                        .weight(1f)
-                ){
-                    LazyRow(
-                        state = listState,
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(spacing.regularSeparation)
-                    ){
-                        items(
-                            items = currentCompanyInTable,
-                            key = { diner -> diner.id }
-                        ){
-                                diner ->
+                Spacer(Modifier.weight(1f))
 
-                            Column(     // Diner icon
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ){
-                                Box(){
-                                    Image(
-                                        painter = painterResource(R.drawable.user_icon),    /// Change it by user photo
-                                        contentDescription = null,
-                                        modifier = Modifier
-                                            .size(spacing.hugeIconSize)
-                                    )
-
-                                    //TODO: The extra friends go here later
-                                }
-
-                                Spacer(Modifier.height(spacing.smallSeparation))
-
-                                Text(
-                                    text = diner.name,
-                                    color = YummiziTheme.colors.yummziziWhite,
-                                    style = YummiziTheme.typography.teacherFontVar1
-                                )
-                            }
-                        }
-                    }
-                }
+                DinerIcon()
 
                 Spacer(Modifier.width(spacing.regularSeparation))
 
-                Image(
-                    painter = painterResource(R.drawable.plus_icon),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .size(spacing.bigIconSize)
-                )
+                if (details.companySize == 0){
+                    Image(
+                        painter = painterResource(R.drawable.plus_icon),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(spacing.bigIconSize)
+                            .clickable { onCompanySizeUpdated(true) }
+                    )
+                }
+                else{
+                    Text(    // Its header
+                        text = "y",
+                        color = YummiziTheme.colors.yummziziWhite,
+                        style = YummiziTheme.typography.leaguespartanFontVar2
+                    )
 
+                    Spacer(Modifier.width(spacing.regularSeparation))
+
+                    NumberSelector(
+                        modifier = Modifier,
+                        color = YummiziTheme.colors.yummziziWhite,
+                        indicatorNumber = details.companySize,
+                        onNumberChanged = { isIncreasing -> onCompanySizeUpdated(isIncreasing) },
+                    )
+                }
+
+                Spacer(Modifier.weight(1f))
             }
         }
     }
 }
 
-data class Diner(   // TODO: Temporal mock-up data class, it will be user
-    val id: Int,
-    val name: String
-    ///val friends: List<Int>,  /// Here is the id of the friends
-    //val currentFriendInTable: List<Int>
-)
+@Composable
+fun DinerIcon(
+    modifier: Modifier = Modifier,
+    userName: String = "Tú",    // TODO: this "Tú" is temporal until friends are implemented
+//    companySize: Int = 0                                                   //
+){
+    val spacing = YummiziTheme.spacing
+    Column(     // Diner icon
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ){
+//        Box(){
+            Image(
+                painter = painterResource(R.drawable.user_icon),    /// Change it by user photo
+                contentDescription = null,
+                modifier = Modifier
+                    .size(spacing.hugeIconSize)
+            )
+
+            //TODO: The extra friends go here later
+//        }
+
+        Spacer(Modifier.height(spacing.smallSeparation))
+        Text(
+            text = userName,
+            color = YummiziTheme.colors.yummziziWhite,
+            style = YummiziTheme.typography.teacherFontVar1
+        )
+    }
+}
+
+// TODO: Implement when different Yummizi's users can invite each other (Inside "Current company joined")
+//                Box(  // Row with the Yummizi's users
+//                    modifier = Modifier
+//                        .weight(1f)
+//                ){
+//                    LazyRow(
+//                        state = listState,
+//                        modifier = Modifier.fillMaxWidth(),
+//                        horizontalArrangement = Arrangement.spacedBy(spacing.regularSeparation)
+//                    ){
+//                        items(
+//                            items = currentCompanyInTable,
+//                            key = { diner -> diner.id }
+//                        ){
+//                                diner ->
+//
+//                            Column(     // Diner icon
+//                                horizontalAlignment = Alignment.CenterHorizontally
+//                            ){
+//                                Box(){
+//                                    Image(
+//                                        painter = painterResource(R.drawable.user_icon),    /// Change it by user photo
+//                                        contentDescription = null,
+//                                        modifier = Modifier
+//                                            .size(spacing.hugeIconSize)
+//                                    )
+//
+//                                    //TODO: The extra friends go here later
+//                                }
+//
+//                                Spacer(Modifier.height(spacing.smallSeparation))
+//
+//                                Text(
+//                                    text = diner.name,
+//                                    color = YummiziTheme.colors.yummziziWhite,
+//                                    style = YummiziTheme.typography.teacherFontVar1
+//                                )
+//                            }
+//                        }
+//                    }
+//                }

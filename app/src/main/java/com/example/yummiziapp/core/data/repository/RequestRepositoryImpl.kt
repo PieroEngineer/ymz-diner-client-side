@@ -32,13 +32,13 @@ class RequestRepositoryImpl @Inject constructor(
         // We check the local DB first. It's the "Source of Truth" for the current UI state.
         val isBlocked = requestDao.containsPendingRestaurant(userId, restaurantId) //TODO: Avoid introducing user ID here because there is only one logged user per phone
         if (isBlocked) {    //TODO: Show in some way that the restaurant already has a pending request for the restaurant
-            Log.w("Yummizi", "🚫 Request blocked: User already has a QUEUED or PAID status at this restaurant.")
+            Log.w("MyActivity", "🚫 Request blocked: User already has a QUEUED or PAID status at this restaurant.")
             ///return@withContext Result.failure(Exception("You already have an active session here."))
             return@withContext
         }
 
         // 2. PREPARE ENTITY
-        val requestId = Uuid.random()   //X Client should generate the request ID
+        val requestId = Uuid.random()   // TODO (#521): Remember that client shouldn't generate the request ID (should or shouldn't?)). Backend responds with request
         val newRequest = Request(
             id = requestId,
             restaurantId = restaurantId,
@@ -56,6 +56,7 @@ class RequestRepositoryImpl @Inject constructor(
 
             if (response.isSuccessful) {
                 Log.d("Yummizi", "✅☁️ Sync successful: $requestId")
+                // TODO (#521): Here the request ID should be returned from the Cloud and subscribe to the request's channel.
                 ///Result.success(Unit)
             } else {
                 // Server returned an error (e.g. 400 or 500)
@@ -101,5 +102,7 @@ class RequestRepositoryImpl @Inject constructor(
             throw e
         }
     }
+
+    /// override suspend confirmAcceptance()
 
 }

@@ -2,6 +2,7 @@ package com.example.yummiziapp.features.user.ui.specification
 
 import android.util.Log
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,6 +13,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -19,8 +23,8 @@ import com.example.yummiziapp.core.designsystem.theme.YummiziTheme
 import com.example.yummiziapp.core.ui.components.NavigationBar
 import com.example.yummiziapp.core.ui.components.SearchingArea
 import com.example.yummiziapp.features.user.ui.specification.components.CompanySection
-import com.example.yummiziapp.features.user.ui.specification.components.Diner
 import com.example.yummiziapp.features.user.ui.specification.components.FocusedRestaurantFrame
+import com.example.yummiziapp.features.user.ui.specification.components.AcceptanceConfirmationModal
 import com.example.yummiziapp.features.user.ui.specification.components.SelectionSection
 import com.example.yummiziapp.features.user.ui.specification.components.SpecificationSection
 import kotlin.uuid.Uuid
@@ -48,128 +52,166 @@ fun SpecificationScreen(
         }
     }
 
-    val uiState by viewModel.uiState.collectAsState()
+    val uiRestaurantState by viewModel.uiRestaurantState.collectAsState()
+    val uiUserState by viewModel.uiUserState.collectAsState()
+    var isConfirmationPopupVisible by rememberSaveable { mutableStateOf(false) }
 
-    // Screen content
-    Column(
-        modifier = modifier
-            .padding(vertical = spacing.mediumPadding)
-            .fillMaxSize()
-            .background(YummiziTheme.colors.yummziziWhite)
+    Box(
+        modifier = Modifier.fillMaxSize()
     ){
-        // Searching part
-        SearchingArea(
-            Modifier
-                .padding(spacing.mediumPadding)
-        )
 
-        Spacer(Modifier.height(spacing.regularSeparation))
-
-        Column( // Complete option frame
+        // Screen content
+        Column(
             modifier = modifier
-                .padding(horizontal = spacing.mediumPadding)
-        ) {
-
-            // Testing data
-            val diner1 = Diner(1, "Grabiel")
-            val diner2 = Diner(2, "Sonia")
-            val diner3 = Diner(3, "Albert")
-            val diner4 = Diner(4, "Marco")
-            val diner5 = Diner(5, "Yeni")
-            val diner6 = Diner(6, "Kriss")
-
-            val currentFriends = listOf(diner1, diner2, diner3, diner4, diner5, diner6)
-
-            // "Your selection" section
-            Log.d("MyActivity", "🔎📱  Just before Specification section")
-            SpecificationSection(
+                .padding(vertical = spacing.mediumPadding)
+                .fillMaxSize()
+                .background(YummiziTheme.colors.yummziziWhite)
+        ){
+            // Searching part
+            SearchingArea(
                 Modifier
-                    .padding(horizontal = spacing.mediumPadding)
-                    .fillMaxWidth()
-                    .zIndex(3f),
+                    .padding(spacing.mediumPadding)
+            )
 
-                mapOf(  //T This is just for testing. The real is a map too, but come from user's backend
-                    "is special date" to true,
-                    "have baby" to false,
-                    "need support" to true
+            Spacer(Modifier.height(spacing.regularSeparation))
+
+            Column( // Complete option frame
+                modifier = modifier
+                    .padding(horizontal = spacing.mediumPadding)
+            ) {
+
+                // X
+//                val diner1 = Diner(1, "Grabiel")
+//                val diner2 = Diner(2, "Sonia")
+//                val diner3 = Diner(3, "Albert")
+//                val diner4 = Diner(4, "Marco")
+//                val diner5 = Diner(5, "Yeni")
+//                val diner6 = Diner(6, "Kriss")
+//
+//                val currentFriends = listOf(diner1, diner2, diner3, diner4, diner5, diner6)
+
+                // "Your selection" section
+                Log.d("MyActivity", "🔎📱  Just before Specification section")
+                SpecificationSection(
+                    Modifier
+                        .padding(horizontal = spacing.mediumPadding)
+                        .fillMaxWidth()
+                        .zIndex(3f),
+
+                    mapOf(  //T This is just for testing. The real is a map too, but come from user's backend
+                        "is special date" to true,
+                        "have baby" to false,
+                        "need support" to true
+                    )
                 )
-            )
 
-            // "Company" section
-            CompanySection(
+                when (val state = uiUserState) {
+                    is UserSpecificationUiState.Loading -> {
+                        // Loading UI
+                    }
+                    is UserSpecificationUiState.Success -> {
+                        CompanySection(     // "Company" section
+                            Modifier
+                                .padding(horizontal = spacing.mediumPadding)
+                                .fillMaxWidth()
+                                .zIndex(2f),
+                            state.details,
+                            onCompanySizeUpdated = { isIncreasing -> viewModel.onCompanySizeUpdated(isIncreasing) }
+                        )
+                    }
+                    is UserSpecificationUiState.Error -> {
+                        Log.d("MyActivity", "🚩👉  Error when trying to see the specifications: ${state.errorMessage}")
+                    }
+                }
+
+
+                when (val state = uiRestaurantState) {
+                    is RestaurantSpecificationUiState.Loading -> {
+                        // Loading UI
+                    }
+                    is RestaurantSpecificationUiState.ListingRestaurants -> {
+                        SelectionSection(
+                            Modifier
+                                .padding(horizontal = spacing.mediumPadding)
+                                .fillMaxWidth()
+                                .zIndex(1f)
+                                .weight(1f),
+
+                            listedRestaurants = state.restaurants,
+
+                            onRemoveRestaurant = { id ->
+                                viewModel.leaveQueue(id)
+                            },
+
+                            onQueuedRestaurantClicked = { id ->
+                                viewModel.onQueuedRestaurantClicked(id)
+                            },
+                            onAcceptedRestaurantClicked = { id ->
+                                viewModel.onAcceptedRestaurantClicked(id)
+                            },
+                            onDeclinedRestaurantClicked = { id ->
+                                viewModel.onDeclinedRestaurantClicked(id)
+                            },
+
+                        )
+                    }
+                    is RestaurantSpecificationUiState.FocusingRestaurant -> {
+                        FocusedRestaurantFrame(
+                            Modifier
+                                .padding(horizontal = spacing.mediumPadding)
+                                .fillMaxWidth()
+                                .zIndex(1f)
+                                .weight(1f),
+
+                            selectedRestaurant = state.restaurant,
+
+                            onQueueJoiningClicked ={ arrivalTimeInMinutes, restaurantId -> // TODO: Include some kind of confirmation when the restaurant was queued even if the orange frame already does it.
+                                viewModel.onQueueJoiningClicked(arrivalTimeInMinutes, restaurantId)
+                            },
+
+                            onTryToConfirmAcceptanceClicked = {
+                                Log.e("MyActivity", "🔎🍽️  Trying to confirm acceptance")
+
+                                isConfirmationPopupVisible = true
+                            }
+                        )
+                    }
+                    is RestaurantSpecificationUiState.Error -> {
+                        Log.d("MyActivity", "🚩👉  Error when trying to see the specifications: ${state.errorMessage}")
+                    }
+
+                }
+
+            Spacer(Modifier.height(spacing.regularSeparation))
+
+            // Navigation part
+            NavigationBar(
                 Modifier
-                    .padding(horizontal = spacing.mediumPadding)
                     .fillMaxWidth()
-                    .zIndex(2f),
-                currentFriends
+                    .height(spacing.barHeight),
+
+                homeHighlighted = true,
+                onHomeClicked = { viewModel.onHomeClicked() },
+                onYouClicked = { viewModel.onYouClicked() },
+
+                shadowOn = false
             )
-
-            when (val state = uiState) {
-                is SpecificationUiState.Loading -> {
-                    // Loading UI
-                }
-                is SpecificationUiState.ListingRestaurants -> {
-                    SelectionSection(
-                        Modifier
-                            .padding(horizontal = spacing.mediumPadding)
-                            .fillMaxWidth()
-                            .zIndex(1f)
-                            .weight(1f),
-
-                        listedRestaurants = state.restaurants,
-
-                        onRemoveRestaurant = { id ->
-                            viewModel.leaveQueue(id)
-                        },
-
-                        onQueuedRestaurantClicked = {
-                            viewModel.onQueuedRestaurantClicked(it)
-                        },
-                        onAcceptedRestaurantClicked = {
-                            viewModel.onAcceptedRestaurantClicked(it)
-                        },
-                        onDeclinedRestaurantClicked = {
-                            viewModel.onDeclinedRestaurantClicked(it)
-                        },
-
-                    )
-                }
-                is SpecificationUiState.FocusingRestaurant -> {
-                    FocusedRestaurantFrame(
-                        Modifier
-                            .padding(horizontal = spacing.mediumPadding)
-                            .fillMaxWidth()
-                            .zIndex(1f)
-                            .weight(1f),
-
-                        selectedRestaurant = state.restaurant,
-
-                        onQueueJoiningClicked ={ arrivalTimeInMinutes, restaurantId -> // TODO: Include some kind of confirmation when the restaurant was queued even if the orange frame already does it.
-                            viewModel.onQueueJoiningClicked(arrivalTimeInMinutes, restaurantId)
-                        }
-                    )
-                }
-                is SpecificationUiState.Error -> {
-                    Log.d("MyActivity", "🚩👉  Error when trying to see the specifications: ${state.errorMessage}")
-                }
-
             }
 
-        Spacer(Modifier.height(spacing.regularSeparation))
-
-        // Navigation part
-        NavigationBar(
-            Modifier
-                .fillMaxWidth()
-                .height(spacing.barHeight),
-
-            homeHighlighted = true,
-            onHomeClicked = { viewModel.onHomeClicked() },
-            onYouClicked = { viewModel.onYouClicked() },
-
-            shadowOn = false
-        )
         }
+
+        // Insert the Modal at the absolute bottom of the root Box structure
+        AcceptanceConfirmationModal(
+            isOpen = isConfirmationPopupVisible,
+            onDismissRequest = { isConfirmationPopupVisible = false },
+            onConfirmationTriggered = {
+                // Close the visual window shield immediately
+                isConfirmationPopupVisible = false
+
+                // Instruct the ViewModel brain to fire off the background business tasks
+                viewModel.onAcceptanceConfirmed()
+            }
+        )
 
     }
 

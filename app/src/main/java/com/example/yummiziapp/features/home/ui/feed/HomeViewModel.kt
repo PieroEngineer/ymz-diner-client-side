@@ -41,7 +41,7 @@ class HomeViewModel @Inject constructor(
 
             // Clean all restaurants
             Log.d("MyActivity", "🧹  Cleaning all restaurants...\n")
-//            clearFeed() /// Commented for testing purposes   //TODO: Consider that the cleaning is when the user doesn't enter after a long while
+            clearFeed() /// Commented for testing purposes   //TODO: Consider that the cleaning is when the user doesn't enter after a long while
 
 
             Log.d("MyActivity", "🎨  Trying to initialize data for user and restaurant...\n")
@@ -53,7 +53,7 @@ class HomeViewModel @Inject constructor(
     }
 
     private fun observeFeed() {
-        viewModelScope.launch {
+        viewModelScope.launch { /// Why is this inside a function?
             getCategorizedFeed().collect { categoryMap ->
                 Log.d("MyActivity", "🗺️  categoryMap received in the view model from use case\n$categoryMap\n")
 

@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -101,113 +102,132 @@ fun SpecificationSection(
 
             Spacer(Modifier.height(spacing.mediumSeparation))
 
-            Row(    // Available selections
+            Box(    /// Temporal cover
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = spacing.mediumPadding)
-                    .padding(bottom = spacing.regularPadding)
-            ) {
+            ){
+                Row(    // Available selections
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = spacing.mediumPadding)
+                        .padding(bottom = spacing.regularPadding)
+                ) {
 
-                Spacer(Modifier.weight(1f))
+                    Spacer(Modifier.weight(1f))
 
-                Column(  // Special date switch
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ){
-                    Image(
-                        painter = painterResource(R.drawable.celebration_icon),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .size(spacing.reducedImageSize)
-                            .clip(CircleShape)
-                            .background(
-                                if (selectedOptions["is special date"]
-                                        ?: false
-                                ) YummiziTheme.colors.yummziziLightOrange2 else YummiziTheme.colors.yummziziGray
-                            )
-                            .border(
-                                BorderStroke(
-                                    spacing.mediumLineThickness,
-                                    YummiziTheme.colors.yummziziWhite
-                                ),
-                                CircleShape
-                            )
-                    )
+                    Column(  // Special date switch
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ){
+                        Image(
+                            painter = painterResource(R.drawable.celebration_icon),
+                            contentDescription = null,
+                            modifier = Modifier
+                                .size(spacing.reducedImageSize)
+                                .clip(CircleShape)
+                                .background(
+                                    if (selectedOptions["is special date"]
+                                            ?: false
+                                    ) YummiziTheme.colors.yummziziLightOrange2 else YummiziTheme.colors.yummziziGray
+                                )
+                                .border(
+                                    BorderStroke(
+                                        spacing.mediumLineThickness,
+                                        YummiziTheme.colors.yummziziWhite
+                                    ),
+                                    CircleShape
+                                )
+                        )
 
-                    Text(
-                        text = "Día especial",
-                        color = YummiziTheme.colors.yummziziWhite,
-                        style = YummiziTheme.typography.teacherFontVar6
-                    )
+                        Text(
+                            text = "Día especial",
+                            color = YummiziTheme.colors.yummziziWhite,
+                            style = YummiziTheme.typography.teacherFontVar6
+                        )
+                    }
+
+                    Spacer(Modifier.weight(2.5f))
+
+                    Column(  // Baby included switch
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ){
+                        Image(
+                            painter = painterResource(R.drawable.baby_icon),
+                            contentDescription = null,
+                            modifier = Modifier
+                                .size(spacing.reducedImageSize)
+                                .clip(CircleShape)
+                                .background(
+                                    if (selectedOptions["have baby"]
+                                            ?: false
+                                    ) YummiziTheme.colors.yummziziLightOrange2 else YummiziTheme.colors.yummziziGray
+                                )
+                                .border(
+                                    BorderStroke(
+                                        spacing.mediumLineThickness,
+                                        YummiziTheme.colors.yummziziWhite
+                                    ),
+                                    CircleShape
+                                )
+                        )
+
+                        Text(
+                            text = "Con bebé",
+                            color = YummiziTheme.colors.yummziziWhite,
+                            style = YummiziTheme.typography.teacherFontVar6
+                        )
+                    }
+
+                    Spacer(Modifier.weight(2.5f))
+
+                    Column(  // Support needed switch
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ){
+                        Image(
+                            painter = painterResource(R.drawable.support_icon),
+                            contentDescription = null,
+                            modifier = Modifier
+                                .size(spacing.reducedImageSize)
+                                .clip(CircleShape)
+                                .background(
+                                    if (selectedOptions["need support"]
+                                            ?: false
+                                    ) YummiziTheme.colors.yummziziLightOrange2 else YummiziTheme.colors.yummziziGray
+                                )
+                                .border(
+                                    BorderStroke(
+                                        spacing.mediumLineThickness,
+                                        YummiziTheme.colors.yummziziWhite
+                                    ),
+                                    CircleShape
+                                )
+                        )
+
+                        Text(
+                            text = "Apoyo",
+                            color = YummiziTheme.colors.yummziziWhite,
+                            style = YummiziTheme.typography.teacherFontVar6
+                        )
+                    }
+
+                    Spacer(Modifier.weight(1f))
+
+
                 }
 
-                Spacer(Modifier.weight(2.5f))
-
-                Column(  // Baby included switch
-                    horizontalAlignment = Alignment.CenterHorizontally
+                Box(
+                    modifier = Modifier
+                        .matchParentSize()
+                        .background(YummiziTheme.colors.yummziziBlack.copy(alpha = 0.5f)),
+                    contentAlignment = Alignment.Center
                 ){
-                    Image(
-                        painter = painterResource(R.drawable.baby_icon),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .size(spacing.reducedImageSize)
-                            .clip(CircleShape)
-                            .background(
-                                if (selectedOptions["have baby"]
-                                        ?: false
-                                ) YummiziTheme.colors.yummziziLightOrange2 else YummiziTheme.colors.yummziziGray
-                            )
-                            .border(
-                                BorderStroke(
-                                    spacing.mediumLineThickness,
-                                    YummiziTheme.colors.yummziziWhite
-                                ),
-                                CircleShape
-                            )
-                    )
-
                     Text(
-                        text = "Con bebé",
+                        text = "Próximamente",
                         color = YummiziTheme.colors.yummziziWhite,
-                        style = YummiziTheme.typography.teacherFontVar6
+                        style = YummiziTheme.typography.leaguespartanFontVar2
                     )
                 }
-
-                Spacer(Modifier.weight(2.5f))
-
-                Column(  // Support needed switch
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ){
-                    Image(
-                        painter = painterResource(R.drawable.support_icon),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .size(spacing.reducedImageSize)
-                            .clip(CircleShape)
-                            .background(
-                                if (selectedOptions["need support"]
-                                        ?: false
-                                ) YummiziTheme.colors.yummziziLightOrange2 else YummiziTheme.colors.yummziziGray
-                            )
-                            .border(
-                                BorderStroke(
-                                    spacing.mediumLineThickness,
-                                    YummiziTheme.colors.yummziziWhite
-                                ),
-                                CircleShape
-                            )
-                    )
-
-                    Text(
-                        text = "Apoyo",
-                        color = YummiziTheme.colors.yummziziWhite,
-                        style = YummiziTheme.typography.teacherFontVar6
-                    )
-                }
-
-                Spacer(Modifier.weight(1f))
-
-
             }
+
         }
 
     }

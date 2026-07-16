@@ -32,4 +32,10 @@ interface LoggedUserDao {
 
     @Update
     suspend fun updateUser(user: LoggedUser)
+
+    @Query("UPDATE logged_user SET companySize = companySize + 1")
+    suspend fun increaseCompanySize()
+
+    @Query("UPDATE logged_user SET companySize = CASE WHEN companySize > 0 THEN companySize - 1 ELSE 0 END")
+    suspend fun decreaseCompanySize()
 }

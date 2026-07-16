@@ -44,6 +44,7 @@ data class DishDto(
     val menuPageId: String,
     val coordinateXInMenu: Double,
     val coordinateYInMenu: Double,
+    val createdAt: Long,
     val description: String
 )
 

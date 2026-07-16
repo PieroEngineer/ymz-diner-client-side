@@ -34,7 +34,9 @@ class UserRepositoryImpl @Inject constructor(
             val mockUser = LoggedUser(
                 id = mockUuid,
                 name = "Sir Mock User",
-                favoriteRestaurants = emptyList()
+                favoriteRestaurants = emptyList(),
+                companySize = 0,
+                specifics =emptyList()
             )
 
             Log.d("MyActivity", "👤 A user mockup was built\n$mockUser")
@@ -97,6 +99,14 @@ class UserRepositoryImpl @Inject constructor(
             preferenceDao.upsertPreference(previousPreference)  // Rollback //TODO: Consider soft-delete (I saved its concept in NotebookLM)
 
             Unit
+        }
+    }
+
+    override suspend fun updateCompanySize(isIncreasing: Boolean) = withContext(ioDispatcher) {
+        if (isIncreasing) {
+            loggedUserDao.increaseCompanySize()
+        } else {
+            loggedUserDao.decreaseCompanySize()
         }
     }
 

@@ -4,7 +4,7 @@ import com.example.yummiziapp.core.data.local.entities.Request
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class CreateRequestDto(
+data class JoinQueueDto(
     val restaurantId: String,
     val userId: String,
     val requestId: String
@@ -37,13 +37,13 @@ data class LeaveQueueDto(
 @Serializable
 data class LeaveQueueResponseDto(
     val message: String,
-    val onCancellationTimestamp: String  //TODO: Use this timestamp in other DTOs so the client-side can have the online timestamp of the cloud
+//    val onCancellationTimestamp: String  //TODO: Use this timestamp in other DTOs so the client-side can have the online timestamp of the cloud
 )
 
 /// Remember, the "get details" don't replace the food, but concatenate it
 
-fun Request.toDto() = CreateRequestDto(
-    restaurantId = id.toString(),
+fun Request.toDto() = JoinQueueDto(
+    restaurantId = restaurantId.toString(),
     userId = userId.toString(),
     requestId = id.toString()
 )

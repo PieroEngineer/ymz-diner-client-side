@@ -14,7 +14,7 @@ import coil3.request.crossfade
  * Completely isolates the feature layers from knowing about Coil's underlying APIs.
  */
 @Composable
-fun YummiziImage(
+fun AsyncYummiziImage(
     model: String?,
     contentDescription: String?,
     modifier: Modifier = Modifier,

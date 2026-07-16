@@ -1,6 +1,5 @@
-package com.example.yummiziapp.features.restaurant.ui.model
+package com.example.yummiziapp.features.user.ui.model
 
-import com.example.yummiziapp.features.user.ui.model.RequestUiStatus
 import kotlin.uuid.Uuid
 
 data class SelectedRestaurantUiModel(

@@ -33,7 +33,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
+//import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.example.yummiziapp.R
@@ -41,11 +41,11 @@ import com.example.yummiziapp.core.designsystem.theme.YummiziTheme
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
-@Preview
+//@Preview
 @Composable
-fun QueueConfirmationModal(
+fun AcceptanceConfirmationModal(
     modifier: Modifier = Modifier,
-    isOpen: Boolean = true,
+    isOpen: Boolean = false,
     onDismissRequest: () -> Unit = {},
     onConfirmationTriggered: () -> Unit = {}
 ) {
@@ -60,7 +60,7 @@ fun QueueConfirmationModal(
         exit = fadeOut()
     ) {
         Box(
-            modifier = Modifier.fillMaxSize(),
+            modifier = modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
             // 🔒 1. THE INTERCEPTION MASK (Locks screen inputs and darkens background)

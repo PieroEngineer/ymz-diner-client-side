@@ -21,7 +21,7 @@ import com.example.yummiziapp.core.designsystem.theme.YummiziTheme
 import com.example.yummiziapp.features.restaurant.ui.model.MenuUiModel
 import kotlin.uuid.Uuid
 import com.example.yummiziapp.R
-import com.example.yummiziapp.core.designsystem.theme.YummiziImage
+import com.example.yummiziapp.core.designsystem.theme.AsyncYummiziImage
 
 @Composable
 fun InteractiveMenu(
@@ -41,7 +41,7 @@ fun InteractiveMenu(
         Log.d("MyActivity", "📇  Menu is going to be showed. Menu info:\n${menuUiModel}\n")
 
         // The Background Menu Image
-        YummiziImage(
+        AsyncYummiziImage(
             model = menuUiModel.page.imageUrl,
             contentDescription = null,
             contentScale = ContentScale.FillHeight,

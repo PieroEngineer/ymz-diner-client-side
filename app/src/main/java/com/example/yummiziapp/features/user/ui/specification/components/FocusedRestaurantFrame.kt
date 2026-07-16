@@ -35,7 +35,7 @@ import androidx.compose.ui.unit.dp
 import com.example.yummiziapp.core.designsystem.theme.YummiziTheme
 import com.example.yummiziapp.features.user.ui.model.FocusedRestaurantUiModel
 import com.example.yummiziapp.R
-import com.example.yummiziapp.core.designsystem.theme.YummiziImage
+import com.example.yummiziapp.core.designsystem.theme.AsyncYummiziImage
 import com.example.yummiziapp.features.user.ui.model.RequestUiStatus
 import kotlin.uuid.Uuid
 
@@ -48,6 +48,8 @@ fun FocusedRestaurantFrame(
     selectedRestaurant: FocusedRestaurantUiModel,
 
     onQueueJoiningClicked: (Int, Uuid) -> Unit,
+
+    onTryToConfirmAcceptanceClicked: () -> Unit
 ){
     val spacing = YummiziTheme.spacing
 
@@ -95,7 +97,7 @@ fun FocusedRestaurantFrame(
                     .padding(top = spacing.mediumPadding)
                     .padding(horizontal = spacing.bigPadding)
             ){  // Restaurant info
-                YummiziImage(
+                AsyncYummiziImage(
                     model = selectedRestaurant.restaurantLogoUrl,
                     contentDescription = null,
                     modifier = Modifier
@@ -140,56 +142,18 @@ fun FocusedRestaurantFrame(
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ){
-                    Row(    /// Maybe convert it into a function, because it's used in other parts too
-                        modifier = Modifier
-                            .border(
-                                BorderStroke(
-                                    spacing.mediumLineThickness,
-                                    YummiziTheme.colors.yummziziDarkOrange
-                                ),
-                                shape = RoundedCornerShape(spacing.regularCornerRadius)
-                            )
-                            .clip(
-                                RoundedCornerShape(40)
-                            ),
-                        verticalAlignment = Alignment.CenterVertically
-                    ){
 
-                        Image(
-                            painter = painterResource(R.drawable.row_btn),
-                            contentDescription = null,
-                            modifier = Modifier
-                                .padding(start = spacing.mediumPadding)
-                                .padding(vertical = spacing.smallPadding)
-                                .size(spacing.regularIconSize)
-                                .rotate(180f)
-                                .clickable {if (arrivalTimeInMinutes > 1) arrivalTimeInMinutes--} //TODO: Include bouncing effect
+                    NumberSelector(
+                        modifier = Modifier,
 
-                        )
+                        color = YummiziTheme.colors.yummziziDarkOrange,
 
-                        Spacer(Modifier.width(spacing.mediumSeparation))
-
-                        Text(
-                            text = arrivalTimeInMinutes.toString(),
-                            textAlign = TextAlign.Center,
-                            color = YummiziTheme.colors.yummziziDarkOrange,
-                            style = YummiziTheme.typography.comfortaaFontVar1,
-                            modifier = Modifier
-                                .padding(vertical = spacing.smallPadding)
-                        )
-
-                        Spacer(Modifier.width(spacing.mediumSeparation))
-
-                        Image(
-                            painter = painterResource(R.drawable.row_btn),
-                            contentDescription = null,
-                            modifier = Modifier
-                                .padding(end = spacing.mediumPadding)
-                                .padding(vertical = spacing.smallPadding)
-                                .size(spacing.regularIconSize)
-                                .clickable {if (arrivalTimeInMinutes < maxTimeByRestaurant) arrivalTimeInMinutes++}
-                        )
-                    }
+                        indicatorNumber= arrivalTimeInMinutes,
+                        onNumberChanged = { increase ->
+                            if (increase) arrivalTimeInMinutes++ else if (arrivalTimeInMinutes > 1) arrivalTimeInMinutes--
+                        },
+                        maxValue = maxTimeByRestaurant,
+                    )
 
                     Spacer(Modifier.width(spacing.mediumSeparation))
 
@@ -244,7 +208,7 @@ fun FocusedRestaurantFrame(
                     ConfirmationButton(
                         modifier = Modifier
                             .fillMaxWidth(.6f),
-                                onClick = {},
+                                onClick = { onTryToConfirmAcceptanceClicked() },
                                 text = "Elegir\nrestaurante"
                     )
                 }

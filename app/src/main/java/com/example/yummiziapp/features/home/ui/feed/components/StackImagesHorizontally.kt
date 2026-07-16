@@ -11,7 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.zIndex
 import com.example.yummiziapp.core.designsystem.theme.YummiziTheme
-import com.example.yummiziapp.core.designsystem.theme.YummiziImage
+import com.example.yummiziapp.core.designsystem.theme.AsyncYummiziImage
 
 //@Preview
 @Composable
@@ -27,7 +27,7 @@ fun StackImagesHorizontally(    ///IDEA: It would be nice add an effect here
             .spacedBy(-spacing.hugeSeparation)     //TODO: Make the horizontal separation dynamic. It should depend of the parent width
     ){
         imagesToStack.forEachIndexed{ index, imageUrl ->
-            YummiziImage(
+            AsyncYummiziImage(
                 model = imageUrl,
                 contentDescription = null,
                 modifier = Modifier

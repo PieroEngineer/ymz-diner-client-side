@@ -27,9 +27,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import com.example.yummiziapp.R
-import com.example.yummiziapp.core.designsystem.theme.YummiziImage
+import com.example.yummiziapp.core.designsystem.theme.AsyncYummiziImage
 import com.example.yummiziapp.core.designsystem.theme.YummiziTheme
-import com.example.yummiziapp.features.restaurant.ui.model.SelectedRestaurantUiModel
+import com.example.yummiziapp.features.user.ui.model.SelectedRestaurantUiModel
 import com.example.yummiziapp.features.user.ui.model.RequestUiStatus
 import kotlin.uuid.Uuid
 
@@ -134,7 +134,7 @@ fun SelectionSection(
                         verticalAlignment = Alignment.CenterVertically
                     ){
 
-                        YummiziImage(
+                        AsyncYummiziImage(
                             model = restaurantInList.restaurantLogoUrl,
                             contentDescription = null,
                             modifier = Modifier

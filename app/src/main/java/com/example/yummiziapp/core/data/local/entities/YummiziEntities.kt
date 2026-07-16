@@ -4,6 +4,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import com.example.yummiziapp.core.data.local.model.AvailableSpecificsToken
 import com.example.yummiziapp.core.data.local.model.RequestStatusToken
 //X import com.example.yummiziapp.features.request.data.model.QueueStatus
 import kotlin.uuid.Uuid
@@ -14,8 +15,20 @@ import kotlinx.serialization.Serializable
 data class LoggedUser(
     @PrimaryKey val id: Uuid, // The "userId"
     val name: String,
-    val favoriteRestaurants: List<Uuid> = emptyList()
+    val favoriteRestaurants: List<Uuid> = emptyList(),
+    val companySize: Int,
+    val specifics: List<AvailableSpecificsToken>,
 )
+
+// TODO: Implement when different Yummizi's users can invite each other
+//@Serializable
+//@Entity(tableName = "friends")
+//data class friend(
+//    @PrimaryKey val friendId: Uuid,
+//    val name: String,
+//    val photoUrl: String?,
+//    val companySize: Int,
+//)
 
 @Serializable
 @Entity(tableName = "restaurants")
@@ -46,6 +59,7 @@ data class Request(
     val status: RequestStatusToken,
     val userId: Uuid,
     val localCreationTimestamp: String //TODO: Change it to Long type
+    ///val arrivalTimeInMinutes: Int,
 )
 
 @Serializable

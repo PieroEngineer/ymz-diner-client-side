@@ -1,6 +1,6 @@
 package com.example.yummiziapp.core.data.network.api
 
-import com.example.yummiziapp.core.data.network.model.CreateRequestDto
+import com.example.yummiziapp.core.data.network.model.JoinQueueDto
 import com.example.yummiziapp.core.data.network.model.CreateRequestResponseDto
 import com.example.yummiziapp.core.data.network.model.LeaveQueueDto
 import com.example.yummiziapp.core.data.network.model.LeaveQueueResponseDto
@@ -19,6 +19,6 @@ interface RequestApi {
 
     @POST("requests/create")
     suspend fun createRequest(
-        @Body body: CreateRequestDto
+        @Body body: JoinQueueDto
     ): Response<CreateRequestResponseDto>
 }

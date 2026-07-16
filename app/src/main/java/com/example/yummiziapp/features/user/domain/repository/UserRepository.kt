@@ -24,4 +24,6 @@ interface UserRepository {
     suspend fun deletePreference(id: Uuid)
 
     fun observePreferences(): Flow<List<Preference>>
+
+    suspend fun updateCompanySize(isIncreasing: Boolean)
 }

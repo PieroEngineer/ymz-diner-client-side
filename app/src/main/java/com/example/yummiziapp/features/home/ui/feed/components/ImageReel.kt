@@ -20,7 +20,7 @@ import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.layout.ContentScale
 import com.example.yummiziapp.core.designsystem.theme.YummiziTheme
 import coil3.compose.rememberAsyncImagePainter
-import com.example.yummiziapp.core.designsystem.theme.YummiziImage
+import com.example.yummiziapp.core.designsystem.theme.AsyncYummiziImage
 
 //@Preview
 @Composable
@@ -97,7 +97,7 @@ fun ImageReel(
                     .fillMaxSize()
             ) {
 
-                YummiziImage(
+                AsyncYummiziImage(
                     model = imageUrls[0],
                     contentDescription = null,
                     modifier = Modifier

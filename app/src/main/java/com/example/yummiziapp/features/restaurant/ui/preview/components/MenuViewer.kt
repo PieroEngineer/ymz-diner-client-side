@@ -15,7 +15,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
-import com.example.yummiziapp.core.designsystem.theme.YummiziImage
+import com.example.yummiziapp.core.designsystem.theme.AsyncYummiziImage
 import com.example.yummiziapp.core.designsystem.theme.YummiziTheme
 import kotlin.math.absoluteValue
 import androidx.compose.ui.util.lerp
@@ -68,7 +68,7 @@ fun MenuViewer( //TODO: Repair here, allow bellow shadow in each menu //TODO: Al
                 .clip(RoundedCornerShape(spacing.mediumCornerRadius))
                 .background(YummiziTheme.colors.yummziziWhite)
         ) {
-            YummiziImage(
+            AsyncYummiziImage(
                 model = images[page],
                 contentDescription = null,
                 contentScale = ContentScale.Fit,

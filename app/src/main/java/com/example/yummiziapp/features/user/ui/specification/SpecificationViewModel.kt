@@ -4,20 +4,22 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
+import com.example.yummiziapp.core.data.local.entities.LoggedUser
 import com.example.yummiziapp.core.data.local.entities.Restaurant
 import com.example.yummiziapp.core.data.local.model.RequestStatusToken
 import com.example.yummiziapp.features.request.domain.repository.RequestRepository
 import com.example.yummiziapp.features.restaurant.domain.repository.RestaurantRepository
-import com.example.yummiziapp.features.restaurant.ui.model.SelectedRestaurantUiModel
+import com.example.yummiziapp.features.user.domain.repository.UserRepository
+import com.example.yummiziapp.features.user.ui.model.SelectedRestaurantUiModel
 import com.example.yummiziapp.features.user.ui.model.FocusedRestaurantUiModel
 import com.example.yummiziapp.features.user.ui.model.RequestUiStatus
+import com.example.yummiziapp.features.user.ui.model.UserDetailsUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
@@ -31,6 +33,7 @@ import kotlin.uuid.Uuid
 class SpecificationViewModel @Inject constructor(
     private val restaurantRepository: RestaurantRepository,
     private val requestRepository: RequestRepository,
+    private val userRepository: UserRepository,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -38,12 +41,12 @@ class SpecificationViewModel @Inject constructor(
     private val restaurantIdReceivedFromNavigation = restaurantIdString?.let { Uuid.parseOrNull(it) }
 
     // The Reactive Engine Core: Wrap the ID inside a StateFlow
-    private val _focusedRestaurantId = MutableStateFlow<Uuid?>(restaurantIdReceivedFromNavigation)
-    val focusedRestaurantId: StateFlow<Uuid?> = _focusedRestaurantId.asStateFlow()
+    private val _focusedRestaurantId = MutableStateFlow(restaurantIdReceivedFromNavigation) // TODO: consider to move it to the stateFlow that is bellow
+//    val focusedRestaurantId: StateFlow<Uuid?> = _focusedRestaurantId.asStateFlow()
 
     // 🔄 2. The Main UI State Machine Pipeline
     @OptIn(ExperimentalCoroutinesApi::class)
-    val uiState: StateFlow<SpecificationUiState> = _focusedRestaurantId
+    val uiRestaurantState: StateFlow<RestaurantSpecificationUiState> = _focusedRestaurantId
         .flatMapLatest { restaurantId ->
             // Whenever _focusedRestaurantId updates its value, this block re-runs automatically!
             if (restaurantId != null) {
@@ -52,9 +55,9 @@ class SpecificationViewModel @Inject constructor(
                 restaurantRepository.observePendingRestaurantWithStatusById(restaurantId)
                     .map { currentRestaurant ->
                         if (currentRestaurant == null) {
-                            SpecificationUiState.Error("Restaurant data allocation corrupted or missing.")
+                            RestaurantSpecificationUiState.Error("Restaurant data allocation corrupted or missing.")
                         } else {
-                            SpecificationUiState.FocusingRestaurant(
+                            RestaurantSpecificationUiState.FocusingRestaurant(
                                 currentRestaurant.restaurant.toFocusedRestaurantUiModel(
                                     currentRestaurant.requestStatus.toUiStatus()
                                 )
@@ -66,7 +69,7 @@ class SpecificationViewModel @Inject constructor(
 
                 restaurantRepository.observePendingRestaurantsWithStatus()
                     .map { currentSelectedRestaurants ->
-                        SpecificationUiState.ListingRestaurants(
+                        RestaurantSpecificationUiState.ListingRestaurants(
                             currentSelectedRestaurants.map {
                                 it.restaurant.toSelectableRestaurantUiModel(
                                     it.requestStatus.toUiStatus()
@@ -78,12 +81,35 @@ class SpecificationViewModel @Inject constructor(
         }
         .catch { error ->
             Log.e("YummiziVM", "🚩 Operational pipeline failure", error)
-            emit(SpecificationUiState.Error(error.message ?: "An unexpected layout error occurred."))
+            emit(RestaurantSpecificationUiState.Error(error.message ?: "An unexpected layout error occurred."))
         }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
-            initialValue = SpecificationUiState.Loading
+            initialValue = RestaurantSpecificationUiState.Loading
+        )
+
+    val uiUserState: StateFlow<UserSpecificationUiState> = userRepository   // TODO:  Divide it in company and specifics
+        .observeCurrentUserInfo()
+        .map{ details ->
+            if (details == null) {
+                Log.w("MyActivity", "⚠️  Details are null")
+                UserSpecificationUiState.Success(
+                    UserDetailsUiModel(
+                        specifics = emptyList(),
+                        companySize = 0
+                    )
+                )
+            }
+            else{
+                UserSpecificationUiState.Success(details.toUserDetailsUiModel())
+            } as UserSpecificationUiState
+        }
+        .catch { e -> emit(UserSpecificationUiState.Error(e.message ?: "Unknown Error when trying to find user's details")) }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = UserSpecificationUiState.Loading
         )
 
     private fun Restaurant.toFocusedRestaurantUiModel(status: RequestUiStatus) = FocusedRestaurantUiModel(
@@ -109,9 +135,15 @@ class SpecificationViewModel @Inject constructor(
         RequestStatusToken.IDLE -> RequestUiStatus.Idle
         RequestStatusToken.QUEUED -> RequestUiStatus.Queued
         RequestStatusToken.ACCEPTED -> RequestUiStatus.Accepted
+        RequestStatusToken.READY -> RequestUiStatus.Accepted    // TODO: Change this to Ready when it's implemented
         RequestStatusToken.PAID -> RequestUiStatus.Paid
         RequestStatusToken.DECLINED -> RequestUiStatus.Declined
     }
+
+    private fun LoggedUser.toUserDetailsUiModel() = UserDetailsUiModel(
+        specifics = specifics,
+        companySize = companySize
+    )
 
 
     private val _effect = Channel<SpecificationUiEvents>(Channel.BUFFERED)
@@ -128,18 +160,43 @@ class SpecificationViewModel @Inject constructor(
     /// If the restaurant is "PAID", this "onRestaurantClicked" doesn't have any sense because the app
     //  will show the focused restaurant directly with the confirmed arrival details
 
+    /// They do the same thing, but I will keep it like this in case there are specific actions later for some of them
     fun onQueuedRestaurantClicked(id: Uuid) {
         _focusedRestaurantId.value = id
     }
-
     fun onAcceptedRestaurantClicked(id: Uuid) {
-
-
+        _focusedRestaurantId.value = id
+    }
+    fun onDeclinedRestaurantClicked(id: Uuid) {
         _focusedRestaurantId.value = id
     }
 
-    fun onDeclinedRestaurantClicked(id: Uuid) {
-        _focusedRestaurantId.value = id
+    fun onAcceptanceConfirmed(){
+        // 🚀 STEP 1: Secure the ID snapshot immediately on the main thread
+        val restaurantId = _focusedRestaurantId.value
+
+        if (restaurantId == null) {
+            Log.e("MyActivity", "🚩  Aborting confirmation: No active restaurant focused.")
+            return
+        }
+        viewModelScope.launch {
+
+            try {   // Continue here: when coming back, continue here
+                // 🛠️ STEP 2: Send acceptance confirmation to the backend network/API and disable the current requests.
+                // restaurantRepository.confirmAcceptance(restaurantId)
+
+                // 🛠️ STEP 3: Clear processing requests locally in the database
+                // restaurantRepository.ClearRequestsForAudit(restaurantId)
+
+                // 🚀 STEP 4: Fire the navigation side-effect safely using the frozen ID
+                _effect.send(SpecificationUiEvents.NavigateToRestaurantMenu(restaurantId))
+
+            } catch (error: Exception) {
+                // Handle network or database transaction failures cleanly
+//                _effect.send(SpecificationUiEvents.ShowErrorSnackbar(error.message ?: "Transaction failed"))
+            }
+
+        }
     }
 
     fun onQueueJoiningClicked(arrivalTimeInMinutes: Int, restaurantId: Uuid) {  //TODO: Later include here their company and specifics
@@ -149,6 +206,12 @@ class SpecificationViewModel @Inject constructor(
         viewModelScope.launch {
             requestRepository.createQueueRequest(restaurantId)
             _effect.send(SpecificationUiEvents.NavigateToHome)
+        }
+    }
+
+    fun onCompanySizeUpdated(isIncreasing: Boolean = true){
+        viewModelScope.launch {
+            userRepository.updateCompanySize(isIncreasing)
         }
     }
 
