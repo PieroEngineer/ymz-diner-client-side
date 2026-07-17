@@ -63,11 +63,12 @@ fun AcceptanceConfirmationModal(
             modifier = modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
+
             // 🔒 1. THE INTERCEPTION MASK (Locks screen inputs and darkens background)
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(Color.Black.copy(alpha = 0.5f)) // Transparent dark cover
+                    .background(YummiziTheme.colors.yummziziBlack.copy(alpha = 0.5f)) // Transparent dark cover
                     .pointerInput(Unit) {
                         // 🚀 Swallow all touch configurations so background elements are completely frozen!
                     }
@@ -81,7 +82,9 @@ fun AcceptanceConfirmationModal(
                     .padding(16.dp)
             ) {
                 Column(
-                    modifier = Modifier.padding(24.dp),
+                    modifier = Modifier
+                        .background(YummiziTheme.colors.yummziziWhite)
+                        .padding(24.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
@@ -98,6 +101,8 @@ fun AcceptanceConfirmationModal(
                     )
                 }
             }
+
+
         }
     }
 }
@@ -111,7 +116,7 @@ private fun SlideToConfirm(
     onConfirm: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val density = LocalDensity.current
+    val density = LocalDensity.current  // TODO: Change the hardcoded values to theme values
     val thumbSize = 56.dp
     val trackHeight = 64.dp
     val thumbPadding = 4.dp
