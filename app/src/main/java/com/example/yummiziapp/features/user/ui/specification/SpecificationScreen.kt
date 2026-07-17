@@ -80,16 +80,6 @@ fun SpecificationScreen(
                     .padding(horizontal = spacing.mediumPadding)
             ) {
 
-                // X
-//                val diner1 = Diner(1, "Grabiel")
-//                val diner2 = Diner(2, "Sonia")
-//                val diner3 = Diner(3, "Albert")
-//                val diner4 = Diner(4, "Marco")
-//                val diner5 = Diner(5, "Yeni")
-//                val diner6 = Diner(6, "Kriss")
-//
-//                val currentFriends = listOf(diner1, diner2, diner3, diner4, diner5, diner6)
-
                 // "Your selection" section
                 Log.d("MyActivity", "🔎📱  Just before Specification section")
                 SpecificationSection(

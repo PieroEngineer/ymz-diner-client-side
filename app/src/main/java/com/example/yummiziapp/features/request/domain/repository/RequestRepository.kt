@@ -11,7 +11,7 @@ interface RequestRepository {
      * 3. Syncs with the Cloud (AWS).
      * 4. Performs a rollback if the network fails.
      */
-    suspend fun createQueueRequest(restaurantId: Uuid)
+    suspend fun createQueueRequest(restaurantId: Uuid, arrivalTimeInMinutes: Int)
 
 //    /**
 //     * Transitions a restaurant between state lists (Queued -> Paid, etc).

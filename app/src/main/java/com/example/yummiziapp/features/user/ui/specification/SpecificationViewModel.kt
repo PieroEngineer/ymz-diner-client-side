@@ -199,12 +199,12 @@ class SpecificationViewModel @Inject constructor(
         }
     }
 
-    fun onQueueJoiningClicked(arrivalTimeInMinutes: Int, restaurantId: Uuid) {  //TODO: Later include here their company and specifics
+    fun onQueueJoiningClicked(arrivalTimeInMinutes: Int, restaurantId: Uuid) {
 
         Log.d("MyActivity", "✅👥  Request made for $restaurantId with $arrivalTimeInMinutes minutes")
 
         viewModelScope.launch {
-            requestRepository.createQueueRequest(restaurantId)
+            requestRepository.createQueueRequest(restaurantId, arrivalTimeInMinutes)
             _effect.send(SpecificationUiEvents.NavigateToHome)
         }
     }

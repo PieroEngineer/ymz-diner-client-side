@@ -95,12 +95,19 @@ fun CompanySection(
 
                     Spacer(Modifier.width(spacing.regularSeparation))
 
-                    NumberSelector(
-                        modifier = Modifier,
-                        color = YummiziTheme.colors.yummziziWhite,
-                        indicatorNumber = details.companySize,
-                        onNumberChanged = { isIncreasing -> onCompanySizeUpdated(isIncreasing) },
-                    )
+                    Column(){
+                        NumberSelector(
+                            color = YummiziTheme.colors.yummziziWhite,
+                            indicatorNumber = details.companySize,
+                            onNumberChanged = { isIncreasing -> onCompanySizeUpdated(isIncreasing) },
+                        )
+
+                        Text(
+                            text = "Acompañantes",
+                            color = YummiziTheme.colors.yummziziWhite,
+                            style = YummiziTheme.typography.teacherFontVar1
+                        )
+                    }
                 }
 
                 Spacer(Modifier.weight(1f))

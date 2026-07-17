@@ -20,7 +20,7 @@ data class LoggedUser(
     val specifics: List<AvailableSpecificsToken>,
 )
 
-// TODO: Implement when different Yummizi's users can invite each other
+// TODO: Implement when different Yummizi's users can invite each other (Consider table relationship)
 //@Serializable
 //@Entity(tableName = "friends")
 //data class friend(
@@ -57,9 +57,10 @@ data class Request(
     @PrimaryKey val id: Uuid,
     val restaurantId: Uuid,
     val status: RequestStatusToken,
-    val userId: Uuid,
-    val localCreationTimestamp: String //TODO: Change it to Long type
-    ///val arrivalTimeInMinutes: Int,
+    val userId: Uuid,   // TODO: Remove this parameter, so it's only lives in "LoggedUser"
+    val localCreationTimestamp: String, //TODO: Change it to Long type
+    val arrivalTimeInMinutes: Int,
+    // val specifics: List<AvailableSpecificsToken>, // TODO
 )
 
 @Serializable

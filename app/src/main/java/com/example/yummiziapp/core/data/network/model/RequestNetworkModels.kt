@@ -7,7 +7,11 @@ import kotlinx.serialization.Serializable
 data class JoinQueueDto(
     val restaurantId: String,
     val userId: String,
-    val requestId: String
+    val requestId: String,
+    val groupSize: Int,
+    val userName: String,
+//    val specificities: List<RequestStatusToken>,      // TODO
+    val arrivalTime: Int
 )
 
 @Serializable
@@ -41,9 +45,3 @@ data class LeaveQueueResponseDto(
 )
 
 /// Remember, the "get details" don't replace the food, but concatenate it
-
-fun Request.toDto() = JoinQueueDto(
-    restaurantId = restaurantId.toString(),
-    userId = userId.toString(),
-    requestId = id.toString()
-)
