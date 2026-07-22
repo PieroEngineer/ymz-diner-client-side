@@ -1,5 +1,6 @@
 package com.example.yummiziapp.features.user.ui.specification.components
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -49,6 +50,8 @@ fun SelectionSection(
     val spacing = YummiziTheme.spacing
     val listState = rememberLazyListState()
 
+//X    Log.d("MyActivity", "🔎  'SelectionSection' was called ")
+
     Column(
         modifier = modifier
             .clip(
@@ -96,7 +99,10 @@ fun SelectionSection(
                                 )
 
                                 is RequestUiStatus.Paid -> {} // TODO // This shouldn't be here theoretically, but I place it here just in case so it works even if the screen is bugged
-                                else -> {}
+
+                                else -> {
+                                    Log.d("MyActivity", "🔎🚩  The unexpected waiting status was ${restaurantInList.waitingState}")
+                                }
                             }
                         },
 

@@ -32,7 +32,7 @@ data class LoggedUser(
 
 @Serializable
 @Entity(tableName = "restaurants")
-data class Restaurant(
+data class Restaurant(  // TODO: This is the entity. And the domain should be another with the status
     @PrimaryKey val id: Uuid,
     val name: String,
     val logoUrl: String,
@@ -61,6 +61,11 @@ data class Request(
     val localCreationTimestamp: String, //TODO: Change it to Long type
     val arrivalTimeInMinutes: Int,
     // val specifics: List<AvailableSpecificsToken>, // TODO
+)
+
+data class RequestUpdate(
+    val restaurantId: Uuid,
+    val newStatus: RequestStatusToken
 )
 
 @Serializable

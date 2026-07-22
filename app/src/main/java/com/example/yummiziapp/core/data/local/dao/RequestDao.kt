@@ -21,8 +21,8 @@ interface RequestDao {
     @Query("DELETE FROM requests WHERE id = :requestId")
     suspend fun deleteRequestById(requestId: Uuid)
 
-    @Query("UPDATE requests SET status = :status WHERE id = :requestId")
-    suspend fun updateRequestStatus(requestId: Uuid, status: RequestStatusToken)
+    @Query("UPDATE requests SET status = :status WHERE restaurantId = :restaurantId")
+    suspend fun updateRequestStatus(restaurantId: Uuid, status: RequestStatusToken)
 
     // --- UI OBSERVATION (REACTIVE) ---
 

@@ -26,4 +26,5 @@ interface RequestRepository {
 
     suspend fun leaveQueue(restaurantId: Uuid)
 
+
 }

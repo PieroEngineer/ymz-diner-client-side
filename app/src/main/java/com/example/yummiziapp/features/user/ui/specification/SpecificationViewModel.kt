@@ -50,7 +50,7 @@ class SpecificationViewModel @Inject constructor(
         .flatMapLatest { restaurantId ->
             // Whenever _focusedRestaurantId updates its value, this block re-runs automatically!
             if (restaurantId != null) {
-                Log.d("YummiziVM", "🔎👉 Switching state mode to FOCUSED: $restaurantId")
+                Log.d("MyActivity", "🔎👉 Switching state mode to FOCUSED: $restaurantId")
 
                 restaurantRepository.observePendingRestaurantWithStatusById(restaurantId)
                     .map { currentRestaurant ->
@@ -65,7 +65,7 @@ class SpecificationViewModel @Inject constructor(
                         }
                     }
             } else {
-                Log.d("YummiziVM", "🔎👉 Switching state mode to LISTING")
+                Log.d("MyActivity", "🔎👉 Switching state mode to LISTING")
 
                 restaurantRepository.observePendingRestaurantsWithStatus()
                     .map { currentSelectedRestaurants ->
@@ -125,7 +125,7 @@ class SpecificationViewModel @Inject constructor(
     // Updated Mapper
     private fun Restaurant.toSelectableRestaurantUiModel(status: RequestUiStatus) = SelectedRestaurantUiModel(
         restaurantId = id,
-        distanceKm = 10,
+        distanceKm = 10,    // TODO: Remove mockup
         restaurantLogoUrl = logoUrl,
         waitingState = status // Dynamic status from the DB!
     )
@@ -181,7 +181,7 @@ class SpecificationViewModel @Inject constructor(
         }
         viewModelScope.launch {
 
-            try {   // Continue here: when coming back, continue here
+            try {
                 // 🛠️ STEP 2: Send acceptance confirmation to the backend network/API and disable the current requests.
                 // restaurantRepository.confirmAcceptance(restaurantId)
 

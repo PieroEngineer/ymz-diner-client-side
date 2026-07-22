@@ -81,7 +81,6 @@ fun SpecificationScreen(
             ) {
 
                 // "Your selection" section
-                Log.d("MyActivity", "🔎📱  Just before Specification section")
                 SpecificationSection(
                     Modifier
                         .padding(horizontal = spacing.mediumPadding)
@@ -114,12 +113,15 @@ fun SpecificationScreen(
                     }
                 }
 
-
                 when (val state = uiRestaurantState) {
                     is RestaurantSpecificationUiState.Loading -> {
+                        Log.d("MyActivity", "🔎🔃  The specifications are loading")
                         // Loading UI
                     }
                     is RestaurantSpecificationUiState.ListingRestaurants -> {
+
+//X                        Log.d("MyActivity", "🔎🥗  Restaurants to be shown: ${state.restaurants}")
+
                         SelectionSection(
                             Modifier
                                 .padding(horizontal = spacing.mediumPadding)

@@ -1,7 +1,11 @@
 package com.example.yummiziapp.core.data.network.model
 
-import com.example.yummiziapp.core.data.local.entities.Request
+import android.util.Log
+import com.example.yummiziapp.core.data.local.entities.RequestUpdate
+import com.example.yummiziapp.core.data.local.model.RequestStatusToken
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlin.uuid.Uuid
 
 @Serializable
 data class JoinQueueDto(
@@ -20,12 +24,7 @@ data class CreateRequestResponseDto(
     val requestId: String,
 )
 
-@Serializable
-data class UpdateStatusDto(
-    val requestId: String,
-    val restaurantId: String,
-    val newState: String
-)
+
 
 @Serializable
 data class UpdateRequestResponseDto(
@@ -43,5 +42,38 @@ data class LeaveQueueResponseDto(
     val message: String,
 //    val onCancellationTimestamp: String  //TODO: Use this timestamp in other DTOs so the client-side can have the online timestamp of the cloud
 )
+
+@Serializable
+data class UpdateStatusDto(
+    val requestId: String,
+    val restaurantId: String,
+    val newState: String
+)
+
+@Serializable
+data class RequestStatusMessageDto(
+    @SerialName("restaurantId") val restaurantId: String,
+    @SerialName("newStatus") val newStatus: String
+){
+    fun toEntity(): RequestUpdate {
+        val newLocalStatus = when (newStatus) {
+            "IDLE" -> RequestStatusToken.IDLE
+            "QUEUED" -> RequestStatusToken.QUEUED
+            "ACCEPTED" -> RequestStatusToken.ACCEPTED
+            "READY" -> RequestStatusToken.READY
+            "PAID" -> RequestStatusToken.PAID
+            "DECLINED" -> RequestStatusToken.DECLINED
+            else -> {
+                Log.e("MyActivity", "🚩Invalid status in WebSockets: $newStatus")
+                throw IllegalArgumentException("Invalid status: $newStatus")    // TODO: Handle it in another way
+            }
+        }
+        return RequestUpdate(
+            restaurantId = Uuid.parse(restaurantId),
+            newStatus = newLocalStatus
+        )
+    }
+}
+
 
 /// Remember, the "get details" don't replace the food, but concatenate it

@@ -3,24 +3,37 @@ package com.example.yummiziapp.core.data.repository
 import android.util.Log
 import com.example.yummiziapp.core.data.di.IoDispatcher
 import com.example.yummiziapp.core.data.local.dao.MenuDao
+import com.example.yummiziapp.core.data.local.dao.RequestDao
 import com.example.yummiziapp.core.data.local.dao.RestaurantDao
 import com.example.yummiziapp.core.data.local.entities.Dish
 import com.example.yummiziapp.core.data.local.entities.Restaurant
 import com.example.yummiziapp.core.data.local.model.RestaurantWithStatus
 import com.example.yummiziapp.core.data.network.api.RestaurantApi
+import com.example.yummiziapp.core.data.network.model.RequestStatusMessageDto
 import com.example.yummiziapp.core.data.network.model.toEntity
+import com.example.yummiziapp.core.data.network.websocket.AblyDataSource
+import com.example.yummiziapp.core.data.network.websocket.mappers.toRawJsonString
 import com.example.yummiziapp.features.restaurant.domain.repository.RestaurantRepository
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.json.Json
 import javax.inject.Inject
 import kotlin.uuid.Uuid
 
 class RestaurantRepositoryImpl @Inject constructor(
+    private val requestDao: RequestDao,
     private val restaurantDao: RestaurantDao,
     private val yummiziApi: RestaurantApi,
     private val menuDao: MenuDao,
-    @IoDispatcher private val ioDispatcher: CoroutineDispatcher
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
+    private val dataSource: AblyDataSource,
+    private val json: Json
 ) : RestaurantRepository {
 
     override fun observeDishes(restaurantId: Uuid): Flow<List<Dish>> = menuDao.observeDishesByRestaurant(restaurantId)
@@ -94,17 +107,54 @@ class RestaurantRepositoryImpl @Inject constructor(
     }
 
     // In UserRepository / RestaurantRepository
-    override fun observePendingRestaurantsWithStatus(): Flow<List<RestaurantWithStatus>> {  // "Pending" means "QUEUED" and "ACCEPTED"
+    override fun observePendingRestaurantsWithStatus(): Flow<List<RestaurantWithStatus>> = flow {  // "Pending" means "QUEUED" and "ACCEPTED"
         // 1. Get current ID (keeping your mock for now, but using the DAO)
         val currentUserId = Uuid.parse("00000000-0000-4000-a000-000000000000")
 
-        // 2. Return the direct stream from the DAO
-        return restaurantDao.observePendingRestaurantsWithStatus(currentUserId)
+        // 🚀 Stream emission strategy:
+        // 1. Emit local Room Flow directly to UI (SSOT)
+        // 2. Concurrently consume WebSocket updates to sync Room DB
+
+//X        val roomStream = restaurantDao.observePendingRestaurantsWithStatus(currentUserId)
+
+//X        emitAll(
+//            roomStream.onStart {
+//                syncWebSocketToRoom()
+//            }
+//        )
+
+        coroutineScope {
+            // Launch the sync in the background
+            launch { syncWebSocketToRoom() }
+
+            // Immediately start emitting data from Room
+            emitAll(restaurantDao.observePendingRestaurantsWithStatus(currentUserId))
+        }
     }
 
-    override fun observePendingRestaurantWithStatusById(restaurantId: Uuid): Flow<RestaurantWithStatus> {
+    override fun observePendingRestaurantWithStatusById(restaurantId: Uuid): Flow<RestaurantWithStatus> = flow {
         val currentUserId = Uuid.parse("00000000-0000-4000-a000-000000000000")
-        return restaurantDao.observePendingRestaurantWithStatusById(currentUserId, restaurantId)
+
+        // 🚀 Stream emission strategy:
+        // 1. Emit local Room Flow directly to UI (SSOT)
+        // 2. Concurrently consume WebSocket updates to sync Room DB
+
+//X        val roomStream = restaurantDao.observePendingRestaurantWithStatusById(currentUserId, restaurantId)
+
+//X        emitAll(
+//            roomStream.onStart {
+//                syncWebSocketToRoom()
+//            }
+//        )
+
+        coroutineScope {
+            // Launch the sync in the background
+            launch { syncWebSocketToRoom() }
+
+            // Immediately start emitting data from Room
+            emitAll(restaurantDao.observePendingRestaurantWithStatusById(currentUserId, restaurantId))
+        }
+
     }
 
     override fun observePendingRestaurants(): Flow<List<Restaurant>> {
@@ -114,4 +164,37 @@ class RestaurantRepositoryImpl @Inject constructor(
         return restaurantDao.observePendingRestaurants(currentUserId)
     }
 
+    private suspend fun syncWebSocketToRoom() = withContext(ioDispatcher) {
+        val userId = "00000000-0000-4000-a000-000000000000"
+        val channelName = "request:$userId"
+
+        Log.d("MyActivity", "🔎  App is going to subscribe to the WebSocket channel: $channelName ...")
+
+        dataSource.subscribeToChannel(channelName)
+            .collect { rawMessage ->
+                // Safely extracts JSON String regardless of Ably's internal type
+                val rawJsonString = rawMessage.toRawJsonString() ?: return@collect
+
+                Log.d("MyActivity", "🔎📩  Received a WebSocket String raw message: $rawJsonString (${rawJsonString::class.simpleName})")
+
+                // 🛡️ STEP 1: Parse payload safely
+                val dtoResult = runCatching {
+                    json.decodeFromString<RequestStatusMessageDto>(rawJsonString)
+                }
+
+                dtoResult.onSuccess { dto ->
+                    // 🛡️ STEP 2: Write to Room DB safely
+                    try {
+                        val requestUpdate = dto.toEntity()
+                        // TODO: Verify here if the transition between request status is valid (e.g. Accepted only is allowed if the previous state was QUEUED)
+
+                        requestDao.updateRequestStatus(requestUpdate.restaurantId, requestUpdate.newStatus)
+                    } catch (e: Exception) {
+                        Log.e("MyActivity", "🚩  Database write failure", e)
+                    }
+                }.onFailure { error ->
+                    Log.w("MyActivity", "🚩  Malformed WebSocket payload dropped", error)
+                }
+            }
+    }
 }

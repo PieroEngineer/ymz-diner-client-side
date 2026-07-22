@@ -5,10 +5,14 @@ import com.example.yummiziapp.core.data.di.IoDispatcher
 import com.example.yummiziapp.core.data.local.dao.LoggedUserDao
 import com.example.yummiziapp.core.data.local.dao.RequestDao
 import com.example.yummiziapp.core.data.local.entities.Request
+import com.example.yummiziapp.core.data.local.entities.RequestUpdate
 import com.example.yummiziapp.core.data.local.model.RequestStatusToken
 import com.example.yummiziapp.core.data.network.api.RequestApi
 import com.example.yummiziapp.core.data.network.model.LeaveQueueDto
+import com.example.yummiziapp.core.data.network.model.RequestStatusMessageDto
+import kotlinx.serialization.json.Json
 import com.example.yummiziapp.core.data.network.model.mappers.mapToJoinQueueDto
+import com.example.yummiziapp.core.data.network.websocket.AblyDataSource
 //import com.example.yummiziapp.features.request.data.model.QueueStatus
 import com.example.yummiziapp.features.request.domain.repository.RequestRepository
 import kotlinx.coroutines.CoroutineDispatcher
@@ -17,12 +21,14 @@ import javax.inject.Inject
 import kotlin.random.Random
 import kotlin.uuid.Uuid
 import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.mapNotNull
 
 class RequestRepositoryImpl @Inject constructor(
     private val yummiziApi: RequestApi,
     private val loggedUserDao: LoggedUserDao,
     private val requestDao: RequestDao,
-    @IoDispatcher private val ioDispatcher: CoroutineDispatcher
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
 ): RequestRepository {
 
     override suspend fun createQueueRequest(restaurantId: Uuid, arrivalTimeInMinutes: Int) = withContext(ioDispatcher) {   //TODO: later use this "...: Result<Unit> = withContext(ioDispatcher)" in others repo's methods and ask to gemini how to use it. It's better
@@ -50,7 +56,8 @@ class RequestRepositoryImpl @Inject constructor(
             id = requestId,
             restaurantId = restaurantId,
             userId = loggedUser.id,
-            status = if (Random.nextDouble() < 0.7) RequestStatusToken.ACCEPTED else RequestStatusToken.QUEUED, //TODO: Remove the MockUp acceptation
+            status = RequestStatusToken.QUEUED,
+//X            status = if (Random.nextDouble() < 0.7) RequestStatusToken.ACCEPTED else RequestStatusToken.QUEUED, //TODO: Remove the MockUp acceptation
             localCreationTimestamp = "",//TODO: System.currentTimeMillis(). Or long?
             arrivalTimeInMinutes = arrivalTimeInMinutes,
         )
@@ -111,11 +118,5 @@ class RequestRepositoryImpl @Inject constructor(
             throw e
         }
     }
-
-    /// override suspend confirmAcceptance()
-
-
-
-    // --- CONVERSORS TO DTO --
 
 }
