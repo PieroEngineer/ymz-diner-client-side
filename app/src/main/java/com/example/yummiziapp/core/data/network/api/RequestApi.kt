@@ -4,6 +4,8 @@ import com.example.yummiziapp.core.data.network.model.JoinQueueDto
 import com.example.yummiziapp.core.data.network.model.CreateRequestResponseDto
 import com.example.yummiziapp.core.data.network.model.LeaveQueueDto
 import com.example.yummiziapp.core.data.network.model.LeaveQueueResponseDto
+import com.example.yummiziapp.core.data.network.model.UpdateStatusDto
+import com.example.yummiziapp.core.data.network.model.UpdateStatusResponseDto
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.POST
@@ -21,4 +23,11 @@ interface RequestApi {
     suspend fun createRequest(
         @Body body: JoinQueueDto
     ): Response<CreateRequestResponseDto>
+
+    @POST("requests/{restaurantId}/update")
+    suspend fun confirmAcceptance(
+        @Path("restaurantId") restaurantId: String,
+        @Body confirmData: UpdateStatusDto,
+    ): Response<UpdateStatusResponseDto>
+
 }

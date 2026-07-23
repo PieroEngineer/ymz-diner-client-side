@@ -132,7 +132,7 @@ class RestaurantRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun observePendingRestaurantWithStatusById(restaurantId: Uuid): Flow<RestaurantWithStatus> = flow {
+    override fun observePendingRestaurantWithStatusById(restaurantId: Uuid): Flow<RestaurantWithStatus?> = flow {
         val currentUserId = Uuid.parse("00000000-0000-4000-a000-000000000000")
 
         // 🚀 Stream emission strategy:
@@ -188,7 +188,8 @@ class RestaurantRepositoryImpl @Inject constructor(
                         val requestUpdate = dto.toEntity()
                         // TODO: Verify here if the transition between request status is valid (e.g. Accepted only is allowed if the previous state was QUEUED)
 
-                        requestDao.updateRequestStatus(requestUpdate.restaurantId, requestUpdate.newStatus)
+//X                        requestDao.updateRequestStatus(requestUpdate.restaurantId, Uuid.parse(userId), requestUpdate.newStatus)
+                        requestDao.updateRequestStatus(requestUpdate.requestId, requestUpdate.newStatus)
                     } catch (e: Exception) {
                         Log.e("MyActivity", "🚩  Database write failure", e)
                     }

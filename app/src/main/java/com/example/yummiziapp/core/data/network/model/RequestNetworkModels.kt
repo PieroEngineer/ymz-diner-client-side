@@ -44,15 +44,21 @@ data class LeaveQueueResponseDto(
 )
 
 @Serializable
-data class UpdateStatusDto(
+data class UpdateStatusDto( /// It's subject to changes due the observation that I did in the backend
     val requestId: String,
-    val restaurantId: String,
+    val userId: String,
     val newState: String
 )
 
 @Serializable
+data class UpdateStatusResponseDto(
+    val message: String,
+)
+
+@Serializable
 data class RequestStatusMessageDto(
-    @SerialName("restaurantId") val restaurantId: String,
+//X    @SerialName("restaurantId") val restaurantId: String,
+    @SerialName("requestId") val requestId: String,
     @SerialName("newStatus") val newStatus: String
 ){
     fun toEntity(): RequestUpdate {
@@ -69,7 +75,8 @@ data class RequestStatusMessageDto(
             }
         }
         return RequestUpdate(
-            restaurantId = Uuid.parse(restaurantId),
+//X            restaurantId = Uuid.parse(restaurantId),
+            requestId = Uuid.parse(requestId),
             newStatus = newLocalStatus
         )
     }

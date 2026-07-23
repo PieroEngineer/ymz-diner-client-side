@@ -53,7 +53,7 @@ interface RestaurantDao {
         userId: Uuid,
         restaurantId: Uuid,
         pendingStatuses: List<RequestStatusToken> = listOf(RequestStatusToken.QUEUED, RequestStatusToken.ACCEPTED)
-        ): Flow<RestaurantWithStatus>    /// Should I include safety checks?
+        ): Flow<RestaurantWithStatus?>    /// Should I include safety checks?
 
     /**
      * Even though we JOIN with the requests table to filter the results,

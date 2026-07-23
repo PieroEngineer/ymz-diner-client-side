@@ -64,7 +64,8 @@ data class Request(
 )
 
 data class RequestUpdate(
-    val restaurantId: Uuid,
+    val requestId: Uuid,
+//    val restaurantId: Uuid,
     val newStatus: RequestStatusToken
 )
 

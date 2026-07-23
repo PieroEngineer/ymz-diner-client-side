@@ -14,7 +14,7 @@ interface RestaurantRepository {
 
     fun observePendingRestaurantsWithStatus(): Flow<List<RestaurantWithStatus>>
 
-    fun observePendingRestaurantWithStatusById(restaurantId: Uuid): Flow<RestaurantWithStatus>
+    fun observePendingRestaurantWithStatusById(restaurantId: Uuid): Flow<RestaurantWithStatus?>
 
     fun observePendingRestaurants(): Flow<List<Restaurant>>
 

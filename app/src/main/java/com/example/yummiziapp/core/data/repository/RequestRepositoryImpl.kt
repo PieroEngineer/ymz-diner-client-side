@@ -5,24 +5,17 @@ import com.example.yummiziapp.core.data.di.IoDispatcher
 import com.example.yummiziapp.core.data.local.dao.LoggedUserDao
 import com.example.yummiziapp.core.data.local.dao.RequestDao
 import com.example.yummiziapp.core.data.local.entities.Request
-import com.example.yummiziapp.core.data.local.entities.RequestUpdate
 import com.example.yummiziapp.core.data.local.model.RequestStatusToken
 import com.example.yummiziapp.core.data.network.api.RequestApi
 import com.example.yummiziapp.core.data.network.model.LeaveQueueDto
-import com.example.yummiziapp.core.data.network.model.RequestStatusMessageDto
-import kotlinx.serialization.json.Json
+import com.example.yummiziapp.core.data.network.model.UpdateStatusDto
 import com.example.yummiziapp.core.data.network.model.mappers.mapToJoinQueueDto
-import com.example.yummiziapp.core.data.network.websocket.AblyDataSource
-//import com.example.yummiziapp.features.request.data.model.QueueStatus
 import com.example.yummiziapp.features.request.domain.repository.RequestRepository
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
-import kotlin.random.Random
 import kotlin.uuid.Uuid
 import kotlinx.coroutines.NonCancellable
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.mapNotNull
 
 class RequestRepositoryImpl @Inject constructor(
     private val yummiziApi: RequestApi,
@@ -57,7 +50,6 @@ class RequestRepositoryImpl @Inject constructor(
             restaurantId = restaurantId,
             userId = loggedUser.id,
             status = RequestStatusToken.QUEUED,
-//X            status = if (Random.nextDouble() < 0.7) RequestStatusToken.ACCEPTED else RequestStatusToken.QUEUED, //TODO: Remove the MockUp acceptation
             localCreationTimestamp = "",//TODO: System.currentTimeMillis(). Or long?
             arrivalTimeInMinutes = arrivalTimeInMinutes,
         )
@@ -118,5 +110,46 @@ class RequestRepositoryImpl @Inject constructor(
             throw e
         }
     }
+
+    override suspend fun confirmAcceptance(restaurantId: Uuid) = withContext(ioDispatcher) {
+        val userId = loggedUserDao.getCurrentUserId() ?: Uuid.parse("00000000-0000-4000-a000-000000000000")
+
+        //TODO: Check if the transition is valid (e.g. QUEUED -> ACCEPTED)
+
+        // Fetch current and other requests for backup
+        val currentRequest = requestDao.getRequestByRestaurantAndUser(restaurantId, userId) ?: return@withContext   // TODO: Remove the user parameter from here because the user is always the same in the app
+        val otherRequests = requestDao.getOtherRequests(currentRequest.id)
+
+        try {
+            // OPTIMISTIC UPDATE: Update status to READY and remove other requests
+            requestDao.confirmAcceptance(currentRequest.id)  /// In future update, maybe the completly delete won't the best option to get the history of histories. (Maybe just include a DAO function that notify to everyone that there is a READY request)
+
+            // NETWORK CALL
+            val response = yummiziApi.confirmAcceptance(
+                restaurantId = restaurantId.toString(),
+                confirmData = UpdateStatusDto(
+                    requestId = currentRequest.id.toString(),
+                    userId = userId.toString(),
+                    newState = RequestStatusToken.READY.name
+                )
+            )
+
+            if (!response.isSuccessful) throw Exception("Cloud failed to confirm acceptance")
+
+        } catch (e: Exception) {
+            // ROLLBACK: Restore everything
+            withContext(NonCancellable) {
+                requestDao.updateRequestStatus(currentRequest.id, currentRequest.status)
+                if(otherRequests.isNotEmpty()){
+                    otherRequests.forEach { requestDao.insertRequest(it) }
+                }
+            }
+
+            Log.e("RequestRepository", "❌ Failed to confirm acceptance, rolling back local state", e)
+            throw e
+        }
+    }
+
+
 
 }

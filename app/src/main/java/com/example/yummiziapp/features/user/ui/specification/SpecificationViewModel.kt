@@ -182,13 +182,10 @@ class SpecificationViewModel @Inject constructor(
         viewModelScope.launch {
 
             try {
-                // 🛠️ STEP 2: Send acceptance confirmation to the backend network/API and disable the current requests.
-                // restaurantRepository.confirmAcceptance(restaurantId)
+                // Send acceptance confirmation to the backend network/API and disable the current requests.
+                requestRepository.confirmAcceptance(restaurantId)
 
-                // 🛠️ STEP 3: Clear processing requests locally in the database
-                // restaurantRepository.ClearRequestsForAudit(restaurantId)
-
-                // 🚀 STEP 4: Fire the navigation side-effect safely using the frozen ID
+                // Fire the navigation side-effect safely using the frozen ID
                 _effect.send(SpecificationUiEvents.NavigateToRestaurantMenu(restaurantId))
 
             } catch (error: Exception) {
