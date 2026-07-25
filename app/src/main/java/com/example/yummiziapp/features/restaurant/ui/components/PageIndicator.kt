@@ -48,9 +48,9 @@ fun PageIndicator(
 
             // 4. Color Logic: Modify your colors here
             val color = if (isSelected) {
-                YummiziTheme.colors.yummziziDarkBlue
+                YummiziTheme.colors.yummiziDarkBlue
             } else {
-                YummiziTheme.colors.yummziziGray
+                YummiziTheme.colors.yummiziGray
             }
 
             Box(

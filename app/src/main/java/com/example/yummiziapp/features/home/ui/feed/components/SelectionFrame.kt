@@ -72,7 +72,7 @@ fun SelectionFrame(
 
                 Text(   // Information message
                     text = if (selectedRestaurants.isNotEmpty()) "Haciendo cola\nen ${selectedRestaurants.size} local${if (selectedRestaurants.size>1) "es" else ""}" else "Mantén presionado\n y arrastra restaurantes\naquí...",
-                    color = YummiziTheme.colors.yummziziWhite.copy(alpha = if (selectedRestaurants.isNotEmpty()) 1f else .6f),
+                    color = YummiziTheme.colors.yummiziWhite.copy(alpha = if (selectedRestaurants.isNotEmpty()) 1f else .6f),
                     style = YummiziTheme.typography.teacherFontVar2
                 )
 

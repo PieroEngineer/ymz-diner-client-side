@@ -10,4 +10,7 @@ sealed interface YummiziRoute {
     // 🚀 Look here: No strings, no templates! Just pure compile-safe variables.
     @Serializable data class MenuPreview(val restaurantId: String) : YummiziRoute
     @Serializable data class FoodSelection(val restaurantId: String) : YummiziRoute
+
+    @Serializable data object PaymentPreparation : YummiziRoute
+
 }

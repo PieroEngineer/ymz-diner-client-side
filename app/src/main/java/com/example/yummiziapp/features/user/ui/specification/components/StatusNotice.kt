@@ -41,7 +41,7 @@ fun StatusNotice(
                     Modifier.border(
                         BorderStroke(
                             spacing.bigLineThickness,
-                            YummiziTheme.colors.yummziziLightOrange2
+                            YummiziTheme.colors.yummiziLightOrange2
                         ),
                         shape = RoundedCornerShape(spacing.regularSeparation)
                     )
@@ -57,7 +57,7 @@ fun StatusNotice(
         Text(
             text = selectedRestaurant.waitingState.phrase,
             textAlign = TextAlign.Start,
-            color = YummiziTheme.colors.yummziziLightOrange2,
+            color = YummiziTheme.colors.yummiziLightOrange2,
             style = YummiziTheme.typography.teacherFontVar1,
             modifier = Modifier
                 .padding(vertical = spacing.smallSeparation)
@@ -69,7 +69,7 @@ fun StatusNotice(
         Image(
             painter = painterResource(selectedRestaurant.waitingState.iconRes),
             contentDescription = null,
-            colorFilter = ColorFilter.tint(color = YummiziTheme.colors.yummziziLightOrange2),
+            colorFilter = ColorFilter.tint(color = YummiziTheme.colors.yummiziLightOrange2),
             modifier = Modifier
                 .size(spacing.smallImageSize)
                 .padding(vertical = spacing.smallSeparation)

@@ -1,6 +1,6 @@
 package com.example.yummiziapp.features.request.data.di
 
-// TODO: Every feature should have their own repository module.
+// TODO: Every feature should have their own repository module like this.
 //import com.example.yummiziapp.core.data.repository.RestaurantRepositoryImpl
 //import com.example.yummiziapp.features.restaurant.domain.repository.RestaurantRepository
 //import dagger.Binds

@@ -48,7 +48,7 @@ fun RestaurantBlock(
                 shape = CircleShape,
                 //shape = shape,
                 shadow = Shadow(
-                    color = YummiziTheme.colors.yummziziBlack.copy(alpha = .5f),
+                    color = YummiziTheme.colors.yummiziBlack.copy(alpha = .5f),
                     radius = 10.dp,                          // High radius for a wide, soft spread
                     offset = DpOffset(x = 0.dp, y = 15.dp), // Offset only to the bottom
                 )

@@ -49,7 +49,7 @@ fun <T: Identifiable> MenuSettingArea(
                 .clip(
                     RoundedCornerShape(20)
                 )
-                .background(YummiziTheme.colors.yummziziWhite)
+                .background(YummiziTheme.colors.yummiziWhite)
                 .align(Alignment.CenterHorizontally)
         ){
 
@@ -66,7 +66,7 @@ fun <T: Identifiable> MenuSettingArea(
             Text(
                 text = menuStructure.title,
                 textAlign = TextAlign.Center,
-                color = YummiziTheme.colors.yummziziLightOrange,
+                color = YummiziTheme.colors.yummiziLightOrange,
                 style = YummiziTheme.typography.teacherFontVar5,
                 modifier = Modifier
                     .padding(start = spacing.smallPadding)
@@ -84,7 +84,7 @@ fun <T: Identifiable> MenuSettingArea(
                 .clip(
                     RoundedCornerShape(5)
                 )
-                .background(YummiziTheme.colors.yummziziWhite.copy(alpha = 0.8f)),
+                .background(YummiziTheme.colors.yummiziWhite.copy(alpha = 0.8f)),
             horizontalAlignment = Alignment.CenterHorizontally
         ){
             LazyColumn(    // Current selected restaurants
@@ -128,7 +128,7 @@ fun <T: Identifiable> MenuSettingArea(
                             modifier = Modifier
                                 .weight(1f),
                             thickness = spacing.mediumLineThickness,
-                            color = YummiziTheme.colors.yummziziLightOrange
+                            color = YummiziTheme.colors.yummiziLightOrange
                         )
 
                         Box(
@@ -140,7 +140,7 @@ fun <T: Identifiable> MenuSettingArea(
                             Text(
                                 text = "S/. $totalOrderCost",
                                 textAlign = TextAlign.End,
-                                color = YummiziTheme.colors.yummziziLightOrange,
+                                color = YummiziTheme.colors.yummiziLightOrange,
                                 style = YummiziTheme.typography.teacherFontVar4,
                                 modifier = Modifier
                                     .fillMaxWidth()

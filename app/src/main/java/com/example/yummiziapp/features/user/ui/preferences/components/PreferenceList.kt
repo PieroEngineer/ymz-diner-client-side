@@ -49,7 +49,7 @@ fun PreferenceList(
                     shape = CircleShape,
                     //shape = shape,
                     shadow = Shadow(
-                        color = YummiziTheme.colors.yummziziBlack.copy(alpha = .5f),
+                        color = YummiziTheme.colors.yummiziBlack.copy(alpha = .5f),
                         radius = 25.dp,                          // High radius for a wide, soft spread
                         offset = DpOffset(x = 0.dp, y = 25.dp), // Offset only to the bottom
                     )
@@ -63,7 +63,7 @@ fun PreferenceList(
             Text(
                 text = "Tus preferencias",
                 textAlign = TextAlign.Center,
-                color = YummiziTheme.colors.yummziziLightOrange,
+                color = YummiziTheme.colors.yummiziLightOrange,
                 style = YummiziTheme.typography.teacherFontVar5,
                 modifier = Modifier
                     .padding(vertical = spacing.mediumPadding)
@@ -115,7 +115,7 @@ fun PreferenceList(
                         "preferencia\n\n" +
                         "personalizada...",
                 textAlign = TextAlign.Center,
-                color = YummiziTheme.colors.yummziziWhite,
+                color = YummiziTheme.colors.yummiziWhite,
                 style = YummiziTheme.typography.comfortaaFontVar6,
             )
             Spacer(Modifier.weight(1f))

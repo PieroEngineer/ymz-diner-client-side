@@ -89,7 +89,7 @@ fun PreferencesScreen(
                     Image(
                         painter = painterResource(R.drawable.row_btn),
                         contentDescription = null,
-                        colorFilter = ColorFilter.tint(color = YummiziTheme.colors.yummziziBlack),
+                        colorFilter = ColorFilter.tint(color = YummiziTheme.colors.yummiziBlack),
                         modifier = Modifier
 //                            .padding(
 //                                vertical = spacing.mediumPadding,
@@ -110,7 +110,7 @@ fun PreferencesScreen(
                         .dropShadow(
                             shape = CircleShape,
                             shadow = Shadow(
-                                color = YummiziTheme.colors.yummziziBlack.copy(alpha = .5f),
+                                color = YummiziTheme.colors.yummiziBlack.copy(alpha = .5f),
                                 radius = 25.dp,                          // High radius for a wide, soft spread
                                 offset = DpOffset(x = 0.dp, y = 25.dp), // Offset only to the bottom
                             )
@@ -125,7 +125,7 @@ fun PreferencesScreen(
                     Text(   //TODO: Make it bigger
                         text = "Preferencias",
                         textAlign = TextAlign.Center,
-                        color = YummiziTheme.colors.yummziziLightOrange,
+                        color = YummiziTheme.colors.yummiziLightOrange,
                         style = YummiziTheme.typography.teacherFontVar7,
                         modifier = Modifier
 //X                            .padding(start = spacing.smallPadding)
@@ -139,7 +139,7 @@ fun PreferencesScreen(
                 Image(      // Info button
                     painter = painterResource(R.drawable.info_button),
                     contentDescription = null,
-                    colorFilter = ColorFilter.tint(color = YummiziTheme.colors.yummziziWhite),
+                    colorFilter = ColorFilter.tint(color = YummiziTheme.colors.yummiziWhite),
                     modifier = Modifier
                         .size(spacing.hugeIconSize)
                         .clickable {  }

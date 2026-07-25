@@ -68,7 +68,7 @@ fun AcceptanceConfirmationModal(
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(YummiziTheme.colors.yummziziBlack.copy(alpha = 0.5f)) // Transparent dark cover
+                    .background(YummiziTheme.colors.yummiziBlack.copy(alpha = 0.5f)) // Transparent dark cover
                     .pointerInput(Unit) {
                         // 🚀 Swallow all touch configurations so background elements are completely frozen!
                     }
@@ -83,13 +83,13 @@ fun AcceptanceConfirmationModal(
             ) {
                 Column(
                     modifier = Modifier
-                        .background(YummiziTheme.colors.yummziziWhite)
+                        .background(YummiziTheme.colors.yummiziWhite)
                         .padding(24.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
                         text = "Confirmar acción",
-                        color = YummiziTheme.colors.yummziziDarkBlue,
+                        color = YummiziTheme.colors.yummiziDarkBlue,
                         style = YummiziTheme.typography.teacherFontVar2
                     )
 
@@ -133,10 +133,10 @@ private fun SlideToConfirm(
             .fillMaxWidth()
             .height(trackHeight)
             .clip(RoundedCornerShape(trackHeight / 2))
-            .background(YummiziTheme.colors.yummziziDarkOrange.copy(alpha = 0.15f))
+            .background(YummiziTheme.colors.yummiziDarkOrange.copy(alpha = 0.15f))
             .border(
                 width = 2.dp,
-                color = YummiziTheme.colors.yummziziDarkOrange,
+                color = YummiziTheme.colors.yummiziDarkOrange,
                 shape = RoundedCornerShape(trackHeight / 2)
             )
             .padding(thumbPadding)
@@ -150,7 +150,7 @@ private fun SlideToConfirm(
             modifier = Modifier
                 .align(Alignment.Center)
                 .alpha((1f - (offsetX.value / maxOffset)).coerceIn(0f, 1f)),
-            color = YummiziTheme.colors.yummziziDarkOrange,
+            color = YummiziTheme.colors.yummiziDarkOrange,
             style = YummiziTheme.typography.teacherFontVar3
         )
 
@@ -183,7 +183,7 @@ private fun SlideToConfirm(
                     )
                 }
                 .clip(RoundedCornerShape(thumbSize / 2))
-                .background(YummiziTheme.colors.yummziziDarkOrange),
+                .background(YummiziTheme.colors.yummiziDarkOrange),
             contentAlignment = Alignment.Center
         ) {
             Icon(

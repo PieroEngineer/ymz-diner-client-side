@@ -33,7 +33,7 @@ fun PreferenceItem(
     Row(
         modifier = modifier
             .clip(RoundedCornerShape(spacing.smallCornerRadius))
-            .background(YummiziTheme.colors.yummziziWhite),
+            .background(YummiziTheme.colors.yummiziWhite),
         verticalAlignment = Alignment.CenterVertically
     ){
         Image(      // Preference icon
@@ -71,7 +71,7 @@ fun PreferenceItem(
             modifier = Modifier
                 .fillMaxHeight(),
             thickness = spacing.bigLineThickness,
-            color = YummiziTheme.colors.yummziziDarkBlue
+            color = YummiziTheme.colors.yummiziDarkBlue
         )
 
         Spacer(Modifier.weight(15.4f))

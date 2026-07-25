@@ -64,7 +64,7 @@ fun ControlBar(
 
                 Text(
                     text = "Añadir",
-                    color = YummiziTheme.colors.yummziziWhite,    //TODO: Transparency depend of the selection
+                    color = YummiziTheme.colors.yummiziWhite,    //TODO: Transparency depend of the selection
                     style = YummiziTheme.typography.comfortaaFontVar4,
                     textAlign = TextAlign.Center
                 )
@@ -87,7 +87,7 @@ fun ControlBar(
 
                 Text(
                     text = "Pre-escoge\norden",
-                    color = YummiziTheme.colors.yummziziWhite,    //TODO: Transparency depend of the selection
+                    color = YummiziTheme.colors.yummiziWhite,    //TODO: Transparency depend of the selection
                     style = YummiziTheme.typography.comfortaaFontVar4,
                     textAlign = TextAlign.Center
                 )
@@ -109,7 +109,7 @@ fun ControlBar(
 
                 Text(
                     text = "Regresar",
-                    color = YummiziTheme.colors.yummziziWhite,    //TODO: Transparency depend of the selection
+                    color = YummiziTheme.colors.yummiziWhite,    //TODO: Transparency depend of the selection
                     style = YummiziTheme.typography.comfortaaFontVar4,
                     textAlign = TextAlign.Center
                 )

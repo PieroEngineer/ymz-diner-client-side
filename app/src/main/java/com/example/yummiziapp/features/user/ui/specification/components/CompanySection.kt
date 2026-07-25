@@ -40,7 +40,7 @@ fun CompanySection(
                 .align(Alignment.BottomCenter)
                 .height(spacing.bigCornerRadius)
                 .fillMaxWidth()
-                .background(YummiziTheme.colors.yummziziLightOrange2)
+                .background(YummiziTheme.colors.yummiziLightOrange2)
         )
 
         Column(
@@ -51,7 +51,7 @@ fun CompanySection(
                         bottomEnd = spacing.bigCornerRadius
                     )
                 )
-                .background(YummiziTheme.colors.yummziziDarkOrange)
+                .background(YummiziTheme.colors.yummiziDarkOrange)
                 .padding(horizontal = spacing.mediumPadding)
                 .padding(vertical = spacing.smallPadding)
         ) {
@@ -59,7 +59,7 @@ fun CompanySection(
 
             Text(    // Its header
                 text = "${details.companySize+1} en mesa",
-                color = YummiziTheme.colors.yummziziWhite,
+                color = YummiziTheme.colors.yummiziWhite,
                 style = YummiziTheme.typography.leaguespartanFontVar2
             )
 
@@ -89,7 +89,7 @@ fun CompanySection(
                 else{
                     Text(    // Its header
                         text = "y",
-                        color = YummiziTheme.colors.yummziziWhite,
+                        color = YummiziTheme.colors.yummiziWhite,
                         style = YummiziTheme.typography.leaguespartanFontVar2
                     )
 
@@ -97,14 +97,14 @@ fun CompanySection(
 
                     Column(){
                         NumberSelector(
-                            color = YummiziTheme.colors.yummziziWhite,
+                            color = YummiziTheme.colors.yummiziWhite,
                             indicatorNumber = details.companySize,
                             onNumberChanged = { isIncreasing -> onCompanySizeUpdated(isIncreasing) },
                         )
 
                         Text(
                             text = "Acompañantes",
-                            color = YummiziTheme.colors.yummziziWhite,
+                            color = YummiziTheme.colors.yummiziWhite,
                             style = YummiziTheme.typography.teacherFontVar1
                         )
                     }
@@ -141,7 +141,7 @@ fun DinerIcon(
         Spacer(Modifier.height(spacing.smallSeparation))
         Text(
             text = userName,
-            color = YummiziTheme.colors.yummziziWhite,
+            color = YummiziTheme.colors.yummiziWhite,
             style = YummiziTheme.typography.teacherFontVar1
         )
     }

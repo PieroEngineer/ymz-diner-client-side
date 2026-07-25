@@ -40,7 +40,7 @@ fun FeedSection(
             Text(
                 text = title,
                 style = YummiziTheme.typography.leaguespartanFontVar3,
-                color = YummiziTheme.colors.yummziziBlack
+                color = YummiziTheme.colors.yummiziBlack
             )
 
             Spacer(
@@ -48,7 +48,7 @@ fun FeedSection(
                     .weight(1f)
                     .height(spacing.mediumLineThickness * .75f)
                     .padding(horizontal = spacing.mediumPadding)
-                    .background(YummiziTheme.colors.yummziziBlack)
+                    .background(YummiziTheme.colors.yummiziBlack)
             )
 
             Row(
@@ -59,7 +59,7 @@ fun FeedSection(
                 Text(
                     text = "Más",
                     style = YummiziTheme.typography.comfortaaFontVar3,
-                    color = YummiziTheme.colors.yummziziGray2
+                    color = YummiziTheme.colors.yummiziGray2
                 )
 
                 Spacer(Modifier.width(spacing.smallSeparation))

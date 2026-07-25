@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.yummiziapp.core.data.local.entities.Dish
 import com.example.yummiziapp.core.data.local.entities.MenuPage
+import com.example.yummiziapp.core.utils.toCurrencyFormat
 import com.example.yummiziapp.features.restaurant.domain.repository.RestaurantRepository
 import com.example.yummiziapp.features.restaurant.ui.model.CoordinatesInPage
 import com.example.yummiziapp.features.restaurant.ui.model.FoodSelectionUiModel
@@ -84,7 +85,7 @@ class FoodSelectionViewModel @Inject constructor(   //TODO: Change the way of ho
                     name = dish.name,
                     amount = quantity,
                     unitPriceCents = dish.priceCents, // Carry this for the next step
-                    accumulatedCost = CurrencyFormatter.formatCentsToSoles(totalCents)
+                    accumulatedCost = totalCents.toCurrencyFormat()
                 )
             }.filter { it.amount > 0 }
         }
@@ -98,9 +99,9 @@ class FoodSelectionViewModel @Inject constructor(   //TODO: Change the way of ho
     val totalOrderCost: StateFlow<String> = foodSelectionState
         .map { selectionList ->
             val totalCents = selectionList.sumOf {
-                it.amount * it.unitPriceCents.toLong()
+                it.amount * it.unitPriceCents.toLong()  /// Is it necessary this "toLong"?
             }
-            CurrencyFormatter.formatCentsToSoles(totalCents.toInt())
+            totalCents.toInt().toCurrencyFormat()
         }
         .stateIn(
             scope = viewModelScope,
@@ -153,14 +154,6 @@ class FoodSelectionViewModel @Inject constructor(   //TODO: Change the way of ho
             )
         }.sortedBy { it.page.pageNumber }
     }
-}
-
-object CurrencyFormatter {  /// Put it in utils folder
-    fun formatCentsToSoles(cents: Int): String {
-        val soles = java.math.BigDecimal(cents).movePointLeft(2)
-        return java.text.DecimalFormat("0.00").format(soles)
-    }
-
 }
 
 //The "Session Manager" Pattern (Recommended)

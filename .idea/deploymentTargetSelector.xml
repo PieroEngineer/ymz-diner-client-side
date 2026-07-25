@@ -6,14 +6,6 @@
         <option name="selectionMode" value="DROPDOWN" />
         <DialogSelection />
       </SelectionState>
-      <SelectionState runConfigName="SlideToConfirm (1)">
-        <option name="selectionMode" value="DROPDOWN" />
-        <DialogSelection />
-      </SelectionState>
-      <SelectionState runConfigName="SliderTest">
-        <option name="selectionMode" value="DROPDOWN" />
-        <DialogSelection />
-      </SelectionState>
       <SelectionState runConfigName="SliderTest (1)">
         <option name="selectionMode" value="DROPDOWN" />
         <DialogSelection />
@@ -23,6 +15,14 @@
         <DialogSelection />
       </SelectionState>
       <SelectionState runConfigName="AcceptanceConfirmationModal">
+        <option name="selectionMode" value="DROPDOWN" />
+        <DialogSelection />
+      </SelectionState>
+      <SelectionState runConfigName="SpecificationScreen">
+        <option name="selectionMode" value="DROPDOWN" />
+        <DialogSelection />
+      </SelectionState>
+      <SelectionState runConfigName="PaymentPreparationScreen">
         <option name="selectionMode" value="DROPDOWN" />
         <DialogSelection />
       </SelectionState>

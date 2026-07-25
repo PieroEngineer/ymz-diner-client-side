@@ -32,7 +32,7 @@ class MainActivity : ComponentActivity() {
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(innerPadding) // 🚀 This shields EVERY screen in your app automatically!
-                            .background(YummiziTheme.colors.yummziziWhite)
+                            .background(YummiziTheme.colors.yummiziWhite)
                     )
                 }
             }

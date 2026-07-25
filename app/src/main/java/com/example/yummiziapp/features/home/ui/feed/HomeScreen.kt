@@ -154,7 +154,7 @@ fun HomeScreen(
                     Text(
                         text = "Loading data...",
                         textAlign = TextAlign.Start,
-                        color = YummiziTheme.colors.yummziziDarkBlue,
+                        color = YummiziTheme.colors.yummiziDarkBlue,
                         style = YummiziTheme.typography.teacherFontVar3
                     )
                 }
@@ -164,7 +164,7 @@ fun HomeScreen(
                     SectionArea(    // Section area takes it parameters and pass the others to its child
                         Modifier
                             .weight(1f)
-                            .background(YummiziTheme.colors.yummziziWhite),
+                            .background(YummiziTheme.colors.yummiziWhite),
                     ) {
                         // Lazy items and keys perfectly right here
                         items(
@@ -242,7 +242,7 @@ fun HomeScreen(
                     Text(
                         text = "There was an error",
                         textAlign = TextAlign.Start,
-                        color = YummiziTheme.colors.yummziziDarkBlue,
+                        color = YummiziTheme.colors.yummiziDarkBlue,
                         style = YummiziTheme.typography.teacherFontVar3
                     )
                 }

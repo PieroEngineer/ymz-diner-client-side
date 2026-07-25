@@ -66,7 +66,7 @@ fun MenuViewer( //TODO: Repair here, allow bellow shadow in each menu //TODO: Al
                     )
                 }
                 .clip(RoundedCornerShape(spacing.mediumCornerRadius))
-                .background(YummiziTheme.colors.yummziziWhite)
+                .background(YummiziTheme.colors.yummiziWhite)
         ) {
             AsyncYummiziImage(
                 model = images[page],

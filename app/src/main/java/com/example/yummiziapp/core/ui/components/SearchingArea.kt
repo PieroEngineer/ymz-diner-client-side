@@ -52,7 +52,7 @@ fun SearchingArea(
                     shape = CircleShape,
                     //shape = shape,
                     shadow = Shadow(
-                        color = YummiziTheme.colors.yummziziBlack.copy(alpha = .155f),
+                        color = YummiziTheme.colors.yummiziBlack.copy(alpha = .155f),
                         radius = 10.dp,                          // High radius for a wide, soft spread
                         offset = DpOffset(x = 0.dp, y = 15.dp), // Offset only to the bottom
                     )
@@ -70,7 +70,7 @@ fun SearchingArea(
                 .dropShadow( // Apply the intense drop shadow
                     shape = shape,
                     shadow = Shadow(
-                        color = YummiziTheme.colors.yummziziBlack.copy(alpha = 0.5f),
+                        color = YummiziTheme.colors.yummiziBlack.copy(alpha = 0.5f),
                         radius = 10.dp,                        // High radius for a wide, soft spread
                         offset = DpOffset(x = 4.dp, y = 8.dp) // Offset only to the bottom
                     )
@@ -96,8 +96,8 @@ fun SearchingArea(
                     .height(spacing.barHeight)
                     .clip(RoundedCornerShape(spacing.mediumCornerRadius * .75f)),
                 colors = TextFieldDefaults.colors(
-                    focusedContainerColor = YummiziTheme.colors.yummziziDarkBlue,
-                    unfocusedContainerColor = YummiziTheme.colors.yummziziDarkBlue,
+                    focusedContainerColor = YummiziTheme.colors.yummiziDarkBlue,
+                    unfocusedContainerColor = YummiziTheme.colors.yummiziDarkBlue,
                     focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent,
                     disabledContainerColor = Color.Transparent,

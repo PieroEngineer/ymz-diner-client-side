@@ -41,7 +41,7 @@ fun DragOverlay(
             .height(itemHeight)
             .width(itemWidth)
             .background(
-                YummiziTheme.colors.yummziziWhite,
+                YummiziTheme.colors.yummiziWhite,
                 RoundedCornerShape(spacing.mediumCornerRadius * .75f)
             ),
         contentAlignment = Alignment.Center
@@ -66,7 +66,7 @@ fun DragOverlay(
             Text(
                 text = restaurant.name,
                 style = YummiziTheme.typography.comfortaaFontVar5,
-                color = YummiziTheme.colors.yummziziBlack
+                color = YummiziTheme.colors.yummiziBlack
             )
         }
     }

@@ -65,7 +65,7 @@ fun SpecificationScreen(
             modifier = modifier
                 .padding(vertical = spacing.mediumPadding)
                 .fillMaxSize()
-                .background(YummiziTheme.colors.yummziziWhite)
+                .background(YummiziTheme.colors.yummiziWhite)
         ){
             // Searching part
             SearchingArea(

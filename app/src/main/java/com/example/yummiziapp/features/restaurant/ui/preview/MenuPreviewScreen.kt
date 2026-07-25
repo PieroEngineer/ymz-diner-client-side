@@ -38,7 +38,7 @@ fun MenuPreviewScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(YummiziTheme.colors.yummziziWhite)
+            .background(YummiziTheme.colors.yummiziWhite)
     ) {
 
 

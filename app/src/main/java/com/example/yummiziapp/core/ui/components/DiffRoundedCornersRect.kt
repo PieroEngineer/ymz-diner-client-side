@@ -32,7 +32,7 @@ fun DiffRoundedCornersRect(
             .dropShadow( // Apply the intense drop shadow
                 shape = shape,
                 shadow = Shadow(
-                    color = YummiziTheme.colors.yummziziBlack.copy(alpha = if (shadowOn) 0.5f else 0f),
+                    color = YummiziTheme.colors.yummiziBlack.copy(alpha = if (shadowOn) 0.5f else 0f),
                     radius = 30.dp,                        // High radius for a wide, soft spread
                     offset = DpOffset(x = 15.dp, y = 20.dp), // Offset only to the bottom
                 )
@@ -45,7 +45,7 @@ fun DiffRoundedCornersRect(
                     bottomStart = bottomStart
                 )
             )
-            .background(YummiziTheme.colors.yummziziLightOrange2)
+            .background(YummiziTheme.colors.yummiziLightOrange2)
             .fillMaxSize()
     )
 }

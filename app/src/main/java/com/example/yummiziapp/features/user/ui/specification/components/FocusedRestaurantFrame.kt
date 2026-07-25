@@ -1,10 +1,6 @@
 package com.example.yummiziapp.features.user.ui.specification.components
 
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -61,7 +57,7 @@ fun FocusedRestaurantFrame(
                     bottomEnd = spacing.regularSeparation
                 )
             )
-            .background(YummiziTheme.colors.yummziziLightOrange2)
+            .background(YummiziTheme.colors.yummiziLightOrange2)
             .padding(horizontal = spacing.mediumPadding)
             .padding(vertical = spacing.regularPadding)
     ){
@@ -70,7 +66,7 @@ fun FocusedRestaurantFrame(
                 .dropShadow( // Apply the intense drop shadow
                     shape = shape,
                     shadow = Shadow(
-                        color = YummiziTheme.colors.yummziziBlack.copy(alpha = .5f),
+                        color = YummiziTheme.colors.yummiziBlack.copy(alpha = .5f),
                         radius = spacing.regularCornerRadius,
                         offset = DpOffset(x = 2.dp, y = 30.dp)
                     )
@@ -83,7 +79,7 @@ fun FocusedRestaurantFrame(
                         bottomEnd = spacing.mediumCornerRadius
                     )
                 )
-                .background(YummiziTheme.colors.yummziziWhite)
+                .background(YummiziTheme.colors.yummiziWhite)
                 .padding(horizontal = spacing.mediumPadding)
                 .padding(vertical = spacing.smallPadding),
             horizontalAlignment = Alignment.CenterHorizontally
@@ -107,7 +103,7 @@ fun FocusedRestaurantFrame(
                 Text(
                     text = "A ${selectedRestaurant.distanceKm}km\n\n${selectedRestaurant.name} espera\nhasta ${selectedRestaurant.maxWaitingTimeInMinutes} min.",
                     textAlign = TextAlign.Start,
-                    color = YummiziTheme.colors.yummziziDarkBlue,
+                    color = YummiziTheme.colors.yummiziDarkBlue,
                     style = YummiziTheme.typography.teacherFontVar3
                 )
             }
@@ -118,7 +114,7 @@ fun FocusedRestaurantFrame(
                 modifier = Modifier
                     .padding(horizontal = spacing.bigPadding),
                 thickness = spacing.mediumLineThickness,
-                color = YummiziTheme.colors.yummziziDarkOrange
+                color = YummiziTheme.colors.yummiziDarkOrange
             )
 
             Spacer(Modifier.weight(2f))
@@ -130,7 +126,7 @@ fun FocusedRestaurantFrame(
                 Text(
                     text = "Tu tiempo máximo de\nllegada",
                     textAlign = TextAlign.Center,
-                    color = YummiziTheme.colors.yummziziDarkOrange,
+                    color = YummiziTheme.colors.yummiziDarkOrange,
                     style = YummiziTheme.typography.teacherFontVar2
                 )
 
@@ -143,7 +139,7 @@ fun FocusedRestaurantFrame(
                     NumberSelector(
                         modifier = Modifier,
 
-                        color = YummiziTheme.colors.yummziziDarkOrange,
+                        color = YummiziTheme.colors.yummiziDarkOrange,
 
                         indicatorNumber= arrivalTimeInMinutes,
                         onNumberChanged = { increase ->
@@ -157,7 +153,7 @@ fun FocusedRestaurantFrame(
                     Text(
                         text = "minutos", //TODO: This start with the max time, but it should be modifiable
                         textAlign = TextAlign.Center,
-                        color = YummiziTheme.colors.yummziziDarkOrange,
+                        color = YummiziTheme.colors.yummiziDarkOrange,
                         style = YummiziTheme.typography.comfortaaFontVar2
                     )
                 }
@@ -170,7 +166,7 @@ fun FocusedRestaurantFrame(
                 Text(
                     text = "Puedes llegar antes si deseas",
                     textAlign = TextAlign.Center,
-                    color = YummiziTheme.colors.yummziziLightOrange2,
+                    color = YummiziTheme.colors.yummiziLightOrange2,
                     style = YummiziTheme.typography.teacherFontVar3
                 )
             }
@@ -179,7 +175,7 @@ fun FocusedRestaurantFrame(
                 modifier = Modifier
                     .padding(horizontal = spacing.bigPadding),
                 thickness = spacing.mediumLineThickness,
-                color = YummiziTheme.colors.yummziziDarkOrange
+                color = YummiziTheme.colors.yummiziDarkOrange
             )
 
             Spacer(Modifier.height(spacing.smallSeparation))

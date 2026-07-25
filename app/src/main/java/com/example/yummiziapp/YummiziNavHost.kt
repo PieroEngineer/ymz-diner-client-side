@@ -8,6 +8,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.yummiziapp.features.navigation.YummiziRoute
 import com.example.yummiziapp.features.home.ui.feed.HomeScreen
+import com.example.yummiziapp.features.payment.ui.beforepay.PaymentPreparationScreen
 import com.example.yummiziapp.features.restaurant.ui.food.FoodSelectionScreen
 import com.example.yummiziapp.features.restaurant.ui.preview.MenuPreviewScreen
 import com.example.yummiziapp.features.user.ui.preferences.PreferencesScreen
@@ -21,7 +22,8 @@ fun YummiziNavHost(
 
     NavHost(
         navController = navController,
-        startDestination = YummiziRoute.Home // 🛡️ Completely type-safe start node
+//        startDestination = YummiziRoute.Home // 🛡️ Completely type-safe start node
+        startDestination = YummiziRoute.PaymentPreparation // 🛡️ Completely type-safe start node
     ) {
 
         composable<YummiziRoute.Home> {
@@ -69,6 +71,10 @@ fun YummiziNavHost(
 
         composable<YummiziRoute.FoodSelection> {
             FoodSelectionScreen()
+        }
+
+        composable<YummiziRoute.PaymentPreparation> {
+            PaymentPreparationScreen()
         }
     }
 }

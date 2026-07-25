@@ -45,7 +45,7 @@ fun FoodSelectionBlock(
         Text(
             text = foodSelection.name,
             textAlign = TextAlign.Start,
-            color = YummiziTheme.colors.yummziziDarkBlue,
+            color = YummiziTheme.colors.yummiziDarkBlue,
             style = YummiziTheme.typography.teacherFontVar3,
             modifier = Modifier
                 .width(120.dp)  //TODO: In UI model (or other place to not hardcore)
@@ -60,7 +60,7 @@ fun FoodSelectionBlock(
                 .border(
                     BorderStroke(
                         spacing.mediumLineThickness,
-                        YummiziTheme.colors.yummziziLightOrange
+                        YummiziTheme.colors.yummiziLightOrange
                     ),
                     shape = RoundedCornerShape(spacing.regularCornerRadius)
                 )
@@ -75,7 +75,7 @@ fun FoodSelectionBlock(
             Image(
                 painter = painterResource(R.drawable.row_btn),
                 contentDescription = null,
-                colorFilter = ColorFilter.tint(color = YummiziTheme.colors.yummziziLightBlue2),
+                colorFilter = ColorFilter.tint(color = YummiziTheme.colors.yummiziLightBlue2),
                 modifier = Modifier
                     .padding(start = spacing.mediumPadding)
                     .padding(vertical = spacing.smallPadding)
@@ -90,7 +90,7 @@ fun FoodSelectionBlock(
             Text(
                 text = foodSelection.amount.toString(),
                 textAlign = TextAlign.Center,
-                color = YummiziTheme.colors.yummziziDarkOrange,
+                color = YummiziTheme.colors.yummiziDarkOrange,
                 style = YummiziTheme.typography.comfortaaFontVar1,
                 modifier = Modifier
                     .padding(vertical = spacing.smallPadding)
@@ -101,7 +101,7 @@ fun FoodSelectionBlock(
             Image(
                 painter = painterResource(R.drawable.row_btn),
                 contentDescription = null,
-                colorFilter = ColorFilter.tint(color = YummiziTheme.colors.yummziziLightBlue2),
+                colorFilter = ColorFilter.tint(color = YummiziTheme.colors.yummiziLightBlue2),
                 modifier = Modifier
                     .padding(end = spacing.mediumPadding)
                     .padding(vertical = spacing.smallPadding)
@@ -115,7 +115,7 @@ fun FoodSelectionBlock(
 
         Text(   //TODO: Replace later the currency for the variable
             text = "S/. ${foodSelection.accumulatedCost}",
-            color = YummiziTheme.colors.yummziziLightOrange,
+            color = YummiziTheme.colors.yummiziLightOrange,
             style = YummiziTheme.typography.teacherFontVar1,
             modifier = Modifier
                 .weight(34f)

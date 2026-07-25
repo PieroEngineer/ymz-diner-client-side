@@ -50,7 +50,7 @@ fun NavigationBar(  //TODO: Change the visual part for the other nice style (Fro
             .dropShadow( // Apply the intense drop shadow
                 shape = CircleShape,
                 shadow = Shadow(
-                    color = YummiziTheme.colors.yummziziWhite.copy(alpha = if (shadowOn) .9f else 0f),
+                    color = YummiziTheme.colors.yummiziWhite.copy(alpha = if (shadowOn) .9f else 0f),
                     radius = 20.dp,                          // High radius for a wide, soft spread
                     offset = DpOffset(x = 0.dp, y = (-18).dp), // Offset only to the bottom
                 )
@@ -65,7 +65,7 @@ fun NavigationBar(  //TODO: Change the visual part for the other nice style (Fro
                 .fillMaxHeight()
                 //.clip(RoundedCornerShape(spacing.regularPaging))
                 .clip(RoundedCornerShape(18.dp))
-                .background(YummiziTheme.colors.yummziziDarkBlue),
+                .background(YummiziTheme.colors.yummiziDarkBlue),
             verticalAlignment = Alignment.CenterVertically
 
         ){
@@ -89,7 +89,7 @@ fun NavigationBar(  //TODO: Change the visual part for the other nice style (Fro
 
                 Text(
                     text = "Home",
-                    color = YummiziTheme.colors.yummziziWhite,    //TODO: Transparency depend of the selection
+                    color = YummiziTheme.colors.yummiziWhite,    //TODO: Transparency depend of the selection
                     style = YummiziTheme.typography.teacherFontVar4
                 )
             }
@@ -114,7 +114,7 @@ fun NavigationBar(  //TODO: Change the visual part for the other nice style (Fro
 
                 Text(
                     text = "You",
-                    color = YummiziTheme.colors.yummziziWhite,
+                    color = YummiziTheme.colors.yummiziWhite,
                     style = YummiziTheme.typography.teacherFontVar4
                 )
             }
@@ -139,7 +139,7 @@ fun NavigationBar(  //TODO: Change the visual part for the other nice style (Fro
 
                 Text(
                     text = "More",
-                    color = YummiziTheme.colors.yummziziWhite,
+                    color = YummiziTheme.colors.yummiziWhite,
                     style = YummiziTheme.typography.teacherFontVar4
                 )
             }

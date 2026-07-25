@@ -27,7 +27,7 @@ import com.example.yummiziapp.core.designsystem.theme.YummiziTheme
 fun NumberSelector(
     modifier: Modifier = Modifier,
 
-    color: Color = YummiziTheme.colors.yummziziDarkOrange,
+    color: Color = YummiziTheme.colors.yummiziDarkOrange,
 
     indicatorNumber: Int,
     onNumberChanged: (Boolean) -> Unit,

@@ -45,7 +45,7 @@ fun FoodSelectionScreen(    // TODO: Correct the prop-drilling of this and other
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(YummiziTheme.colors.yummziziWhite)
+            .background(YummiziTheme.colors.yummiziWhite)
     ){
         // Professional State Switching
         when (val result = menuUiState) {
@@ -54,7 +54,7 @@ fun FoodSelectionScreen(    // TODO: Correct the prop-drilling of this and other
                 Text(
                     text = "Loading data...",
                     textAlign = TextAlign.Start,
-                    color = YummiziTheme.colors.yummziziDarkBlue,
+                    color = YummiziTheme.colors.yummiziDarkBlue,
                     style = YummiziTheme.typography.teacherFontVar3
                 )
             }
@@ -73,7 +73,7 @@ fun FoodSelectionScreen(    // TODO: Correct the prop-drilling of this and other
                 Text(
                     text = "Error: ${result.message}",
                     textAlign = TextAlign.Start,
-                    color = YummiziTheme.colors.yummziziDarkBlue,
+                    color = YummiziTheme.colors.yummiziDarkBlue,
                     style = YummiziTheme.typography.teacherFontVar3
                 )
             }
@@ -122,13 +122,13 @@ fun FoodSelectionScreen(    // TODO: Correct the prop-drilling of this and other
                         .clip(
                             RoundedCornerShape(spacing.mediumCornerRadius)
                         )
-                        .background(YummiziTheme.colors.yummziziWhite)
+                        .background(YummiziTheme.colors.yummiziWhite)
 
                 ){
                     Text(
                         text = "Atrás",
                         textAlign = TextAlign.Center,
-                        color = YummiziTheme.colors.yummziziBlack,
+                        color = YummiziTheme.colors.yummiziBlack,
                         style = YummiziTheme.typography.teacherFontVar2,
                         modifier = Modifier
                             .padding(horizontal = spacing.bigPadding)
@@ -144,13 +144,13 @@ fun FoodSelectionScreen(    // TODO: Correct the prop-drilling of this and other
                         .clip(
                             RoundedCornerShape(spacing.mediumCornerRadius)
                         )
-                        .background(YummiziTheme.colors.yummziziLightBlue)
+                        .background(YummiziTheme.colors.yummiziLightBlue)
 
                 ){
                     Text(
                         text = "Continuar",
                         textAlign = TextAlign.Center,
-                        color = YummiziTheme.colors.yummziziWhite,
+                        color = YummiziTheme.colors.yummiziWhite,
                         style = YummiziTheme.typography.teacherFontVar2,
                         modifier = Modifier
                             .padding(horizontal = spacing.bigPadding)

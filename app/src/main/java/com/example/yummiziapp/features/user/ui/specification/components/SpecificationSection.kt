@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -42,13 +41,13 @@ fun SpecificationSection(
                 .align(Alignment.BottomCenter)
                 .height(spacing.bigCornerRadius)    // Connect with the rounded corner
                 .fillMaxWidth()
-                .background(YummiziTheme.colors.yummziziDarkOrange)
+                .background(YummiziTheme.colors.yummiziDarkOrange)
         )
 
         Column(
             modifier = Modifier
                 .border(
-                    BorderStroke(spacing.bigLineThickness, YummiziTheme.colors.yummziziWhite),
+                    BorderStroke(spacing.bigLineThickness, YummiziTheme.colors.yummiziWhite),
                     shape = RoundedCornerShape(
                         topStart = spacing.mediumCornerRadius,
                         topEnd = spacing.bigCornerRadius,
@@ -64,7 +63,7 @@ fun SpecificationSection(
                         bottomEnd = spacing.mediumCornerRadius
                     )
                 )
-                .background(YummiziTheme.colors.yummziziDarkOrange)
+                .background(YummiziTheme.colors.yummiziDarkOrange)
         ) {
 
             Row(    // Its header
@@ -75,7 +74,7 @@ fun SpecificationSection(
             ) {
                 Text(
                     text = "Tus especificaciones",
-                    color = YummiziTheme.colors.yummziziWhite,
+                    color = YummiziTheme.colors.yummiziWhite,
                     style = YummiziTheme.typography.leaguespartanFontVar2
                 )
 
@@ -127,12 +126,12 @@ fun SpecificationSection(
                                 .background(
                                     if (selectedOptions["is special date"]
                                             ?: false
-                                    ) YummiziTheme.colors.yummziziLightOrange2 else YummiziTheme.colors.yummziziGray
+                                    ) YummiziTheme.colors.yummiziLightOrange2 else YummiziTheme.colors.yummiziGray
                                 )
                                 .border(
                                     BorderStroke(
                                         spacing.mediumLineThickness,
-                                        YummiziTheme.colors.yummziziWhite
+                                        YummiziTheme.colors.yummiziWhite
                                     ),
                                     CircleShape
                                 )
@@ -140,7 +139,7 @@ fun SpecificationSection(
 
                         Text(
                             text = "Día especial",
-                            color = YummiziTheme.colors.yummziziWhite,
+                            color = YummiziTheme.colors.yummiziWhite,
                             style = YummiziTheme.typography.teacherFontVar6
                         )
                     }
@@ -159,12 +158,12 @@ fun SpecificationSection(
                                 .background(
                                     if (selectedOptions["have baby"]
                                             ?: false
-                                    ) YummiziTheme.colors.yummziziLightOrange2 else YummiziTheme.colors.yummziziGray
+                                    ) YummiziTheme.colors.yummiziLightOrange2 else YummiziTheme.colors.yummiziGray
                                 )
                                 .border(
                                     BorderStroke(
                                         spacing.mediumLineThickness,
-                                        YummiziTheme.colors.yummziziWhite
+                                        YummiziTheme.colors.yummiziWhite
                                     ),
                                     CircleShape
                                 )
@@ -172,7 +171,7 @@ fun SpecificationSection(
 
                         Text(
                             text = "Con bebé",
-                            color = YummiziTheme.colors.yummziziWhite,
+                            color = YummiziTheme.colors.yummiziWhite,
                             style = YummiziTheme.typography.teacherFontVar6
                         )
                     }
@@ -191,12 +190,12 @@ fun SpecificationSection(
                                 .background(
                                     if (selectedOptions["need support"]
                                             ?: false
-                                    ) YummiziTheme.colors.yummziziLightOrange2 else YummiziTheme.colors.yummziziGray
+                                    ) YummiziTheme.colors.yummiziLightOrange2 else YummiziTheme.colors.yummiziGray
                                 )
                                 .border(
                                     BorderStroke(
                                         spacing.mediumLineThickness,
-                                        YummiziTheme.colors.yummziziWhite
+                                        YummiziTheme.colors.yummiziWhite
                                     ),
                                     CircleShape
                                 )
@@ -204,7 +203,7 @@ fun SpecificationSection(
 
                         Text(
                             text = "Apoyo",
-                            color = YummiziTheme.colors.yummziziWhite,
+                            color = YummiziTheme.colors.yummiziWhite,
                             style = YummiziTheme.typography.teacherFontVar6
                         )
                     }
@@ -217,12 +216,12 @@ fun SpecificationSection(
                 Box(
                     modifier = Modifier
                         .matchParentSize()
-                        .background(YummiziTheme.colors.yummziziBlack.copy(alpha = 0.5f)),
+                        .background(YummiziTheme.colors.yummiziBlack.copy(alpha = 0.5f)),
                     contentAlignment = Alignment.Center
                 ){
                     Text(
                         text = "Próximamente",
-                        color = YummiziTheme.colors.yummziziWhite,
+                        color = YummiziTheme.colors.yummiziWhite,
                         style = YummiziTheme.typography.leaguespartanFontVar2
                     )
                 }

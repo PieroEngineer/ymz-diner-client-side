@@ -52,7 +52,7 @@ fun PreferenceCustomizationFrame(
             .dropShadow(
                 shape = CircleShape,
                 shadow = Shadow(
-                    color = YummiziTheme.colors.yummziziBlack.copy(alpha = .5f),
+                    color = YummiziTheme.colors.yummiziBlack.copy(alpha = .5f),
                     radius = 25.dp,                          // High radius for a wide, soft spread
                     offset = DpOffset(x = 0.dp, y = 25.dp), // Offset only to the bottom
                 )
@@ -64,7 +64,7 @@ fun PreferenceCustomizationFrame(
         Text(   // Section title
             text = "Personaliza tu preferencia",
             textAlign = TextAlign.Center,
-            color = YummiziTheme.colors.yummziziLightOrange,
+            color = YummiziTheme.colors.yummiziLightOrange,
             style = YummiziTheme.typography.teacherFontVar5,
             modifier = Modifier
                 .padding(horizontal = spacing.mediumPadding)
@@ -100,8 +100,8 @@ fun PreferenceCustomizationFrame(
 
             // Modify background color (container color in Material 3)
             colors = TextFieldDefaults.colors(
-                unfocusedContainerColor = YummiziTheme.colors.yummziziWhite,
-                cursorColor = YummiziTheme.colors.yummziziDarkBlue,
+                unfocusedContainerColor = YummiziTheme.colors.yummiziWhite,
+                cursorColor = YummiziTheme.colors.yummiziDarkBlue,
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent
             )
@@ -113,7 +113,7 @@ fun PreferenceCustomizationFrame(
                 .fillMaxWidth(.4f)
                 .padding(start = spacing.mediumPadding),
             thickness = spacing.smallLineThickness,
-            color = YummiziTheme.colors.yummziziDarkBlue
+            color = YummiziTheme.colors.yummiziDarkBlue
         )
 
         // Preference content text field
@@ -141,9 +141,9 @@ fun PreferenceCustomizationFrame(
 
             // Modify background color (container color in Material 3)
             colors = TextFieldDefaults.colors(
-                focusedContainerColor = YummiziTheme.colors.yummziziLightOrange2,
-                unfocusedContainerColor = YummiziTheme.colors.yummziziWhite,
-                cursorColor = YummiziTheme.colors.yummziziDarkBlue,
+                focusedContainerColor = YummiziTheme.colors.yummiziLightOrange2,
+                unfocusedContainerColor = YummiziTheme.colors.yummiziWhite,
+                cursorColor = YummiziTheme.colors.yummiziDarkBlue,
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent
             )

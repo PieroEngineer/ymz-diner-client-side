@@ -60,13 +60,13 @@ fun SelectionSection(
                     bottomEnd = spacing.regularSeparation
                 )
             )
-            .background(YummiziTheme.colors.yummziziLightOrange2)
+            .background(YummiziTheme.colors.yummiziLightOrange2)
             .padding(horizontal = spacing.mediumPadding)
             .padding(vertical = spacing.regularPadding)
     ) {
         Text(   // Its header
             text = "Haciendo cola en ${listedRestaurants.size} locales...",
-            color = YummiziTheme.colors.yummziziWhite,
+            color = YummiziTheme.colors.yummiziWhite,
             style = YummiziTheme.typography.leaguespartanFontVar2
         )
 
@@ -112,7 +112,7 @@ fun SelectionSection(
                     Text(
                         text = "A\n${restaurantInList.distanceKm}km",
                         textAlign = TextAlign.Center,
-                        color = YummiziTheme.colors.yummziziWhite,
+                        color = YummiziTheme.colors.yummiziWhite,
                         style = YummiziTheme.typography.teacherFontVar3
                     )
 
@@ -127,7 +127,7 @@ fun SelectionSection(
                                     Modifier.border(
                                         BorderStroke(
                                             spacing.bigLineThickness,
-                                            YummiziTheme.colors.yummziziWhite
+                                            YummiziTheme.colors.yummiziWhite
                                         ),
                                         shape = RoundedCornerShape(spacing.mediumCornerRadius)
                                     )
@@ -155,7 +155,7 @@ fun SelectionSection(
                         Text(   /// Perhaps it looks better if the text is aligned to the right side
                             text = restaurantInList.waitingState.phrase,
                             textAlign = TextAlign.Start,
-                            color = YummiziTheme.colors.yummziziWhite,
+                            color = YummiziTheme.colors.yummiziWhite,
                             style = YummiziTheme.typography.teacherFontVar1,
                             modifier = Modifier
                                 .padding(vertical = spacing.mediumPadding)
