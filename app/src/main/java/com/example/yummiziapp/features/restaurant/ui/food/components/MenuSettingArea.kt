@@ -34,6 +34,7 @@ fun <T: Identifiable> MenuSettingArea(
     modifier: Modifier = Modifier,
     menuStructure: MenuSetting<T>,
     onUpdatingSelectionQuantityClicked: (dishId: Uuid, delta: Int) -> Unit,
+    onRemoveDishClicked: (dishId: Uuid) -> Unit,
     totalOrderCost: String
 ){
     val spacing = YummiziTheme.spacing
@@ -106,7 +107,15 @@ fun <T: Identifiable> MenuSettingArea(
                         is MenuSetting.CurrentSelections -> {
                             FoodSelectionBlock(
                                 foodSelection = selection as FoodSelectionUiModel,
-                                onUpdatingSelectionQuantityClicked = onUpdatingSelectionQuantityClicked
+//X                                onUpdatingSelectionQuantityClicked = onUpdatingSelectionQuantityClicked
+                                onUpdatingSelectionQuantityClicked = {
+                                    increaseQuantity ->
+                                    onUpdatingSelectionQuantityClicked(
+                                        selection.id,
+                                        if (increaseQuantity) 1 else -1
+                                    )
+                                },
+                                onRemoveDishClicked = { onRemoveDishClicked(selection.id) }
                             )
                         }
                     }

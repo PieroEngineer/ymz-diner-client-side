@@ -115,17 +115,9 @@ class RestaurantRepositoryImpl @Inject constructor(
         // 1. Emit local Room Flow directly to UI (SSOT)
         // 2. Concurrently consume WebSocket updates to sync Room DB
 
-//X        val roomStream = restaurantDao.observePendingRestaurantsWithStatus(currentUserId)
-
-//X        emitAll(
-//            roomStream.onStart {
-//                syncWebSocketToRoom()
-//            }
-//        )
-
         coroutineScope {
             // Launch the sync in the background
-            launch { syncWebSocketToRoom() }
+            launch { syncWebSocketToRoom() } // TODO (#527): Try to move this to the request Repo. In the end, there is no problem if the user's mobile listen when they are not in the screen
 
             // Immediately start emitting data from Room
             emitAll(restaurantDao.observePendingRestaurantsWithStatus(currentUserId))
@@ -139,17 +131,9 @@ class RestaurantRepositoryImpl @Inject constructor(
         // 1. Emit local Room Flow directly to UI (SSOT)
         // 2. Concurrently consume WebSocket updates to sync Room DB
 
-//X        val roomStream = restaurantDao.observePendingRestaurantWithStatusById(currentUserId, restaurantId)
-
-//X        emitAll(
-//            roomStream.onStart {
-//                syncWebSocketToRoom()
-//            }
-//        )
-
         coroutineScope {
             // Launch the sync in the background
-            launch { syncWebSocketToRoom() }
+            launch { syncWebSocketToRoom() }    // TODO (#527)
 
             // Immediately start emitting data from Room
             emitAll(restaurantDao.observePendingRestaurantWithStatusById(currentUserId, restaurantId))

@@ -61,10 +61,10 @@ fun HomeScreen(
     LaunchedEffect(Unit) {
         viewModel.navEffect.collect { effect ->
             when (effect) {
-                is HomeScreenUiEvents.NavigateToRestaurantSelectionFrame -> { onRestaurantSelectionNavigation(effect.restaurantId) }
-                is HomeScreenUiEvents.NavigateToRestaurantMenuPreview -> { onRestaurantSelected(effect.restaurantId) }
-                is HomeScreenUiEvents.NavigateToPreferences -> { onPreferenceNavigation() }
-                is HomeScreenUiEvents.ShowConnectionError -> { /* ... */ }
+                is HomeUiEvents.NavigateToRestaurantSelectionFrame -> { onRestaurantSelectionNavigation(effect.restaurantId) }
+                is HomeUiEvents.NavigateToRestaurantMenuPreview -> { onRestaurantSelected(effect.restaurantId) }
+                is HomeUiEvents.NavigateToPreferences -> { onPreferenceNavigation() }
+                is HomeUiEvents.ShowConnectionError -> { /* ... */ }
             }
         }
     }

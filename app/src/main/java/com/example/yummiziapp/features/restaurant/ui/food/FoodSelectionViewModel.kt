@@ -6,18 +6,22 @@ import androidx.lifecycle.viewModelScope
 import com.example.yummiziapp.core.data.local.entities.Dish
 import com.example.yummiziapp.core.data.local.entities.MenuPage
 import com.example.yummiziapp.core.utils.toCurrencyFormat
+import com.example.yummiziapp.features.payment.domain.repository.PaymentRepository
 import com.example.yummiziapp.features.restaurant.domain.repository.RestaurantRepository
 import com.example.yummiziapp.features.restaurant.ui.model.CoordinatesInPage
 import com.example.yummiziapp.features.restaurant.ui.model.FoodSelectionUiModel
 import com.example.yummiziapp.features.restaurant.ui.model.MenuUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.collections.filter
@@ -27,23 +31,61 @@ import kotlin.uuid.Uuid
 @HiltViewModel
 class FoodSelectionViewModel @Inject constructor(   //TODO: Change the way of how the dishes change to don't receive all of them in a
     private val restaurantRepository: RestaurantRepository,
+    private val paymentRepository: PaymentRepository,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
+
+
+    private val _effect = Channel<FoodSelectionUiEvents>(Channel.BUFFERED)
+    val navEffect = _effect.receiveAsFlow()
 
     // Extract the ID safely
     private val restaurantIdString: String = checkNotNull(savedStateHandle["restaurantId"])
     private val restaurantId = Uuid.parse(restaurantIdString)
 
+    private val _orderMap = MutableStateFlow<Map<Uuid, Int>>(emptyMap())
 
-    private val _selectionMap = MutableStateFlow<Map<Uuid, Int>>(emptyMap())
+
+    init {
+        // Trigger the GET request to cloud immediately on start
+        refreshMenu()
+    }
+
+    private fun refreshMenu() {
+        viewModelScope.launch {
+            restaurantRepository.refreshRestaurantMenu(restaurantId)
+        }
+    }
+
+    fun confirmOrder(){
+        viewModelScope.launch {
+            paymentRepository.selectOrder(_orderMap.value)      // Make it functional
+
+            // TODO: If the payment fails, Navigate, but show a snackbar asking for trying again.
+            _effect.send(FoodSelectionUiEvents.NavigateToPayment/* (restaurantId) */)
+        }
+    }
 
 
+//X
+//    fun updateQuantity(dishId: Uuid, delta: Int) {
+//        val current = _selectionMap.value.toMutableMap()
+//        val newCount = (current[dishId] ?: 1) + delta
+//        if (newCount <= 0) current[dishId] = 1 else current[dishId] = newCount
+//        _selectionMap.value = current
+//    }
     // 3. Methods to update state
     fun updateQuantity(dishId: Uuid, delta: Int) {
-        val current = _selectionMap.value.toMutableMap()
-        val newCount = (current[dishId] ?: 1) + delta
-        if (newCount <= 0) current[dishId] = 1 else current[dishId] = newCount
-        _selectionMap.value = current
+        _orderMap.update { current ->
+            val newCount = (current[dishId] ?: 0) + delta
+            if (newCount <= 0) current - dishId else current + (dishId to newCount) /// Consider change "current - dishId" by the intention of this "current[dishId] = 1"
+        }
+    }
+
+    fun removeDish(dishId: Uuid) {
+        _orderMap.update { current ->
+            current - dishId
+        }
     }
 
     // High-Performance StateFlow
@@ -64,18 +106,12 @@ class FoodSelectionViewModel @Inject constructor(   //TODO: Change the way of ho
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = FoodSelectionUiState.Loading
         )
-    /// Possible improve here to be safe over coroutines
-    //fun updateQuantity(dishId: Uuid, delta: Int) {
-    //    _selectionMap.update { current ->
-    //        val newCount = (current[dishId] ?: 0) + delta
-    //        if (newCount <= 0) current - dishId else current + (dishId to newCount)
-    //    }
 
 
     // The Source of Truth (Items)
     val foodSelectionState: StateFlow<List<FoodSelectionUiModel>> = restaurantRepository
         .observeDishes(restaurantId)
-        .combine(_selectionMap) { dishes, selection ->
+        .combine(_orderMap) { dishes, selection ->
             dishes.map { dish ->
                 val quantity = selection[dish.id] ?: 0
                 val totalCents = quantity * dish.priceCents
@@ -128,17 +164,6 @@ class FoodSelectionViewModel @Inject constructor(   //TODO: Change the way of ho
     //    .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), CheckoutUiState())
 
 
-    init {
-        // Trigger the GET request to cloud immediately on start
-        refreshMenu()
-    }
-
-
-    private fun refreshMenu() {
-        viewModelScope.launch {
-            restaurantRepository.refreshRestaurantMenu(restaurantId)
-        }
-    }
 
     fun Map<MenuPage, List<Dish>>.toUiModels(): List<MenuUiModel> {
         return this.map { (page, dishes) ->
@@ -155,6 +180,8 @@ class FoodSelectionViewModel @Inject constructor(   //TODO: Change the way of ho
         }.sortedBy { it.page.pageNumber }
     }
 }
+
+
 
 //The "Session Manager" Pattern (Recommended)
 //You should have a SessionManager or UserStorage class (usually powered by DataStore or SharedPreferences) that holds the current logged-in user's info.

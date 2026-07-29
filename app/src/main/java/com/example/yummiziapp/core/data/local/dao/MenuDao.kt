@@ -59,4 +59,7 @@ interface MenuDao {
     @Query("DELETE FROM dishes WHERE menuPageId IN (SELECT id FROM menu_pages WHERE restaurantId = :restaurantId)")
     suspend fun deleteDishesForRestaurant(restaurantId: Uuid)
 
+    @Query("SELECT * FROM dishes WHERE id IN (:dishIds)")
+    suspend fun getDishesByIds(dishIds: List<Uuid>): List<Dish>
+
 }

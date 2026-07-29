@@ -8,7 +8,7 @@ fun mapToJoinQueueDto(loggedUser: LoggedUser, request: Request): JoinQueueDto{
     return JoinQueueDto(
         restaurantId = request.restaurantId.toString(),
         userId = loggedUser.id.toString(),
-        requestId = request.id.toString(),
+        requestId = request.requestId.toString(),
         groupSize = loggedUser.companySize,
         userName = loggedUser.name,
         arrivalTime = request.arrivalTimeInMinutes

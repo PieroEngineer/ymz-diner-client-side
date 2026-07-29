@@ -8,10 +8,12 @@ import com.example.yummiziapp.core.data.local.dao.RestaurantDao
 import com.example.yummiziapp.core.data.local.dao.LoggedUserDao
 import com.example.yummiziapp.core.data.local.dao.RequestDao
 import com.example.yummiziapp.core.data.local.dao.MenuDao
+import com.example.yummiziapp.core.data.local.dao.PaymentDao
 import com.example.yummiziapp.core.data.local.dao.PreferenceDao
 import com.example.yummiziapp.core.data.local.entities.Dish
 import com.example.yummiziapp.core.data.local.entities.LoggedUser
 import com.example.yummiziapp.core.data.local.entities.MenuPage
+import com.example.yummiziapp.core.data.local.entities.OrderSelection
 import com.example.yummiziapp.core.data.local.entities.Preference
 import com.example.yummiziapp.core.data.local.entities.Request
 import com.example.yummiziapp.core.data.local.entities.Restaurant
@@ -23,7 +25,8 @@ import com.example.yummiziapp.core.data.local.entities.Restaurant
         MenuPage::class,
         Dish::class,
         Request::class,
-        Preference::class
+        Preference::class,
+        OrderSelection::class
     ],
     version = 1,
     exportSchema = false // TODO: Activate it when the app is ready to be released
@@ -35,4 +38,6 @@ abstract class YummiziDatabase : RoomDatabase() {
     abstract fun requestDao(): RequestDao
     abstract fun menuDao(): MenuDao
     abstract fun preferenceDao(): PreferenceDao
+
+    abstract fun paymentDao(): PaymentDao
 }

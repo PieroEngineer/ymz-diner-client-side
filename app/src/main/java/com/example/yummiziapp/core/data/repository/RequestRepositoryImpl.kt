@@ -46,11 +46,11 @@ class RequestRepositoryImpl @Inject constructor(
         // 2. PREPARE ENTITY
         val requestId = Uuid.random()   // TODO (#521): Remember that client shouldn't generate the request ID. Backend responds with request
         val newRequest = Request(
-            id = requestId,
+            requestId = requestId,
             restaurantId = restaurantId,
             userId = loggedUser.id,
             status = RequestStatusToken.QUEUED,
-            localCreationTimestamp = "",//TODO: System.currentTimeMillis(). Or long?
+            localCreationTimestamp = System.currentTimeMillis(),
             arrivalTimeInMinutes = arrivalTimeInMinutes,
         )
 
@@ -88,12 +88,12 @@ class RequestRepositoryImpl @Inject constructor(
         try {
             // 2. OPTIMISTIC UPDATE: Remove from Local DB immediately
             // The UI (observing via Flow) will instantly see the "Join" button again.
-            requestDao.deleteRequestById(currentRequest.id)
+            requestDao.deleteRequestById(currentRequest.requestId)
 
             // 3. NETWORK CALL: Tell the cloud
             // We use the requestId from our 'backup' variable.
             val response = yummiziApi.cancelRequest(
-                requestId = currentRequest.id.toString(),
+                requestId = currentRequest.requestId.toString(),
                 cancelData = LeaveQueueDto(restaurantId = restaurantId.toString())
             )
 
@@ -118,17 +118,17 @@ class RequestRepositoryImpl @Inject constructor(
 
         // Fetch current and other requests for backup
         val currentRequest = requestDao.getRequestByRestaurantAndUser(restaurantId, userId) ?: return@withContext   // TODO: Remove the user parameter from here because the user is always the same in the app
-        val otherRequests = requestDao.getOtherRequests(currentRequest.id)
+        val otherRequests = requestDao.getOtherRequests(currentRequest.requestId)
 
         try {
             // OPTIMISTIC UPDATE: Update status to READY and remove other requests
-            requestDao.confirmAcceptance(currentRequest.id)  /// In future update, maybe the completly delete won't the best option to get the history of histories. (Maybe just include a DAO function that notify to everyone that there is a READY request)
+            requestDao.confirmAcceptance(currentRequest.requestId)  /// In future update, maybe the completly delete won't the best option to get the history of histories. (Maybe just include a DAO function that notify to everyone that there is a READY request)
 
             // NETWORK CALL
             val response = yummiziApi.confirmAcceptance(
                 restaurantId = restaurantId.toString(),
                 confirmData = UpdateStatusDto(
-                    requestId = currentRequest.id.toString(),
+                    requestId = currentRequest.requestId.toString(),
                     userId = userId.toString(),
                     newState = RequestStatusToken.READY.name
                 )
@@ -139,7 +139,7 @@ class RequestRepositoryImpl @Inject constructor(
         } catch (e: Exception) {
             // ROLLBACK: Restore everything
             withContext(NonCancellable) {
-                requestDao.updateRequestStatus(currentRequest.id, currentRequest.status)
+                requestDao.updateRequestStatus(currentRequest.requestId, currentRequest.status)
                 if(otherRequests.isNotEmpty()){
                     otherRequests.forEach { requestDao.insertRequest(it) }
                 }

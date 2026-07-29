@@ -97,7 +97,7 @@ fun CompanySection(
 
                     Column(){
                         NumberSelector(
-                            color = YummiziTheme.colors.yummiziWhite,
+                            mainColor = YummiziTheme.colors.yummiziWhite,
                             indicatorNumber = details.companySize,
                             onNumberChanged = { isIncreasing -> onCompanySizeUpdated(isIncreasing) },
                         )

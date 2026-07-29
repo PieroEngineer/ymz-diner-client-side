@@ -41,9 +41,33 @@ data class Restaurant(  // TODO: This is the entity. And the domain should be an
     // 💡 Tip: There is no built-in standard Multiplatform spatial Coordinate primitive in Android Jetpack/Room yet.
     // Keeping raw primitives (Double) or creating a simple embedded @Embedded data class remains the industry standard.
     val latitude: Double?,
-    val longitude: Double?
-    // val maxWaitingTimeInMinutes: Int,
+    val longitude: Double?,
+    val phoneNumber: Int?,
+    val paymentQrUrl: String?,
+    // val maxWaitingTimeInMinutes: Int, // TODO: For now the default time is 15 minutes, but we must implement this attribute
     //val description: String,
+)
+
+@Entity(
+    tableName = "order_selections",
+    primaryKeys = ["requestId", "dishId"],
+    foreignKeys = [
+        ForeignKey(
+            entity = Request::class,
+            parentColumns = ["requestId"],
+            childColumns = ["requestId"],
+            onDelete = ForeignKey.CASCADE
+        )
+    ],
+    indices = [Index(value = ["requestId"]), Index(value = ["dishId"])]
+)
+data class OrderSelection(
+    val requestId: Uuid,
+    val dishId: Uuid,
+    val dishName: String,
+    val quantity: Int,
+    val historicalUnitPriceInCents: Int // It's just local, it doesn't go in the payload to send.
+//    val paymentMethod: String // TODO
 )
 
 @Entity(
@@ -54,11 +78,11 @@ data class Restaurant(  // TODO: This is the entity. And the domain should be an
 )
 @Serializable
 data class Request(
-    @PrimaryKey val id: Uuid,
+    @PrimaryKey val requestId: Uuid,
     val restaurantId: Uuid,
     val status: RequestStatusToken,
     val userId: Uuid,   // TODO: Remove this parameter, so it's only lives in "LoggedUser"
-    val localCreationTimestamp: String, //TODO: Change it to Long type
+    val localCreationTimestamp: Long,
     val arrivalTimeInMinutes: Int,
     // val specifics: List<AvailableSpecificsToken>, // TODO
 )

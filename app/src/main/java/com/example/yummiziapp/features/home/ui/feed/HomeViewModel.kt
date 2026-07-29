@@ -7,7 +7,6 @@ import com.example.yummiziapp.core.data.local.entities.Restaurant
 import com.example.yummiziapp.features.user.domain.repository.UserRepository
 import com.example.yummiziapp.features.home.domain.usecase.GetCategorizedFeedUseCase
 import com.example.yummiziapp.features.home.ui.model.SectionUiModel
-import com.example.yummiziapp.features.request.domain.repository.RequestRepository
 import com.example.yummiziapp.features.restaurant.domain.repository.RestaurantRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
@@ -30,7 +29,7 @@ class HomeViewModel @Inject constructor(
 ) : ViewModel() {
 
     // Navigation handler
-    private val _effect = Channel<HomeScreenUiEvents>(Channel.BUFFERED)
+    private val _effect = Channel<HomeUiEvents>(Channel.BUFFERED)
     val navEffect = _effect.receiveAsFlow()
 
     private val _uiState = MutableStateFlow<HomeUiState>(HomeUiState.Loading)   /// Is this way a bad practice?
@@ -113,20 +112,20 @@ class HomeViewModel @Inject constructor(
 
     fun onRestaurantClicked(id: Uuid) {
         viewModelScope.launch {
-            _effect.send(HomeScreenUiEvents.NavigateToRestaurantMenuPreview(id))
+            _effect.send(HomeUiEvents.NavigateToRestaurantMenuPreview(id))
         }
     }
 
     fun onSelectionFrameClicked(){
         viewModelScope.launch {
             Log.d("MyActivity", "🔎🟧  Frame was clicked")
-            _effect.send(HomeScreenUiEvents.NavigateToRestaurantSelectionFrame(null))
+            _effect.send(HomeUiEvents.NavigateToRestaurantSelectionFrame(null))
         }
     }
 
     fun onYouClicked(){
         viewModelScope.launch {
-            _effect.send(HomeScreenUiEvents.NavigateToPreferences)
+            _effect.send(HomeUiEvents.NavigateToPreferences)
         }
     }
 
@@ -135,7 +134,7 @@ class HomeViewModel @Inject constructor(
         // We use viewModelScope because writing to a database
         // is a 'suspend' (heavy) operation.
         viewModelScope.launch {
-            _effect.send(HomeScreenUiEvents.NavigateToRestaurantSelectionFrame(restaurant.id))
+            _effect.send(HomeUiEvents.NavigateToRestaurantSelectionFrame(restaurant.id))
 
         }
     }

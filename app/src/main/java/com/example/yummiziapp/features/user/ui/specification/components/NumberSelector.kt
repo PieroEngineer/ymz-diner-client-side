@@ -27,11 +27,12 @@ import com.example.yummiziapp.core.designsystem.theme.YummiziTheme
 fun NumberSelector(
     modifier: Modifier = Modifier,
 
-    color: Color = YummiziTheme.colors.yummiziDarkOrange,
+    mainColor: Color = YummiziTheme.colors.yummiziDarkOrange,
+    rowColor: Color = YummiziTheme.colors.yummiziDarkOrange,
 
     indicatorNumber: Int,
     onNumberChanged: (Boolean) -> Unit,
-    maxValue: Int = 100,    ///  What would be the maximum?
+    maxValue: Int = 100,    ///  What would be the maximum? I can conditionally use a conditional, but AI says that it isn't readbly
 ){
     val spacing = YummiziTheme.spacing
 
@@ -40,7 +41,7 @@ fun NumberSelector(
             .border(
                 BorderStroke(
                     spacing.mediumLineThickness,
-                    color
+                    mainColor
                 ),
                 shape = RoundedCornerShape(spacing.regularCornerRadius)
             )
@@ -53,7 +54,7 @@ fun NumberSelector(
         Image(
             painter = painterResource(R.drawable.row_btn),
             contentDescription = null,
-            colorFilter = ColorFilter.tint(color = color),
+            colorFilter = ColorFilter.tint(color = rowColor),
             modifier = Modifier
                 .padding(start = spacing.mediumPadding)
                 .padding(vertical = spacing.smallPadding)
@@ -67,7 +68,7 @@ fun NumberSelector(
         Text(
             text = indicatorNumber.toString(),
             textAlign = TextAlign.Center,
-            color = color,
+            color = mainColor,
             style = YummiziTheme.typography.comfortaaFontVar1,
             modifier = Modifier
                 .padding(vertical = spacing.smallPadding)
@@ -78,7 +79,7 @@ fun NumberSelector(
         Image(
             painter = painterResource(R.drawable.row_btn),
             contentDescription = null,
-            colorFilter = ColorFilter.tint(color = color),
+            colorFilter = ColorFilter.tint(color = rowColor),
             modifier = Modifier
                 .padding(end = spacing.mediumPadding)
                 .padding(vertical = spacing.smallPadding)

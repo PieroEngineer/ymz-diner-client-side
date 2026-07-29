@@ -19,7 +19,7 @@ interface RequestDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertRequest(request: Request)
 
-    @Query("DELETE FROM requests WHERE id = :requestId")
+    @Query("DELETE FROM requests WHERE requestId = :requestId")
     suspend fun deleteRequestById(requestId: Uuid)
 
     // --- UI OBSERVATION (REACTIVE) ---
@@ -39,7 +39,7 @@ interface RequestDao {
 
     // --- ONE-SHOT QUERIES (LOGIC CHECKS) ---
 
-    @Query("SELECT * FROM requests WHERE id = :requestId")
+    @Query("SELECT * FROM requests WHERE requestId = :requestId")
     suspend fun getRequestById(requestId: Uuid): Request?
 
     @Query("""
@@ -62,22 +62,25 @@ interface RequestDao {
     """)
     suspend fun getRequestByRestaurantAndUser(restaurantId: Uuid, userId: Uuid): Request?
 
+    @Query("SELECT * FROM requests WHERE status = 'READY' ORDER BY localCreationTimestamp DESC LIMIT 1")
+    suspend fun getLatestReadyRequest(): Request?   // TODO: Include an expiration cheking like an attribute or creating a new status in "RequestStatusToken"
+
     //X
 //    @Query("UPDATE requests SET status = :status WHERE restaurantId = :restaurantId AND userId = :userId")
 //    suspend fun updateRequestStatus(restaurantId: Uuid, userId: Uuid, status: RequestStatusToken)
 
-    @Query("UPDATE requests SET status = :status WHERE id = :requestId")
+    @Query("UPDATE requests SET status = :status WHERE requestId = :requestId")
     suspend fun updateRequestStatus(requestId: Uuid, status: RequestStatusToken)
 
-    @Query("DELETE FROM requests WHERE id != :requestId")
+    @Query("DELETE FROM requests WHERE requestId != :requestId")
     suspend fun deleteOtherRequests(requestId: Uuid)
 
-    @Query("SELECT * FROM requests WHERE id != :requestId")
+    @Query("SELECT * FROM requests WHERE requestId != :requestId")
     suspend fun getOtherRequests(requestId: Uuid): List<Request>
 
     @Transaction
     suspend fun confirmAcceptance(requestId: Uuid) {
         updateRequestStatus(requestId, RequestStatusToken.READY)
-        deleteOtherRequests(requestId)
+        deleteOtherRequests(requestId)  // TODO: Consider don't remove them, but just update the status (Assign as "past")
     }
 }

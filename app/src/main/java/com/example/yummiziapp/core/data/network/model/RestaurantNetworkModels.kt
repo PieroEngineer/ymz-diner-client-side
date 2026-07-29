@@ -17,7 +17,9 @@ data class RestaurantDto(
     val dishesToShowUrls: List<String> = emptyList(),
     val menuImageUrls: List<String> = emptyList(),
     val latitude: Double? = null,
-    val longitude: Double? = null
+    val longitude: Double? = null,
+    val phoneNumber: Int? = null,
+    val paymentQrUrl: String? = null,
 )
 
 @Serializable
@@ -83,5 +85,8 @@ fun RestaurantDto.toEntity() = Restaurant(
     sectionType = sectionType,
     dishesToShowLink = dishesToShowUrls,
     latitude = latitude,
-    longitude = longitude
+    longitude = longitude,
+    phoneNumber = phoneNumber,
+    paymentQrUrl= paymentQrUrl
+
 )

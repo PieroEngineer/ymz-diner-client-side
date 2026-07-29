@@ -22,8 +22,7 @@ fun YummiziNavHost(
 
     NavHost(
         navController = navController,
-//        startDestination = YummiziRoute.Home // 🛡️ Completely type-safe start node
-        startDestination = YummiziRoute.PaymentPreparation // 🛡️ Completely type-safe start node
+        startDestination = YummiziRoute.Home // 🛡️ Completely type-safe start node
     ) {
 
         composable<YummiziRoute.Home> {
@@ -52,7 +51,6 @@ fun YummiziNavHost(
                 onHomeClickedNav = {
                     // Pops back safely or routes cleanly
                     navController.popBackStack()
-//X                    navController.navigate(YummiziRoute.Home)
                 },
                 onYouClickedNav = {
                     navController.navigate(YummiziRoute.Preferences)
@@ -70,7 +68,11 @@ fun YummiziNavHost(
         }
 
         composable<YummiziRoute.FoodSelection> {
-            FoodSelectionScreen()
+            FoodSelectionScreen(
+                onOrderConfirmed = {
+                    navController.navigate(YummiziRoute.PaymentPreparation)
+                }
+            )
         }
 
         composable<YummiziRoute.PaymentPreparation> {

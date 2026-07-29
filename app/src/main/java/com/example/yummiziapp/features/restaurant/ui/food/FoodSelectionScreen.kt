@@ -1,6 +1,7 @@
 package com.example.yummiziapp.features.restaurant.ui.food
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -33,6 +35,7 @@ import com.example.yummiziapp.features.restaurant.ui.model.MenuSetting
 @Composable
 fun FoodSelectionScreen(    // TODO: Correct the prop-drilling of this and other screens with the slot solution
     modifier: Modifier = Modifier,
+    onOrderConfirmed: () -> Unit,
     viewModel: FoodSelectionViewModel = hiltViewModel()
 ){
     val spacing = YummiziTheme.spacing
@@ -41,8 +44,16 @@ fun FoodSelectionScreen(    // TODO: Correct the prop-drilling of this and other
     val foodSelectionState by viewModel.foodSelectionState.collectAsStateWithLifecycle()
     val totalOrderCost by viewModel.totalOrderCost.collectAsStateWithLifecycle()
 
+    LaunchedEffect(Unit) {
+        viewModel.navEffect.collect { effect ->
+            when(effect) {
+                is FoodSelectionUiEvents.NavigateToPayment -> { onOrderConfirmed() }
+            }
+        }
+    }
+
     // Screen content
-    Column(
+    Column( /// We need to convert it into a function to use it in the preselection too.
         modifier = modifier
             .fillMaxSize()
             .background(YummiziTheme.colors.yummiziWhite)
@@ -104,6 +115,9 @@ fun FoodSelectionScreen(    // TODO: Correct the prop-drilling of this and other
                 onUpdatingSelectionQuantityClicked = { dishId, delta ->
                     viewModel.updateQuantity(dishId, delta)
                 },
+                onRemoveDishClicked = { dishId ->
+                    viewModel.removeDish(dishId)
+                },
                 totalOrderCost = totalOrderCost
             )
 
@@ -145,6 +159,9 @@ fun FoodSelectionScreen(    // TODO: Correct the prop-drilling of this and other
                             RoundedCornerShape(spacing.mediumCornerRadius)
                         )
                         .background(YummiziTheme.colors.yummiziLightBlue)
+                        .clickable {
+                            viewModel.confirmOrder()
+                        }
 
                 ){
                     Text(

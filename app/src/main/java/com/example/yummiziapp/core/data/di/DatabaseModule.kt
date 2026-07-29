@@ -12,6 +12,7 @@ import com.example.yummiziapp.core.data.local.dao.RestaurantDao
 import com.example.yummiziapp.core.data.local.dao.LoggedUserDao
 import com.example.yummiziapp.core.data.local.dao.RequestDao
 import com.example.yummiziapp.core.data.local.dao.MenuDao
+import com.example.yummiziapp.core.data.local.dao.PaymentDao
 import com.example.yummiziapp.core.data.local.dao.PreferenceDao
 import com.example.yummiziapp.core.data.local.db.YummiziDatabase
 
@@ -45,4 +46,7 @@ object DatabaseModule {
 
     @Provides
     fun providePreferenceDao(db: YummiziDatabase): PreferenceDao = db.preferenceDao()
+
+    @Provides
+    fun providePaymentDao(db: YummiziDatabase): PaymentDao = db.paymentDao()
 }

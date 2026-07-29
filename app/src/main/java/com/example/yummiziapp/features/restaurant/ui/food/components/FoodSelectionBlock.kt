@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import com.example.yummiziapp.core.designsystem.theme.YummiziTheme
 import com.example.yummiziapp.R
 import com.example.yummiziapp.features.restaurant.ui.model.FoodSelectionUiModel
+import com.example.yummiziapp.features.user.ui.specification.components.NumberSelector
 import kotlin.uuid.Uuid
 
 @Composable
@@ -31,7 +32,9 @@ fun FoodSelectionBlock(
 
     foodSelection: FoodSelectionUiModel,
 
-    onUpdatingSelectionQuantityClicked: (dishId: Uuid, delta: Int) -> Unit,
+    onUpdatingSelectionQuantityClicked: (Boolean) -> Unit,
+
+    onRemoveDishClicked: () -> Unit,
 
     ){
     val spacing = YummiziTheme.spacing
@@ -55,61 +58,69 @@ fun FoodSelectionBlock(
 
         Spacer(Modifier.weight(5.9f))
 
-        Row(    //TODO: Convert it into a function, because it's used in other parts too
-            modifier = Modifier
-                .border(
-                    BorderStroke(
-                        spacing.mediumLineThickness,
-                        YummiziTheme.colors.yummiziLightOrange
-                    ),
-                    shape = RoundedCornerShape(spacing.regularCornerRadius)
-                )
-                .clip(
-                    RoundedCornerShape(50)
-                )
-                .weight(40.85f),
-            verticalAlignment = Alignment.CenterVertically
-        ){
+        NumberSelector(
+            rowColor = YummiziTheme.colors.yummiziLightBlue2,
 
+            indicatorNumber = foodSelection.amount,
+            onNumberChanged = onUpdatingSelectionQuantityClicked
+        )
 
-            Image(
-                painter = painterResource(R.drawable.row_btn),
-                contentDescription = null,
-                colorFilter = ColorFilter.tint(color = YummiziTheme.colors.yummiziLightBlue2),
-                modifier = Modifier
-                    .padding(start = spacing.mediumPadding)
-                    .padding(vertical = spacing.smallPadding)
-                    .size(spacing.smallIconSize)
-                    .rotate(180f)
-                    .clickable { onUpdatingSelectionQuantityClicked(foodSelection.id, -1) }
-
-            )
-
-            Spacer(Modifier.weight(1f))
-
-            Text(
-                text = foodSelection.amount.toString(),
-                textAlign = TextAlign.Center,
-                color = YummiziTheme.colors.yummiziDarkOrange,
-                style = YummiziTheme.typography.comfortaaFontVar1,
-                modifier = Modifier
-                    .padding(vertical = spacing.smallPadding)
-            )
-
-            Spacer(Modifier.weight(1f))
-
-            Image(
-                painter = painterResource(R.drawable.row_btn),
-                contentDescription = null,
-                colorFilter = ColorFilter.tint(color = YummiziTheme.colors.yummiziLightBlue2),
-                modifier = Modifier
-                    .padding(end = spacing.mediumPadding)
-                    .padding(vertical = spacing.smallPadding)
-                    .size(spacing.smallIconSize)
-                    .clickable { onUpdatingSelectionQuantityClicked(foodSelection.id, 1) }
-
-            )
-        }
+        //X
+//        Row(
+//            modifier = Modifier
+//                .border(
+//                    BorderStroke(
+//                        spacing.mediumLineThickness,
+//                        YummiziTheme.colors.yummiziLightOrange
+//                    ),
+//                    shape = RoundedCornerShape(spacing.regularCornerRadius)
+//                )
+//                .clip(
+//                    RoundedCornerShape(50)
+//                )
+//                .weight(40.85f),
+//            verticalAlignment = Alignment.CenterVertically
+//        ){
+//
+//
+//            Image(
+//                painter = painterResource(R.drawable.row_btn),
+//                contentDescription = null,
+//                colorFilter = ColorFilter.tint(color = YummiziTheme.colors.yummiziLightBlue2),
+//                modifier = Modifier
+//                    .padding(start = spacing.mediumPadding)
+//                    .padding(vertical = spacing.smallPadding)
+//                    .size(spacing.smallIconSize)
+//                    .rotate(180f)
+//                    .clickable { onUpdatingSelectionQuantityClicked(foodSelection.id, -1) }
+//
+//            )
+//
+//            Spacer(Modifier.weight(1f))
+//
+//            Text(
+//                text = foodSelection.amount.toString(),
+//                textAlign = TextAlign.Center,
+//                color = YummiziTheme.colors.yummiziDarkOrange,
+//                style = YummiziTheme.typography.comfortaaFontVar1,
+//                modifier = Modifier
+//                    .padding(vertical = spacing.smallPadding)
+//            )
+//
+//            Spacer(Modifier.weight(1f))
+//
+//            Image(
+//                painter = painterResource(R.drawable.row_btn),
+//                contentDescription = null,
+//                colorFilter = ColorFilter.tint(color = YummiziTheme.colors.yummiziLightBlue2),
+//                modifier = Modifier
+//                    .padding(end = spacing.mediumPadding)
+//                    .padding(vertical = spacing.smallPadding)
+//                    .size(spacing.smallIconSize)
+//                    .clickable { onUpdatingSelectionQuantityClicked(foodSelection.id, 1) }
+//
+//            )
+//        }
 
         Spacer(Modifier.weight(7.78f))
 
@@ -130,6 +141,7 @@ fun FoodSelectionBlock(
                 .padding(end = spacing.mediumPadding)
                 .padding(vertical = spacing.smallPadding)
                 .size(spacing.mediumIconSize)
+                .clickable { onRemoveDishClicked() }
         )
 
     }
