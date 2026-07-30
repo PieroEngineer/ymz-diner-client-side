@@ -18,4 +18,7 @@ interface PaymentDao {
 
     @Query("SELECT * FROM order_selections")
     fun observeOrderSelections(): Flow<List<OrderSelection>>
+
+    @Query("SELECT * FROM order_selections")
+    suspend fun getOrderSelections(): List<OrderSelection>
 }

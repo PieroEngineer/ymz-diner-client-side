@@ -49,11 +49,23 @@ class FoodSelectionViewModel @Inject constructor(   //TODO: Change the way of ho
     init {
         // Trigger the GET request to cloud immediately on start
         refreshMenu()
+        initializeOrder()
     }
 
     private fun refreshMenu() {
         viewModelScope.launch {
             restaurantRepository.refreshRestaurantMenu(restaurantId)
+        }
+    }
+
+    private fun initializeOrder() {
+        viewModelScope.launch {
+            val currentOrder = paymentRepository.getCurrentOrder()
+            if (currentOrder.isNotEmpty()) {
+                _orderMap.update { 
+                    currentOrder.associate { it.dishId to it.quantity }
+                }
+            }
         }
     }
 

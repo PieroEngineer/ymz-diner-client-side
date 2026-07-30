@@ -73,7 +73,6 @@ fun HomeScreen( // Continue here: Test when the user already has an ready reques
 
     val spacing = YummiziTheme.spacing
 
-
     // State variables
     var draggingRestaurant by remember { mutableStateOf<Restaurant?>(null) }
     var dragPosition by remember { mutableStateOf(Offset.Zero) }

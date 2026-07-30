@@ -29,7 +29,7 @@ interface RestaurantRepository {
 
     fun observeMenuPagesByRestaurant(restaurantId: Uuid): Flow<List<MenuPage>>
 
-    suspend fun clearAllRestaurants()
+    suspend fun clearAllRestaurantsAndRequests()
 
     suspend fun syncFeedRestaurants()
 

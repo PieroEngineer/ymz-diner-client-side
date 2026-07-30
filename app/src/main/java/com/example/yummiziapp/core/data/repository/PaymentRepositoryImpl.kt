@@ -92,11 +92,18 @@ class PaymentRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun observeConfirmedOrder(): Flow<List<OrderSelection>> = paymentDao.observeOrderSelections()
+    override fun observeCurrentOrder(): Flow<List<OrderSelection>> = paymentDao.observeOrderSelections()
+
+    override suspend fun getCurrentOrder(): List<OrderSelection> = withContext(ioDispatcher) {
+        paymentDao.getOrderSelections()
+    }
 
 //    override suspend fun getPaymentImageFromInternalStorage(filename: String): Result<File> = withContext(ioDispatcher) {
 //        //  TODO
 //    }
+
+    // ... removeCurrenImageFromInternalStorage() ...
+    // TODO
 
     override suspend fun savePaymentImageToInternalStorage(uri: Uri): Result<File> = withContext(ioDispatcher) {
         runCatching {

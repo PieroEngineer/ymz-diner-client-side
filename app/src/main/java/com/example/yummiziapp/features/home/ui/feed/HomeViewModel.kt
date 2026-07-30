@@ -41,8 +41,7 @@ class HomeViewModel @Inject constructor(
 
             // Clean all restaurants
             Log.d("MyActivity", "🧹  Cleaning all restaurants...\n")
-            clearFeed() /// Commented for testing purposes   //TODO: Consider that the cleaning is when the user doesn't enter after a long while
-
+            clearFeed()   //TODO: Remove this in production. The behavior should cover certain situations. Consider that the cleaning is when the user doesn't enter after a long while
 
             Log.d("MyActivity", "🎨  Trying to initialize data for user and restaurant...\n")
             userRepository.seedMockUser() // Make this a suspend call
@@ -118,7 +117,7 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 Log.d("MyActivity", "🧹  Cleaning all restaurants...\n")
-                restaurantRepository.clearAllRestaurants()
+                restaurantRepository.clearAllRestaurantsAndRequests()
             }
             catch (e: Exception) {
                 Log.d("MyActivity", "🚩🧹 There was an error while trying to clean the feed  | $e\n")

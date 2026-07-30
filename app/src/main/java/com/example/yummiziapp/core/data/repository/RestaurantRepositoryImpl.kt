@@ -19,7 +19,6 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
@@ -29,10 +28,12 @@ import kotlin.uuid.Uuid
 class RestaurantRepositoryImpl @Inject constructor(
     private val requestDao: RequestDao,
     private val restaurantDao: RestaurantDao,
-    private val yummiziApi: RestaurantApi,
     private val menuDao: MenuDao,
-    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
+
+    private val yummiziApi: RestaurantApi,
     private val dataSource: AblyDataSource,
+
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val json: Json
 ) : RestaurantRepository {
 
@@ -42,9 +43,10 @@ class RestaurantRepositoryImpl @Inject constructor(
 
     override fun observeMenuPagesByRestaurant(restaurantId: Uuid) = menuDao.observeMenuPagesByRestaurant(restaurantId)
 
-    //
-    override suspend fun clearAllRestaurants() {
+    override suspend fun clearAllRestaurantsAndRequests() {
+        /// Does it need a transaction?
         restaurantDao.clearRestaurantsFromFeed()
+        requestDao.clearAll()
     }
 
 
