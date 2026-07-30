@@ -12,7 +12,7 @@ import com.example.yummiziapp.features.restaurant.domain.repository.RestaurantRe
 import com.example.yummiziapp.features.user.domain.repository.UserRepository
 import com.example.yummiziapp.features.user.ui.model.SelectedRestaurantUiModel
 import com.example.yummiziapp.features.user.ui.model.FocusedRestaurantUiModel
-import com.example.yummiziapp.features.user.ui.model.RequestUiStatus
+import com.example.yummiziapp.features.user.ui.model.PendingRequestUiStatus
 import com.example.yummiziapp.features.user.ui.model.UserDetailsUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -112,7 +112,7 @@ class SpecificationViewModel @Inject constructor(
             initialValue = UserSpecificationUiState.Loading
         )
 
-    private fun Restaurant.toFocusedRestaurantUiModel(status: RequestUiStatus) = FocusedRestaurantUiModel(
+    private fun Restaurant.toFocusedRestaurantUiModel(status: PendingRequestUiStatus) = FocusedRestaurantUiModel(
         restaurantId = id,
         restaurantLogoUrl = logoUrl,
         waitingState = status,
@@ -123,7 +123,7 @@ class SpecificationViewModel @Inject constructor(
 
     // Extension function for clean mapping
     // Updated Mapper
-    private fun Restaurant.toSelectableRestaurantUiModel(status: RequestUiStatus) = SelectedRestaurantUiModel(
+    private fun Restaurant.toSelectableRestaurantUiModel(status: PendingRequestUiStatus) = SelectedRestaurantUiModel(
         restaurantId = id,
         distanceKm = 10,    // TODO: Remove mockup
         restaurantLogoUrl = logoUrl,
@@ -131,13 +131,14 @@ class SpecificationViewModel @Inject constructor(
     )
 
     // 🚀 High-Performance Pattern Matrix: Extension Mapper
-    private fun RequestStatusToken.toUiStatus(): RequestUiStatus = when (this) {
-        RequestStatusToken.IDLE -> RequestUiStatus.Idle
-        RequestStatusToken.QUEUED -> RequestUiStatus.Queued
-        RequestStatusToken.ACCEPTED -> RequestUiStatus.Accepted
-        RequestStatusToken.READY -> RequestUiStatus.Accepted    // TODO: Change this to Ready when it's implemented
-        RequestStatusToken.PAID -> RequestUiStatus.Paid
-        RequestStatusToken.DECLINED -> RequestUiStatus.Declined
+    private fun RequestStatusToken.toUiStatus(): PendingRequestUiStatus = when (this) {
+        RequestStatusToken.IDLE -> PendingRequestUiStatus.Idle
+        RequestStatusToken.QUEUED -> PendingRequestUiStatus.Queued
+        RequestStatusToken.ACCEPTED -> PendingRequestUiStatus.Accepted
+//X        RequestStatusToken.READY -> PendingRequestUiStatus.Accepted    //X TODO: Change this to Ready when it's implemented
+//X        RequestStatusToken.PAID -> PendingRequestUiStatus.Paid
+        RequestStatusToken.DECLINED -> PendingRequestUiStatus.Declined
+        else -> PendingRequestUiStatus.Other    // TODO: Handle a better solution for this
     }
 
     private fun LoggedUser.toUserDetailsUiModel() = UserDetailsUiModel(

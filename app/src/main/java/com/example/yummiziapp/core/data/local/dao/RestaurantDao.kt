@@ -68,6 +68,16 @@ interface RestaurantDao {
     """)
     fun observePendingRestaurants(userId: Uuid): Flow<List<Restaurant>>
 
+    @Query("""
+        SELECT restaurants.* FROM restaurants 
+        JOIN requests ON restaurants.id = requests.restaurantId 
+        WHERE requests.userId = :userId 
+        AND requests.status = 'READY'
+        ORDER BY requests.localCreationTimestamp DESC
+        LIMIT 1
+    """)
+    fun observeReadyRestaurant(userId: Uuid): Flow<Restaurant?>
+
     @Query("SELECT * FROM restaurants WHERE id = :restaurantId")    //TODO: Avoid "Select *": Use Projections to fetch only the specific columns needed for a particular screen. This reduces memory overhead and improves IO speed.
     suspend fun getRestaurantById(restaurantId: Uuid?): Restaurant?
 

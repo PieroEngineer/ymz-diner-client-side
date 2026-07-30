@@ -18,6 +18,8 @@ interface RestaurantRepository {
 
     fun observePendingRestaurants(): Flow<List<Restaurant>>
 
+    fun observeReadyRestaurants(): Flow<Restaurant?>
+
     fun observeRestaurantsByIds(restaurantIds: List<Uuid>): Flow<List<Restaurant>>
 
     //    suspend fun deleteRestaurant(id: Uuid)

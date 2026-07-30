@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -76,14 +77,42 @@ class HomeViewModel @Inject constructor(
     // On the other hand, if there is at least one "PAID", the restaurant selection screen only show that
     // restaurant in the white frame as with stated in Canva
 
+    //X
+//    val pendingRestaurants: StateFlow<List<Restaurant>> = restaurantRepository
+//        .observePendingRestaurants()
+//        .stateIn(
+//            scope = viewModelScope,
+//            started = SharingStarted.WhileSubscribed(5000),
+//            initialValue = emptyList()
+//        )
+
+    //X
+    // val readyRestaurants: StateFlow<Restaurant> = restaurantRepository
+    //  .observeReadyRestaurants()
+    //  .stateIn(
+    //      scope = viewModelScope,
+    //      started = SharingStarted.WhileSubscribed(5000),
+    //      initialValue = emptyList()
+    //  )
+
+
     // This is to update the orange frame
-    val pendingRestaurants: StateFlow<List<Restaurant>> = restaurantRepository
-        .observePendingRestaurants()
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = emptyList()
-        )
+    val activeRestaurantsUiState: StateFlow<ActiveRestaurantsUiState> = combine(
+        restaurantRepository.observePendingRestaurants(),
+        restaurantRepository.observeReadyRestaurants()
+    ) { pendingRestaurants, readyRestaurant ->
+        if (readyRestaurant == null) {
+            ActiveRestaurantsUiState.PendingStatus(pendingRestaurants)
+        }
+        else{
+            ActiveRestaurantsUiState.ReadyStatus(readyRestaurant)
+        }
+    }
+    .stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = ActiveRestaurantsUiState.Loading
+    )
 
     private fun clearFeed() {
         viewModelScope.launch {
@@ -118,8 +147,15 @@ class HomeViewModel @Inject constructor(
 
     fun onSelectionFrameClicked(){
         viewModelScope.launch {
-            Log.d("MyActivity", "🔎🟧  Frame was clicked")
-            _effect.send(HomeUiEvents.NavigateToRestaurantSelectionFrame(null))
+            if (activeRestaurantsUiState.value is ActiveRestaurantsUiState.ReadyStatus){
+
+                val currentState = activeRestaurantsUiState.value as? ActiveRestaurantsUiState.ReadyStatus ?: return@launch
+
+                _effect.send(HomeUiEvents.NavigateToReadyRestaurantMenu( currentState.restaurant.id ))
+            }
+            else{
+                _effect.send(HomeUiEvents.NavigateToRestaurantSelectionFrame(null))
+            }
         }
     }
 

@@ -22,20 +22,21 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInWindow
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.toSize
-import com.example.yummiziapp.core.data.local.entities.Restaurant
+import androidx.compose.ui.zIndex
 import com.example.yummiziapp.core.designsystem.theme.YummiziTheme
 import com.example.yummiziapp.R
+import com.example.yummiziapp.core.designsystem.theme.AsyncYummiziImage
 import com.example.yummiziapp.core.ui.components.DiffRoundedCornersRect
+import com.example.yummiziapp.features.home.ui.feed.ActiveRestaurantsUiState
 
 @Composable
 fun SelectionFrame(
     modifier: Modifier = Modifier,
-    selectedRestaurants: List<Restaurant?> = emptyList(),
+    activeRestaurantsUiState: ActiveRestaurantsUiState,
     onBoundsChanged: (Rect) -> Unit
 ) {
     val spacing = YummiziTheme.spacing
 
-    Log.d("MyActivity", "🍽️  Current selected restaurants\n$selectedRestaurants\n")
 
     Box(    // First Container (Block + logo)
         modifier = modifier
@@ -44,8 +45,8 @@ fun SelectionFrame(
                 val size = coordinates.size.toSize()
                 onBoundsChanged(Rect(position, size))
             },
-
         ){
+
         Box(    // Second container (Only block)
             modifier = Modifier
                 .fillMaxWidth()
@@ -68,37 +69,71 @@ fun SelectionFrame(
                     .align(Alignment.Center),
                 verticalAlignment = Alignment.CenterVertically
             ){
+                when (val state = activeRestaurantsUiState) {
+                    is ActiveRestaurantsUiState.Loading -> {
+                        Text(
+                            text = "Loading data...",
+                            color = YummiziTheme.colors.yummiziDarkBlue,
+                            style = YummiziTheme.typography.teacherFontVar3
+                        )
+                    }
+                    is ActiveRestaurantsUiState.PendingStatus -> {
+                        val selectedRestaurants = state.restaurants
 
+                        Text(   // Information message
+                            text = if (selectedRestaurants.isNotEmpty()) "Haciendo cola\nen ${selectedRestaurants.size} local${if (selectedRestaurants.size>1) "es" else ""}" else "Mantén presionado\n y arrastra restaurantes\naquí...",
+                            color = YummiziTheme.colors.yummiziWhite.copy(alpha = if (selectedRestaurants.isNotEmpty()) 1f else .6f),
+                            style = YummiziTheme.typography.teacherFontVar2
+                        )
 
-                Text(   // Information message
-                    text = if (selectedRestaurants.isNotEmpty()) "Haciendo cola\nen ${selectedRestaurants.size} local${if (selectedRestaurants.size>1) "es" else ""}" else "Mantén presionado\n y arrastra restaurantes\naquí...",
-                    color = YummiziTheme.colors.yummiziWhite.copy(alpha = if (selectedRestaurants.isNotEmpty()) 1f else .6f),
-                    style = YummiziTheme.typography.teacherFontVar2
-                )
+                        Spacer(Modifier.width(spacing.bigSeparation))
 
-                Spacer(Modifier.width(spacing.bigSeparation))
+                        if(selectedRestaurants.isNotEmpty()){    // With restaurants -> Restaurant logos
 
-                if(selectedRestaurants.isNotEmpty()){    // With restaurants -> Restaurant logos
+                            StackImagesHorizontally(
+                                Modifier
+                                    .height(spacing.smallImageSize)
+                                    .fillMaxWidth(),
 
-                    StackImagesHorizontally(
-                        Modifier
-                            .height(spacing.smallImageSize)
-                            .fillMaxWidth(),
+                                selectedRestaurants.mapNotNull{it?.logoUrl}
+                            )
 
-                        selectedRestaurants.mapNotNull{it?.logoUrl}
-                    )
+                        }
+                        else{    // Without restaurants -> Placeholder image
+                            Image(
+                                painter = painterResource(R.drawable.placeholder_select),
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .size(spacing.mediumImageSize)
+                            )
+                        }
+                    }
+                    is ActiveRestaurantsUiState.ReadyStatus ->{
+                        val readyRestaurant = state.restaurant
 
+                        AsyncYummiziImage(
+                            model = readyRestaurant.logoUrl,
+                            contentDescription = null,
+                            modifier = Modifier
+                                .height(spacing.smallImageSize)
+                                .clip(RoundedCornerShape(spacing.mediumCornerRadius))
+                        )
+
+                        Spacer(Modifier.width(spacing.bigSeparation))
+
+                        Text(   // Information message
+                            text = "${readyRestaurant.name} te espera",
+                            color = YummiziTheme.colors.yummiziWhite,
+                            style = YummiziTheme.typography.teacherFontVar2
+                        )
+                    }
+                    is ActiveRestaurantsUiState.Error -> {
+                        Log.d("MyActivity", "🚩  There was an error when displaying the restaurants in the orange frame...\n")
+                    }
                 }
-                else{    // Without restaurants -> Placeholder image
-                    Image(
-                        painter = painterResource(R.drawable.placeholder_select),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .size(spacing.mediumImageSize)
-                    )
-                }
+
+
             }
-
         }
 
         Image(

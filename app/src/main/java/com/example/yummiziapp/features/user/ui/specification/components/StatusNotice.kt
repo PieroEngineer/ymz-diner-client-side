@@ -21,7 +21,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.yummiziapp.core.designsystem.theme.YummiziTheme
 import com.example.yummiziapp.features.user.ui.model.FocusedRestaurantUiModel
-import com.example.yummiziapp.features.user.ui.model.RequestUiStatus
+import com.example.yummiziapp.features.user.ui.model.PendingRequestUiStatus
 
 @Composable
 fun StatusNotice(
@@ -36,7 +36,7 @@ fun StatusNotice(
             .padding(bottom = spacing.mediumPadding)
             .padding(horizontal = spacing.bigPadding)
             .then(
-                if (selectedRestaurant.waitingState is RequestUiStatus.Accepted) {
+                if (selectedRestaurant.waitingState is PendingRequestUiStatus.Accepted) {
                     // If the condition is true, apply the border modifier.
                     Modifier.border(
                         BorderStroke(

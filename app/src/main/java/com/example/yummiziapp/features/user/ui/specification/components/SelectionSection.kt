@@ -31,7 +31,7 @@ import com.example.yummiziapp.R
 import com.example.yummiziapp.core.designsystem.theme.AsyncYummiziImage
 import com.example.yummiziapp.core.designsystem.theme.YummiziTheme
 import com.example.yummiziapp.features.user.ui.model.SelectedRestaurantUiModel
-import com.example.yummiziapp.features.user.ui.model.RequestUiStatus
+import com.example.yummiziapp.features.user.ui.model.PendingRequestUiStatus
 import kotlin.uuid.Uuid
 
 
@@ -86,19 +86,19 @@ fun SelectionSection(
                         .fillMaxWidth()
                         .clickable {
                             when (restaurantInList.waitingState) {  // These are the only states that can be in the list of restaurants in specifications
-                                is RequestUiStatus.Queued -> onQueuedRestaurantClicked(
+                                is PendingRequestUiStatus.Queued -> onQueuedRestaurantClicked(
                                     restaurantInList.restaurantId
                                 )
 
-                                is RequestUiStatus.Accepted -> onAcceptedRestaurantClicked(
+                                is PendingRequestUiStatus.Accepted -> onAcceptedRestaurantClicked(
                                     restaurantInList.restaurantId
                                 )
 
-                                is RequestUiStatus.Declined -> onDeclinedRestaurantClicked(
+                                is PendingRequestUiStatus.Declined -> onDeclinedRestaurantClicked(
                                     restaurantInList.restaurantId
                                 )
 
-                                is RequestUiStatus.Paid -> {} // TODO // This shouldn't be here theoretically, but I place it here just in case so it works even if the screen is bugged
+                                //Xis PendingRequestUiStatus.Paid -> {} // TODO // This shouldn't be here theoretically, but I place it here just in case so it works even if the screen is bugged
 
                                 else -> {
                                     Log.d("MyActivity", "🔎🚩  The unexpected waiting status was ${restaurantInList.waitingState}")
@@ -122,7 +122,7 @@ fun SelectionSection(
                         modifier = Modifier
                             .weight(1f)
                             .then(  // Use .then() to conditionally chain modifiers
-                                if (restaurantInList.waitingState is RequestUiStatus.Accepted) {
+                                if (restaurantInList.waitingState is PendingRequestUiStatus.Accepted) {
                                     // If the condition is true, apply the border modifier.
                                     Modifier.border(
                                         BorderStroke(

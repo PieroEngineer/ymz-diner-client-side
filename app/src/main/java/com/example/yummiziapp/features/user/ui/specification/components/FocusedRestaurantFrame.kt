@@ -29,7 +29,7 @@ import androidx.compose.ui.unit.dp
 import com.example.yummiziapp.core.designsystem.theme.YummiziTheme
 import com.example.yummiziapp.features.user.ui.model.FocusedRestaurantUiModel
 import com.example.yummiziapp.core.designsystem.theme.AsyncYummiziImage
-import com.example.yummiziapp.features.user.ui.model.RequestUiStatus
+import com.example.yummiziapp.features.user.ui.model.PendingRequestUiStatus
 import kotlin.uuid.Uuid
 
 
@@ -161,7 +161,7 @@ fun FocusedRestaurantFrame(
 
             Spacer(Modifier.weight(2f))
 
-            if (selectedRestaurant.waitingState == RequestUiStatus.Queued){
+            if (selectedRestaurant.waitingState == PendingRequestUiStatus.Queued){
                 /// Include a text with "teacher" font with color "yummziziLightOrange2"
                 Text(
                     text = "Puedes llegar antes si deseas",
@@ -182,7 +182,7 @@ fun FocusedRestaurantFrame(
 
 
             when (selectedRestaurant.waitingState) {    // Lower area
-                is RequestUiStatus.Idle -> {
+                is PendingRequestUiStatus.Idle -> {
                     ConfirmationButton(
                         modifier = Modifier
                             .fillMaxWidth(.6f),
@@ -190,14 +190,14 @@ fun FocusedRestaurantFrame(
                         text = "Unirse a la cola"
                     )
                 }
-                is RequestUiStatus.Queued -> {
+                is PendingRequestUiStatus.Queued -> {
                     StatusNotice(
                         modifier = Modifier
                             .fillMaxWidth(.85f),
                         selectedRestaurant = selectedRestaurant
                     )
                 }
-                is RequestUiStatus.Accepted -> {
+                is PendingRequestUiStatus.Accepted -> {
                     ConfirmationButton(
                         modifier = Modifier
                             .fillMaxWidth(.6f),
@@ -205,14 +205,22 @@ fun FocusedRestaurantFrame(
                                 text = "Elegir\nrestaurante"
                     )
                 }
-                is RequestUiStatus.Paid -> {
+                //X
+//                is RequestUiStatus.Paid -> {
+//                    StatusNotice(
+//                        modifier = Modifier
+//                            .fillMaxWidth(.85f),
+//                        selectedRestaurant = selectedRestaurant
+//                    )
+//                }
+                is PendingRequestUiStatus.Declined -> {
                     StatusNotice(
                         modifier = Modifier
                             .fillMaxWidth(.85f),
                         selectedRestaurant = selectedRestaurant
                     )
                 }
-                is RequestUiStatus.Declined -> {
+                else -> {   // TODO: handle it in a better way
                     StatusNotice(
                         modifier = Modifier
                             .fillMaxWidth(.85f),

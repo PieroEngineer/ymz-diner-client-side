@@ -19,6 +19,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.yummiziapp.core.designsystem.theme.YummiziTheme
 import com.example.yummiziapp.core.ui.components.NavigationBar
 import com.example.yummiziapp.core.ui.components.SearchingArea
@@ -52,8 +53,8 @@ fun SpecificationScreen(
         }
     }
 
-    val uiRestaurantState by viewModel.uiRestaurantState.collectAsState()
-    val uiUserState by viewModel.uiUserState.collectAsState()
+    val uiRestaurantState by viewModel.uiRestaurantState.collectAsStateWithLifecycle()
+    val uiUserState by viewModel.uiUserState.collectAsStateWithLifecycle()
     var isConfirmationPopupVisible by rememberSaveable { mutableStateOf(false) }
 
     Box(
@@ -87,7 +88,7 @@ fun SpecificationScreen(
                         .fillMaxWidth()
                         .zIndex(3f),
 
-                    mapOf(  //T This is just for testing. The real is a map too, but come from user's backend
+                    mapOf(  /// This is just for testing. The real is a map too, but come from user's backend
                         "is special date" to true,
                         "have baby" to false,
                         "need support" to true

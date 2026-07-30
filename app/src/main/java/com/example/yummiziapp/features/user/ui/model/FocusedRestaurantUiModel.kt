@@ -5,7 +5,7 @@ import kotlin.uuid.Uuid
 data class FocusedRestaurantUiModel(
     val restaurantId: Uuid,
     val restaurantLogoUrl: String,
-    val waitingState: RequestUiStatus,
+    val waitingState: PendingRequestUiStatus,
     val distanceKm: Int,
     val name: String,
     val maxWaitingTimeInMinutes: Int

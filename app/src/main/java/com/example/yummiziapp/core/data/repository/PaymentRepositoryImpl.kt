@@ -73,7 +73,7 @@ class PaymentRepositoryImpl @Inject constructor(
                 userId = userId,
                 userName = "Sir Mock User p", //readyRequest.userName,
                 arrivalTime = readyRequest.arrivalTimeInMinutes,
-                groupSize = loggedUser.companySize,
+                groupSize = loggedUser.companySize + 1,
                 selections = orderSelectionDtos
             )
 

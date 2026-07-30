@@ -49,10 +49,11 @@ import com.example.yummiziapp.features.home.ui.feed.components.SectionArea
 
 //@Preview(showBackground = true)
 @Composable
-fun HomeScreen(
+fun HomeScreen( // Continue here: Test when the user already has an ready request and remove cp if it works
     modifier: Modifier = Modifier,
     onRestaurantSelectionNavigation: (Uuid?) -> Unit,
     onRestaurantSelected: (Uuid) -> Unit,
+    onReadyRestaurantSelected: (Uuid) -> Unit,
     onPreferenceNavigation: () -> Unit,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
@@ -63,8 +64,9 @@ fun HomeScreen(
             when (effect) {
                 is HomeUiEvents.NavigateToRestaurantSelectionFrame -> { onRestaurantSelectionNavigation(effect.restaurantId) }
                 is HomeUiEvents.NavigateToRestaurantMenuPreview -> { onRestaurantSelected(effect.restaurantId) }
-                is HomeUiEvents.NavigateToPreferences -> { onPreferenceNavigation() }
+                is HomeUiEvents.NavigateToReadyRestaurantMenu -> { onReadyRestaurantSelected(effect.restaurantId) }
                 is HomeUiEvents.ShowConnectionError -> { /* ... */ }
+                is HomeUiEvents.NavigateToPreferences -> { onPreferenceNavigation() }
             }
         }
     }
@@ -80,8 +82,8 @@ fun HomeScreen(
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
 
-    val selectedRestaurants by viewModel.pendingRestaurants.collectAsStateWithLifecycle()    // This state determine what restaurants are in the orange frame
-    val uiState by viewModel.uiState.collectAsState()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val activeRestaurantsUiState by viewModel.activeRestaurantsUiState.collectAsStateWithLifecycle()
 
     // Hoisted State: Controlled completely at the Screen Orchestration Layer
     var currentControlledSectionId by rememberSaveable { mutableStateOf<Int?>(null) }
@@ -128,7 +130,7 @@ fun HomeScreen(
                         onClick = { viewModel.onSelectionFrameClicked() }
                     ),
 
-                selectedRestaurants = selectedRestaurants,
+                activeRestaurantsUiState = activeRestaurantsUiState,
                 onBoundsChanged = { bounds ->
                     dropZoneBounds = bounds
                 }
@@ -202,6 +204,10 @@ fun HomeScreen(
                                             currentControlledSectionId == section.id,
 
                                             { restaurant, startPos ->
+                                                //If there is a restaurant ready, don't allow drag
+                                                if(activeRestaurantsUiState is ActiveRestaurantsUiState.ReadyStatus) return@RestaurantBlock    /// Should I move all this dragging logic to the ViewModel?
+                                                //TODO: add a snackbar or some kind of message to notify the user that the restaurant is already selected, so he can't drag another restaurant
+
                                                 draggingRestaurant = restaurant
 
                                                 // Convert DP to PX properly using density.density
@@ -222,8 +228,6 @@ fun HomeScreen(
                                                     draggingRestaurant?.let {
 
                                                         viewModel.onRestaurantDropped(it)
-//X                                                        if (it != null){
-//                                                        }
                                                     }
                                                 }
                                                 draggingRestaurant = null

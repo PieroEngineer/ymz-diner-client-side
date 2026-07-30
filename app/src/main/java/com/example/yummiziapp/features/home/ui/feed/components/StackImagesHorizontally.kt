@@ -15,7 +15,7 @@ import com.example.yummiziapp.core.designsystem.theme.AsyncYummiziImage
 
 //@Preview
 @Composable
-fun StackImagesHorizontally(    ///IDEA: It would be nice add an effect here
+fun StackImagesHorizontally(    ///IDEA: It would be nice add an effect here    // An effect of the pending restaurant logos moving horizontally appearing and desappearing in the ends
     modifier: Modifier = Modifier,
 
     imagesToStack: List<String>

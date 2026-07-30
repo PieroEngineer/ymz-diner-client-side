@@ -6,5 +6,5 @@ data class SelectedRestaurantUiModel(
     val restaurantId: Uuid,
     val distanceKm: Int,
     val restaurantLogoUrl: String,
-    val waitingState: RequestUiStatus,
+    val waitingState: PendingRequestUiStatus,
 )

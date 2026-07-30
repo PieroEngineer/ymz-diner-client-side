@@ -38,6 +38,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.yummiziapp.R
 import com.example.yummiziapp.core.designsystem.theme.AsyncYummiziImage
 import com.example.yummiziapp.core.designsystem.theme.YummiziTheme
@@ -52,7 +53,7 @@ fun PaymentPreparationScreen(
 
     Log.w("MyActivity", "🔎🔎  1")
 
-    val pickedImageUiState by viewModel.pickedImageUiState.collectAsState()
+    val pickedImageUiState by viewModel.pickedImageUiState.collectAsStateWithLifecycle()
 
     Log.w("MyActivity", "🔎🔎  2")
 

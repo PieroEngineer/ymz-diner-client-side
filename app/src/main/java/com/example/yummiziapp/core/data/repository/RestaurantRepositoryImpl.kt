@@ -148,6 +148,11 @@ class RestaurantRepositoryImpl @Inject constructor(
         return restaurantDao.observePendingRestaurants(currentUserId)
     }
 
+    override fun observeReadyRestaurants(): Flow<Restaurant?> {
+        val currentUserId = Uuid.parse("00000000-0000-4000-a000-000000000000")
+        return restaurantDao.observeReadyRestaurant(currentUserId)
+    }
+
     private suspend fun syncWebSocketToRoom() = withContext(ioDispatcher) {
         val userId = "00000000-0000-4000-a000-000000000000"
         val channelName = "request:$userId"

@@ -36,9 +36,16 @@ fun YummiziNavHost(
                 onRestaurantSelected = { id ->
                     navController.navigate(YummiziRoute.MenuPreview(restaurantId = id.toString()))
                 },
+                onReadyRestaurantSelected = { id ->
+                    navController.navigate(YummiziRoute.FoodSelection(restaurantId = id.toString()))
+                },
                 onPreferenceNavigation = {
                     navController.navigate(YummiziRoute.Preferences)
-                }
+                },
+                //X
+//                onRestaurantSelectedNav = { id ->
+//                    navController.navigate(YummiziRoute.FoodSelection(restaurantId = id.toString()))
+//                },
             )
         }
 

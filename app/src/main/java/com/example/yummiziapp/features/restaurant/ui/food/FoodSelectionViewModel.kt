@@ -67,13 +67,6 @@ class FoodSelectionViewModel @Inject constructor(   //TODO: Change the way of ho
     }
 
 
-//X
-//    fun updateQuantity(dishId: Uuid, delta: Int) {
-//        val current = _selectionMap.value.toMutableMap()
-//        val newCount = (current[dishId] ?: 1) + delta
-//        if (newCount <= 0) current[dishId] = 1 else current[dishId] = newCount
-//        _selectionMap.value = current
-//    }
     // 3. Methods to update state
     fun updateQuantity(dishId: Uuid, delta: Int) {
         _orderMap.update { current ->
