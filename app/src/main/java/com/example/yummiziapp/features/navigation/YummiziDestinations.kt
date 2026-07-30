@@ -11,6 +11,6 @@ sealed interface YummiziRoute {
     @Serializable data class MenuPreview(val restaurantId: String) : YummiziRoute
     @Serializable data class FoodSelection(val restaurantId: String) : YummiziRoute
 
-    @Serializable data object PaymentPreparation : YummiziRoute
+    @Serializable data class PaymentPreparation(val restaurantId: String) : YummiziRoute
 
 }

@@ -9,9 +9,11 @@ import kotlin.uuid.Uuid
 interface PaymentRepository {
     suspend fun savePaymentImageToInternalStorage(uri: Uri): Result<File>
 
-    suspend fun selectOrder(orderMap: Map<Uuid, Int>): Result<Int>
+    suspend fun selectOrder(orderMap: Map<Uuid, Int>)
 
-    fun observeCurrentOrder(): Flow<List<OrderSelection>>
+//    fun observeCurrentOrder(): Flow<List<OrderSelection>>
 
     suspend fun getCurrentOrder(): List<OrderSelection>
+
+    suspend fun uploadSelectedOrder()
 }

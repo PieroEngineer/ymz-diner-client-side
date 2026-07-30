@@ -71,10 +71,10 @@ class FoodSelectionViewModel @Inject constructor(   //TODO: Change the way of ho
 
     fun confirmOrder(){
         viewModelScope.launch {
-            paymentRepository.selectOrder(_orderMap.value)      // Make it functional
+            paymentRepository.selectOrder(_orderMap.value)
 
             // TODO: If the payment fails, Navigate, but show a snackbar asking for trying again.
-            _effect.send(FoodSelectionUiEvents.NavigateToPayment/* (restaurantId) */)
+            _effect.send(FoodSelectionUiEvents.NavigateToPayment(restaurantId) )    /// Should I send this contained in the entity or here?
         }
     }
 

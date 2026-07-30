@@ -28,6 +28,7 @@ import com.example.yummiziapp.features.restaurant.ui.food.components.MenuArea
 import com.example.yummiziapp.R
 import com.example.yummiziapp.features.restaurant.ui.food.components.MenuSettingArea
 import com.example.yummiziapp.features.restaurant.ui.model.MenuSetting
+import kotlin.uuid.Uuid
 
 //import androidx.compose.ui.tooling.preview.Preview
 
@@ -35,7 +36,7 @@ import com.example.yummiziapp.features.restaurant.ui.model.MenuSetting
 @Composable
 fun FoodSelectionScreen(    // TODO: Correct the prop-drilling of this and other screens with the slot solution
     modifier: Modifier = Modifier,
-    onOrderConfirmed: () -> Unit,
+    onOrderConfirmed: (Uuid) -> Unit,
     viewModel: FoodSelectionViewModel = hiltViewModel()
 ){
     val spacing = YummiziTheme.spacing
@@ -47,7 +48,7 @@ fun FoodSelectionScreen(    // TODO: Correct the prop-drilling of this and other
     LaunchedEffect(Unit) {
         viewModel.navEffect.collect { effect ->
             when(effect) {
-                is FoodSelectionUiEvents.NavigateToPayment -> { onOrderConfirmed() }
+                is FoodSelectionUiEvents.NavigateToPayment -> { onOrderConfirmed(effect.restaurantId) }
             }
         }
     }

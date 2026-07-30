@@ -76,8 +76,8 @@ fun YummiziNavHost(
 
         composable<YummiziRoute.FoodSelection> {
             FoodSelectionScreen(
-                onOrderConfirmed = {
-                    navController.navigate(YummiziRoute.PaymentPreparation)
+                onOrderConfirmed = { id ->
+                    navController.navigate(YummiziRoute.PaymentPreparation(restaurantId = id.toString()))
                 }
             )
         }

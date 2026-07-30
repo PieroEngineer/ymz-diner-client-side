@@ -32,16 +32,14 @@ class PaymentRepositoryImpl @Inject constructor(
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ) : PaymentRepository {
 
-    override suspend fun selectOrder(orderMap: Map<Uuid, Int>): Result<Int> = withContext(ioDispatcher) {
-        runCatching {
+    override suspend fun selectOrder(orderMap: Map<Uuid, Int>)/*: Result<Unit>*/ = withContext(ioDispatcher) {
+//        runCatching { /// Should I use runCatching?
             // Get the current "READY" request and extract its ID and the Restaurant ID
             val readyRequest = requestDao.getLatestReadyRequest()
                 ?: throw IllegalStateException("No READY request found")
             
             val loggedUser = loggedUserDao.getUser(Uuid.parse("00000000-0000-4000-a000-000000000000"))
                 ?: throw IllegalStateException("No logged user found")
-
-            val userId = loggedUser.id
 
             // Get dish details to get historical price
             val dishIds = orderMap.keys.toList()
@@ -62,39 +60,59 @@ class PaymentRepositoryImpl @Inject constructor(
 
             // Save locally
             paymentDao.insertOrderSelections(orderSelections)
+//        }
+    }
 
-            // Convert the list of "OrderSelection" into a list of "OrderSelectionDto"
-            val orderSelectionDtos = orderSelections.toDtoList()
+    override suspend fun uploadSelectedOrder() {    // TODO: Update the state of the request to PAID
+        // Get the current "READY" request and extract its ID and the Restaurant ID
+        val readyRequest = requestDao.getLatestReadyRequest()
+            ?: throw IllegalStateException("No READY request found")
 
-            // Add the list of "OrderSelectionDto" into a "sendOrderReadyToBePaidDto"
-            val payload = createSendOrderDto(
-                requestId = readyRequest.requestId,
-                restaurantId = readyRequest.restaurantId,
-                userId = userId,
-                userName = "Sir Mock User p", //readyRequest.userName,
-                arrivalTime = readyRequest.arrivalTimeInMinutes,
-                groupSize = loggedUser.companySize + 1,
-                selections = orderSelectionDtos
-            )
+        val loggedUser = loggedUserDao.getUser(Uuid.parse("00000000-0000-4000-a000-000000000000"))
+            ?: throw IllegalStateException("No logged user found")
 
-            Log.d("MyActivity", "⏫  Payload of the request: $payload")
+        // Convert the list of "OrderSelection" into a list of "OrderSelectionDto"
+        val orderSelectionDtos = paymentDao.getOrderSelections().toDtoList()
 
-            // POST the sendOrderReadyToBePaidDto with the api function "selectOrder"
-            val response = yummiziApi.selectOrder(payload)
+        // Sum of prices
+        val totalPriceInCentsFromLocal = orderSelectionDtos.sumOf { it.historicalUnitPriceInCents * it.quantity }
 
-            if (response.isSuccessful) {
-                // Receive the response with the total price and return it
-                response.body()?.totalPriceInCents 
-                    ?: throw IllegalStateException("Empty response body")
-            } else {
-                throw Exception("API call failed: ${response.code()} ${response.message()}")
+        // Add the list of "OrderSelectionDto" into a "sendOrderReadyToBePaidDto"
+        val payload = createSendOrderDto(   // TODO: change it to only receive the request and logged user directly to make it looks better
+            requestId = readyRequest.requestId,
+            restaurantId = readyRequest.restaurantId,
+            userId = loggedUser.id,
+            userName = "Sir Mock User p", //readyRequest.userName,
+            arrivalTime = readyRequest.arrivalTimeInMinutes,
+            groupSize = loggedUser.companySize + 1,
+            selections = orderSelectionDtos
+        )
+
+        Log.d("MyActivity", "⏫  Payload of the request: $payload")
+
+        // POST the sendOrderReadyToBePaidDto with the api function "selectOrder"
+        val response = yummiziApi.selectOrder(payload)
+
+        if (response.isSuccessful) {
+            // Receive the response with the total price and return it
+            val totalPriceInCentsFromRemote = response.body()?.totalPriceInCents
+                ?: throw IllegalStateException("Empty response body")
+
+            if (totalPriceInCentsFromLocal != totalPriceInCentsFromRemote) {
+                Log.d("MyActivity", "\n🚩💲  The local price doesn't match with the remote price:\n  Local: $totalPriceInCentsFromLocal\n  Remote: $totalPriceInCentsFromRemote")
             }
+            else{
+                Log.d("MyActivity", "✅💲  The local price matches with the remote price")
+            }
+
+        } else {
+            throw Exception("API call failed: ${response.code()} ${response.message()}")
         }
     }
 
-    override fun observeCurrentOrder(): Flow<List<OrderSelection>> = paymentDao.observeOrderSelections()
+//    override fun observeCurrentOrder(): Flow<List<OrderSelection>> = paymentDao.observeOrderSelections()
 
-    override suspend fun getCurrentOrder(): List<OrderSelection> = withContext(ioDispatcher) {
+    override suspend fun getCurrentOrder(): List<OrderSelection> = withContext(ioDispatcher) {  /// Is this "withContext(ioDispatcher)" inefficient due it's a direct call?
         paymentDao.getOrderSelections()
     }
 

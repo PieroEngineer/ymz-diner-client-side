@@ -216,7 +216,8 @@ fun PaymentPreparationScreen(
                         .padding(
                             vertical = spacing.regularPadding,
                             horizontal = spacing.bigPadding
-                        ),
+                        )
+                        .clickable{ viewModel.onPaymentSendClicked() },
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
@@ -258,11 +259,9 @@ fun PaymentPreparationScreen(
                             modifier = Modifier
                                 .fillMaxSize()
                                 .dropShadow(shape = RoundedCornerShape(12.dp)) {
-                                    alpha =
-                                        0.5f                                  // High opacity to make it visible
+                                    alpha = 0.5f                                  // High opacity to make it visible
                                     radius = 20f                                 // Soft blur radius
-                                    spread =
-                                        2f                               // Expands the shadow size
+                                    spread = 2f                               // Expands the shadow size
                                     offset = Offset(8f, 12f) // Pushes shadow down
                                 }
                                 .clip(RoundedCornerShape(spacing.mediumCornerRadius))

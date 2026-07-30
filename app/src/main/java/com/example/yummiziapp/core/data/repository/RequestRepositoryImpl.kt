@@ -138,7 +138,7 @@ class RequestRepositoryImpl @Inject constructor(
 
         } catch (e: Exception) {
             // ROLLBACK: Restore everything
-            withContext(NonCancellable) {
+            withContext(NonCancellable) { // TODO: Try it without "withContext(NonCancellable)", because now it's in repo /// Gemini: Warning: Do NOT use NonCancellable to start long-running network or database calls in a ViewModel. It is strictly designed for immediate, lightweight cleanup operations in a finally block.
                 requestDao.updateRequestStatus(currentRequest.requestId, currentRequest.status)
                 if(otherRequests.isNotEmpty()){
                     otherRequests.forEach { requestDao.insertRequest(it) }

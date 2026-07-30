@@ -3,7 +3,7 @@ package com.example.yummiziapp.core.data.network.model
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class sendOrderReadyToBePaidDto(
+data class SendOrderReadyToBePaidDto(
     val requestId: String,
     val restaurantId: String,
     val userId: String,
@@ -22,7 +22,7 @@ data class OrderSelectionDto(
 )
 
 @Serializable
-data class sendOrderReadyToBePaidResponseDto(
+data class SendOrderReadyToBePaidResponseDto(
     val message: String,
     val totalPriceInCents: Int
 )
