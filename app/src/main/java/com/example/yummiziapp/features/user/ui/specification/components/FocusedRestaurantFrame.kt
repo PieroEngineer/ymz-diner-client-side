@@ -139,7 +139,7 @@ fun FocusedRestaurantFrame(
                     NumberSelector(
                         modifier = Modifier,
 
-                        mainColor = YummiziTheme.colors.yummiziDarkOrange,
+                        borderColor = YummiziTheme.colors.yummiziDarkOrange,
 
                         indicatorNumber= arrivalTimeInMinutes,
                         onNumberChanged = { increase ->

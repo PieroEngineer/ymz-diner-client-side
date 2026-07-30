@@ -27,7 +27,7 @@ import com.example.yummiziapp.core.designsystem.theme.YummiziTheme
 fun NumberSelector(
     modifier: Modifier = Modifier,
 
-    mainColor: Color = YummiziTheme.colors.yummiziDarkOrange,
+    borderColor: Color = YummiziTheme.colors.yummiziDarkOrange,
     rowColor: Color = YummiziTheme.colors.yummiziDarkOrange,
 
     indicatorNumber: Int,
@@ -41,7 +41,7 @@ fun NumberSelector(
             .border(
                 BorderStroke(
                     spacing.mediumLineThickness,
-                    mainColor
+                    borderColor
                 ),
                 shape = RoundedCornerShape(spacing.regularCornerRadius)
             )
@@ -68,7 +68,7 @@ fun NumberSelector(
         Text(
             text = indicatorNumber.toString(),
             textAlign = TextAlign.Center,
-            color = mainColor,
+            color = borderColor,
             style = YummiziTheme.typography.comfortaaFontVar1,
             modifier = Modifier
                 .padding(vertical = spacing.smallPadding)
