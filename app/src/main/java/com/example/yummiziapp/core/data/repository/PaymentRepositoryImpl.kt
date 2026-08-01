@@ -9,6 +9,7 @@ import com.example.yummiziapp.core.data.local.dao.LoggedUserDao
 import com.example.yummiziapp.core.data.local.dao.MenuDao
 import com.example.yummiziapp.core.data.local.dao.PaymentDao
 import com.example.yummiziapp.core.data.local.dao.RequestDao
+import com.example.yummiziapp.core.data.local.dao.RestaurantDao
 import com.example.yummiziapp.core.data.local.entities.OrderSelection
 import com.example.yummiziapp.core.data.network.api.PaymentApi
 import com.example.yummiziapp.core.data.network.model.mappers.createSendOrderDto
@@ -27,7 +28,9 @@ class PaymentRepositoryImpl @Inject constructor(
     private val requestDao: RequestDao,
     private val menuDao: MenuDao,
     private val loggedUserDao: LoggedUserDao,
+
     private val yummiziApi: PaymentApi,
+
     @ApplicationContext private val context: Context,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ) : PaymentRepository {
@@ -110,7 +113,7 @@ class PaymentRepositoryImpl @Inject constructor(
         }
     }
 
-//    override fun observeCurrentOrder(): Flow<List<OrderSelection>> = paymentDao.observeOrderSelections()
+    override fun observeCurrentOrder(): Flow<List<OrderSelection>> = paymentDao.observeOrderSelections()
 
     override suspend fun getCurrentOrder(): List<OrderSelection> = withContext(ioDispatcher) {  /// Is this "withContext(ioDispatcher)" inefficient due it's a direct call?
         paymentDao.getOrderSelections()

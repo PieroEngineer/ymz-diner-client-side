@@ -90,6 +90,20 @@ interface RestaurantDao {
     @Query("DELETE FROM restaurants WHERE id = :restaurantId")
     suspend fun deleteById(restaurantId: Uuid)
 
+    @Query("""
+        UPDATE restaurants 
+        SET phoneNumberToPay = :phoneToPay, 
+            phoneNumberToContact = :phoneToContact, 
+            paymentQrUrl = :qrUrl 
+        WHERE id = :restaurantId
+    """)
+    suspend fun updatePaymentInfo(
+        restaurantId: Uuid,
+        phoneToPay: Int,
+        phoneToContact: Int,
+        qrUrl: String
+    )
+
     @Query("DELETE FROM restaurants")
     suspend fun clearAll()
 

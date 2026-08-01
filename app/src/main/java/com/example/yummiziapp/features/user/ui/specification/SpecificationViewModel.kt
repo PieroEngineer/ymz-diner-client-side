@@ -135,8 +135,6 @@ class SpecificationViewModel @Inject constructor(
         RequestStatusToken.IDLE -> PendingRequestUiStatus.Idle
         RequestStatusToken.QUEUED -> PendingRequestUiStatus.Queued
         RequestStatusToken.ACCEPTED -> PendingRequestUiStatus.Accepted
-//X        RequestStatusToken.READY -> PendingRequestUiStatus.Accepted    //X TODO: Change this to Ready when it's implemented
-//X        RequestStatusToken.PAID -> PendingRequestUiStatus.Paid
         RequestStatusToken.DECLINED -> PendingRequestUiStatus.Declined
         else -> PendingRequestUiStatus.Other    // TODO: Handle a better solution for this
     }

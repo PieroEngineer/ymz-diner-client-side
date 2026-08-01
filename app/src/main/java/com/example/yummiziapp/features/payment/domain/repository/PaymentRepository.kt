@@ -11,7 +11,7 @@ interface PaymentRepository {
 
     suspend fun selectOrder(orderMap: Map<Uuid, Int>)
 
-//    fun observeCurrentOrder(): Flow<List<OrderSelection>>
+    fun observeCurrentOrder(): Flow<List<OrderSelection>>
 
     suspend fun getCurrentOrder(): List<OrderSelection>
 

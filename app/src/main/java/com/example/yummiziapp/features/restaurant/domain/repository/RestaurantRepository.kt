@@ -29,6 +29,7 @@ interface RestaurantRepository {
 
     fun observeMenuPagesByRestaurant(restaurantId: Uuid): Flow<List<MenuPage>>
 
+    suspend fun fetchPaymentInfo(restaurantId: Uuid)
     suspend fun clearAllRestaurantsAndRequests()
 
     suspend fun syncFeedRestaurants()

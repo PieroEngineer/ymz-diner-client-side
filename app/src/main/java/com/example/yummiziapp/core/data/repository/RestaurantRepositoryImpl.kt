@@ -49,6 +49,25 @@ class RestaurantRepositoryImpl @Inject constructor(
         requestDao.clearAll()
     }
 
+    override suspend fun fetchPaymentInfo(restaurantId: Uuid) {
+        withContext(ioDispatcher) { /// Is "withContext(...)" necessary here?
+            try {
+                val response = yummiziApi.getPaymentInfo(restaurantId.toString())
+                if (response.isSuccessful) {
+                    response.body()?.let { paymentInfo ->
+                        restaurantDao.updatePaymentInfo(
+                            restaurantId = restaurantId,
+                            phoneToPay = paymentInfo.phoneNumberToPay,
+                            phoneToContact = paymentInfo.phoneNumberToContact,
+                            qrUrl = paymentInfo.paymentQrUrl
+                        )
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e("MyActivity", "Failed to fetch payment info for restaurant: $restaurantId", e)
+            }
+        }
+    }
 
     // Fetch from remote and save to Room
     override suspend fun syncFeedRestaurants() = withContext(ioDispatcher) {

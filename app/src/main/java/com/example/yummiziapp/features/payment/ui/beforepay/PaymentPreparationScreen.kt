@@ -54,6 +54,7 @@ fun PaymentPreparationScreen(
     Log.w("MyActivity", "🔎🔎  1")
 
     val pickedImageUiState by viewModel.pickedImageUiState.collectAsStateWithLifecycle()
+    val paymentInfoUiState by viewModel.paymentInfoUiState.collectAsStateWithLifecycle()
 
     Log.w("MyActivity", "🔎🔎  2")
 
@@ -82,166 +83,180 @@ fun PaymentPreparationScreen(
                 .padding(spacing.bigPadding),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-//            AsyncYummiziImage(    // Restaurant logo
-//                model = null, // Placeholder URL
-//                contentDescription = null,
-//                modifier = Modifier.weight(1f)
-//            )
-            Image(  //X Mockup
-                painter = painterResource(id = R.drawable.mock_rest_logo_1),
-                contentDescription = null,
-                modifier = Modifier.weight(1f)
-            )
 
-            Column( // Main frame
-                modifier = Modifier
-                    .weight(7f)
-                    .clip(RoundedCornerShape(spacing.mediumCornerRadius))
-                    .background(YummiziTheme.colors.yummiziWhite)
-                    .padding(
-                        vertical = spacing.mediumPadding,
-                        horizontal = spacing.bigPadding
-                    ),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(   // Price
-                    text = "S/. 53,20", // Placeholder for decimal number
-                    style = YummiziTheme.typography.leaguespartanFontVar4,
-                    color = YummiziTheme.colors.yummiziBlack
-                )
-
-                Spacer(modifier = Modifier.height(spacing.smallSeparation))
-
-                HorizontalDivider(
-                    thickness = spacing.smallLineThickness,
-                    color = YummiziTheme.colors.yummiziGray
-                )
-
-                Spacer(modifier = Modifier.height(spacing.mediumSeparation))
-
-                Box(    // Payment methods' logos
-                    modifier = Modifier
-                        .fillMaxWidth(.5f)
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.yape_logo),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .size(spacing.hugeIconSize)
-                            .align(Alignment.CenterStart)
-                            .fillMaxHeight()
-                    )
-
-                    Image(
-                        painter = painterResource(id = R.drawable.plin_logo),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .size(spacing.hugeIconSize)
-                            .align(Alignment.CenterEnd)
-                            .fillMaxHeight()
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(spacing.tinySeparation))
-
-//                AsyncYummiziImage(    // Payment QR
-//                    model = null, // Placeholder URL
-//                    contentDescription = null,
-//                    modifier = Modifier.size(spacing.bigImageSize)
-//                )
-                Image(  //X Mockup
-                    painter = painterResource(id = R.drawable.mock_qr),
-                    contentDescription = null,
-                    modifier = Modifier.size(spacing.bigImageSize)
-                )
-
-                Spacer(modifier = Modifier.height(spacing.mediumSeparation))
-
-                Text(
-                    text = "O al número",
-                    style = YummiziTheme.typography.comfortaaFontVar3,
-                    color = YummiziTheme.colors.yummiziBlack,
-                )
-
-                Spacer(modifier = Modifier.height(spacing.smallSeparation))
-
-                Row(    // Copiable phone number box
-                    modifier = Modifier
-//X                        .fillMaxWidth(.5f)
-                        .weight(1f)
-                        .shadow(
-                            elevation = 4.dp,
-                            shape = RoundedCornerShape(10.dp)
-                        )
-                        .clip(RoundedCornerShape(spacing.smallCornerRadius))
-                        .background(YummiziTheme.colors.yummiziWhite)
-                        .padding(
-                            vertical = spacing.tinyPadding,
-                            horizontal = spacing.mediumPadding
-                        ),
-                    verticalAlignment = Alignment.CenterVertically
-
-                ) {
+            when (val state = paymentInfoUiState) {
+                is PaymentPreparationUiState.Loading -> {
+                   // TODO: Put a block that contains a loading animation
                     Text(
-                        text = "987654321",
-                        style = YummiziTheme.typography.comfortaaFontVar1,
+                        text = "Loading data...",
+                        textAlign = TextAlign.Center,
                         color = YummiziTheme.colors.yummiziDarkBlue,
-                        textAlign = TextAlign.Center
+                        style = YummiziTheme.typography.teacherFontVar3
                     )
-
-                    Spacer(modifier = Modifier.width(spacing.mediumSeparation))
-
-                    Image(
-                        painter = painterResource(id = R.drawable.copy_icon),
+                }
+                is PaymentPreparationUiState.Success -> {
+                    AsyncYummiziImage(    // Restaurant logo
+                        model = state.restaurantInfo.restaurantLogoUrl, // Placeholder URL
                         contentDescription = null,
+                        modifier = Modifier.weight(1f)
+                    )
+
+                    Column( // Main frame
                         modifier = Modifier
-                            .size(spacing.smallIconSize)
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(spacing.smallSeparation))
-
-                Text(
-                    text = "Presionar el número para copiarlo",
-                    style = YummiziTheme.typography.teacherFontVar6,
-                    color = YummiziTheme.colors.yummiziGray
-                )
-
-                Spacer(modifier = Modifier.weight(.9f))
-
-                Box(    // Payment confirmation button
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(40)) // 40%
-                        .background(YummiziTheme.colors.yummiziDarkBlue)
-                        .padding(
-                            vertical = spacing.regularPadding,
-                            horizontal = spacing.bigPadding
+                            .weight(7f)
+                            .clip(RoundedCornerShape(spacing.mediumCornerRadius))
+                            .background(YummiziTheme.colors.yummiziWhite)
+                            .padding(
+                                vertical = spacing.mediumPadding,
+                                horizontal = spacing.bigPadding
+                            ),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(   // Price
+                            text = "S/. ${state.restaurantInfo.totalPayment}", // Placeholder for decimal number
+                            style = YummiziTheme.typography.leaguespartanFontVar4,
+                            color = YummiziTheme.colors.yummiziBlack
                         )
-                        .clickable{ viewModel.onPaymentSendClicked() },
-                    contentAlignment = Alignment.Center
-                ) {
+
+                        Spacer(modifier = Modifier.height(spacing.smallSeparation))
+
+                        HorizontalDivider(
+                            thickness = spacing.smallLineThickness,
+                            color = YummiziTheme.colors.yummiziGray
+                        )
+
+                        Spacer(modifier = Modifier.height(spacing.mediumSeparation))
+
+                        Box(    // Payment methods' logos
+                            modifier = Modifier
+                                .fillMaxWidth(.5f)
+                        ) {
+                            Image(
+                                painter = painterResource(id = R.drawable.yape_logo),
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .size(spacing.hugeIconSize)
+                                    .align(Alignment.CenterStart)
+                                    .fillMaxHeight()
+                            )
+
+                            Image(
+                                painter = painterResource(id = R.drawable.plin_logo),
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .size(spacing.hugeIconSize)
+                                    .align(Alignment.CenterEnd)
+                                    .fillMaxHeight()
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(spacing.tinySeparation))
+
+                        AsyncYummiziImage(    // Payment QR
+                            model = state.restaurantInfo.paymentQrCodeUrl,
+                            contentDescription = null,
+                            modifier = Modifier.size(spacing.bigImageSize)
+                        )
+
+                        Spacer(modifier = Modifier.height(spacing.mediumSeparation))
+
+                        Text(
+                            text = "O al número",
+                            style = YummiziTheme.typography.comfortaaFontVar3,
+                            color = YummiziTheme.colors.yummiziBlack,
+                        )
+
+                        Spacer(modifier = Modifier.height(spacing.smallSeparation))
+
+                        Row(    // Copiable phone number box
+                            modifier = Modifier
+//X                        .fillMaxWidth(.5f)
+                                .weight(1f)
+                                .shadow(
+                                    elevation = 4.dp,
+                                    shape = RoundedCornerShape(10.dp)
+                                )
+                                .clip(RoundedCornerShape(spacing.smallCornerRadius))
+                                .background(YummiziTheme.colors.yummiziWhite)
+                                .padding(
+                                    vertical = spacing.tinyPadding,
+                                    horizontal = spacing.mediumPadding
+                                ),
+                            verticalAlignment = Alignment.CenterVertically
+
+                        ) {
+                            Text(
+                                text = state.restaurantInfo.phoneNumber,
+                                style = YummiziTheme.typography.comfortaaFontVar1,
+                                color = YummiziTheme.colors.yummiziDarkBlue,
+                                textAlign = TextAlign.Center
+                            )
+
+                            Spacer(modifier = Modifier.width(spacing.mediumSeparation))
+
+                            Image(
+                                painter = painterResource(id = R.drawable.copy_icon),
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .size(spacing.smallIconSize)
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(spacing.smallSeparation))
+
+                        Text(
+                            text = "Presionar el número para copiarlo",
+                            style = YummiziTheme.typography.teacherFontVar6,
+                            color = YummiziTheme.colors.yummiziGray
+                        )
+
+                        Spacer(modifier = Modifier.weight(.9f))
+
+                        Box(    // Payment confirmation button
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(40)) // 40%
+                                .background(YummiziTheme.colors.yummiziDarkBlue)
+                                .padding(
+                                    vertical = spacing.regularPadding,
+                                    horizontal = spacing.bigPadding
+                                )
+                                .clickable{ viewModel.onPaymentSendClicked() },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "Confirmar pago",
+                                style = YummiziTheme.typography.comfortaaFontVar3,
+                                color = YummiziTheme.colors.yummiziWhite
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.weight(0.3f))
+
+                        HorizontalDivider(
+                            thickness = spacing.smallLineThickness,
+                            color = YummiziTheme.colors.yummiziGray
+                        )
+
+                        Spacer(modifier = Modifier.height(spacing.smallSeparation))
+
+                        Text(
+                            text = "¡ Gracias por ser parte de Yummizi !",
+                            style = YummiziTheme.typography.teacherFontVar6,
+                            color = YummiziTheme.colors.yummiziDarkOrange,
+                        )
+                    }
+                }
+                is PaymentPreparationUiState.Error -> {
+                    // TODO: Put a block that contains a erro message
                     Text(
-                        text = "Confirmar pago",
-                        style = YummiziTheme.typography.comfortaaFontVar3,
-                        color = YummiziTheme.colors.yummiziWhite
+                        text = "There was an error",
+                        textAlign = TextAlign.Center,
+                        color = YummiziTheme.colors.yummiziDarkBlue,
+                        style = YummiziTheme.typography.teacherFontVar3
                     )
                 }
-
-                Spacer(modifier = Modifier.weight(0.3f))
-
-                HorizontalDivider(
-                    thickness = spacing.smallLineThickness,
-                    color = YummiziTheme.colors.yummiziGray
-                )
-
-                Spacer(modifier = Modifier.height(spacing.smallSeparation))
-
-                Text(
-                    text = "¡ Gracias por ser parte de Yummizi !",
-                    style = YummiziTheme.typography.teacherFontVar6,
-                    color = YummiziTheme.colors.yummiziDarkOrange,
-                )
             }
+
 
             Spacer(modifier = Modifier.height(spacing.mediumSeparation))
 

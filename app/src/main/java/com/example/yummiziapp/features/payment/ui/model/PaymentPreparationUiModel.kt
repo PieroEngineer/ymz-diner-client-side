@@ -4,5 +4,5 @@ data class PaymentPreparationUiModel(
     val restaurantLogoUrl: String,
     val totalPayment: String,
     val paymentQrCodeUrl: String,
-    val phoneNumber: Int,
+    val phoneNumber: String,
 )

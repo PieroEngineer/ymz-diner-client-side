@@ -37,7 +37,7 @@ class HomeViewModel @Inject constructor(
     val uiState = _uiState.asStateFlow()
 
     init {
-        viewModelScope.launch {
+        viewModelScope.launch { /// I guess this launch scope is unnecessary because the functions included already have it.
 
             // Clean all restaurants
             Log.d("MyActivity", "🧹  Cleaning all restaurants...\n")
@@ -51,8 +51,7 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    private fun observeFeed() {
-        viewModelScope.launch { /// Why is this inside a function?
+    private suspend fun observeFeed() { // TODO: Change it be a flow and avoid the direct modification of "_uiState.value"
             getCategorizedFeed().collect { categoryMap ->
                 Log.d("MyActivity", "🗺️  categoryMap received in the view model from use case\n$categoryMap\n")
 
@@ -68,7 +67,6 @@ class HomeViewModel @Inject constructor(
                 }
                 _uiState.value = HomeUiState.Success(sections)
             }
-        }
     }
 
     // TODO
@@ -113,27 +111,23 @@ class HomeViewModel @Inject constructor(
         initialValue = ActiveRestaurantsUiState.Loading
     )
 
-    private fun clearFeed() {
-        viewModelScope.launch {
-            try {
-                Log.d("MyActivity", "🧹  Cleaning all restaurants...\n")
-                restaurantRepository.clearAllRestaurantsAndRequests()
-            }
-            catch (e: Exception) {
-                Log.d("MyActivity", "🚩🧹 There was an error while trying to clean the feed  | $e\n")
-            }
+    private suspend fun clearFeed() {
+        try {
+            Log.d("MyActivity", "🧹  Cleaning all restaurants...\n")
+            restaurantRepository.clearAllRestaurantsAndRequests()
+        }
+        catch (e: Exception) {
+            Log.d("MyActivity", "🚩🧹 There was an error while trying to clean the feed  | $e\n")
         }
     }
 
-    private fun syncFeed() {
-        viewModelScope.launch {
-            try {
-                Log.d("MyActivity", "🔁 Refreshing restaurant feed\n")
-                restaurantRepository.syncFeedRestaurants()
-            }
-            catch (e: Exception) {
-                Log.d("MyActivity", "🚩🔁 There was an error while trying to refresh the feed  | $e\n")
-            }
+    private suspend fun syncFeed() {
+        try {
+            Log.d("MyActivity", "🔁 Refreshing restaurant feed\n")
+            restaurantRepository.syncFeedRestaurants()
+        }
+        catch (e: Exception) {
+            Log.d("MyActivity", "🚩🔁 There was an error while trying to refresh the feed  | $e\n")
         }
     }
 

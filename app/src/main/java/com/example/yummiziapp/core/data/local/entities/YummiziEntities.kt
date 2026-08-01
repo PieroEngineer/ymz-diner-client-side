@@ -40,10 +40,11 @@ data class Restaurant(  // TODO: This is the entity. And the domain should be an
     val dishesToShowLink: List<String>,
     // 💡 Tip: There is no built-in standard Multiplatform spatial Coordinate primitive in Android Jetpack/Room yet.
     // Keeping raw primitives (Double) or creating a simple embedded @Embedded data class remains the industry standard.
-    val latitude: Double?,
-    val longitude: Double?,
-    val phoneNumber: Int?,
-    val paymentQrUrl: String?,
+//    val latitude: Double?,     // TODO
+//    val longitude: Double?, //
+    val phoneNumberToPay: Int? = null,
+    val phoneNumberToContact: Int? = null,
+    val paymentQrUrl: String? = null
     // val maxWaitingTimeInMinutes: Int, // TODO: For now the default time is 15 minutes, but we must implement this attribute
     //val description: String,
 )

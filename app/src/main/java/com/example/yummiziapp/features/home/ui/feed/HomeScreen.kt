@@ -49,7 +49,7 @@ import com.example.yummiziapp.features.home.ui.feed.components.SectionArea
 
 //@Preview(showBackground = true)
 @Composable
-fun HomeScreen( // Continue here: Test when the user already has an ready request and remove cp if it works
+fun HomeScreen(
     modifier: Modifier = Modifier,
     onRestaurantSelectionNavigation: (Uuid?) -> Unit,
     onRestaurantSelected: (Uuid) -> Unit,

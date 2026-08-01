@@ -8,18 +8,23 @@ import kotlinx.serialization.Serializable
 import kotlin.uuid.Uuid
 
 @Serializable
-data class RestaurantDto(
+data class FeedRestaurantResponseDto(
     val id: String,
     val name: String,
     val logoUrl: String,      // Changed from logoId to URL for Cloud
     val sectionType: String,
     val requestId: String = "",
-    val dishesToShowUrls: List<String> = emptyList(),
-    val menuImageUrls: List<String> = emptyList(),
-    val latitude: Double? = null,
-    val longitude: Double? = null,
-    val phoneNumber: Int? = null,
-    val paymentQrUrl: String? = null,
+    val dishesToShowUrls: List<String>,// |X -> = emptyList(),
+//X    val menuImageUrls: List<String> = emptyList(),
+//X    val latitude: Double? = null,
+//X    val longitude: Double? = null
+)
+
+@Serializable
+data class RestaurantPaymentResponseDto(
+    val phoneNumberToPay: Int,
+    val phoneNumberToContact: Int,
+    val paymentQrUrl: String
 )
 
 @Serializable
@@ -78,15 +83,12 @@ fun DishDto.toEntity(): Dish {
     )
 }
 
-fun RestaurantDto.toEntity() = Restaurant(
+fun FeedRestaurantResponseDto.toEntity() = Restaurant(
     id = id.let { Uuid.parse(it) },// ?: Uuid.NIL,
     name = name,
     logoUrl = logoUrl,
     sectionType = sectionType,
     dishesToShowLink = dishesToShowUrls,
-    latitude = latitude,
-    longitude = longitude,
-    phoneNumber = phoneNumber,
-    paymentQrUrl= paymentQrUrl
-
+//X    latitude = latitude,
+//X    longitude = longitude
 )
