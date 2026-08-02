@@ -8,7 +8,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.yummiziapp.features.navigation.YummiziRoute
 import com.example.yummiziapp.features.home.ui.feed.HomeScreen
-import com.example.yummiziapp.features.payment.ui.beforepay.PaymentPreparationScreen
+import com.example.yummiziapp.features.payment.ui.checkin.PaymentPreparationScreen
 import com.example.yummiziapp.features.restaurant.ui.food.FoodSelectionScreen
 import com.example.yummiziapp.features.restaurant.ui.preview.MenuPreviewScreen
 import com.example.yummiziapp.features.user.ui.preferences.PreferencesScreen

@@ -1,4 +1,4 @@
-package com.example.yummiziapp.features.payment.ui.beforepay
+package com.example.yummiziapp.features.payment.ui.checkin
 
 import java.io.File
 

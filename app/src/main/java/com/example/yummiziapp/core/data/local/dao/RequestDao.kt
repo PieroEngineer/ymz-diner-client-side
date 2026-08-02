@@ -65,6 +65,9 @@ interface RequestDao {
     @Query("SELECT * FROM requests WHERE status = 'READY' ORDER BY localCreationTimestamp DESC LIMIT 1")
     suspend fun getLatestReadyRequest(): Request?   // TODO: Include an expiration cheking like an attribute or creating a new status in "RequestStatusToken"
 
+    @Query("SELECT * FROM requests WHERE status = 'PAID' ORDER BY localCreationTimestamp DESC LIMIT 1")
+    suspend fun getLatestPaidRequest(): Request?   // TODO: Include an expiration cheking like an attribute or creating a new status in "RequestStatusToken"
+
     @Query("UPDATE requests SET status = :status WHERE requestId = :requestId")
     suspend fun updateRequestStatus(requestId: Uuid, status: RequestStatusToken)
 

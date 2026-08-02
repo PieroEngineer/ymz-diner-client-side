@@ -1,4 +1,4 @@
-package com.example.yummiziapp.features.payment.ui.beforepay
+package com.example.yummiziapp.features.payment.ui.checkin
 
 import android.net.Uri
 import androidx.lifecycle.SavedStateHandle
@@ -8,7 +8,6 @@ import com.example.yummiziapp.core.utils.toCurrencyFormat
 import com.example.yummiziapp.features.payment.domain.repository.PaymentRepository
 import com.example.yummiziapp.features.restaurant.domain.repository.RestaurantRepository
 import com.example.yummiziapp.features.payment.ui.model.PaymentPreparationUiModel
-import com.example.yummiziapp.features.restaurant.ui.food.FoodSelectionUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -16,7 +15,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -28,7 +26,7 @@ class PaymentPreparationViewModel @Inject constructor(
     private val restaurantRepository: RestaurantRepository,
     private val paymentRepository: PaymentRepository,
     savedStateHandle: SavedStateHandle
-)  : ViewModel(){
+)  : ViewModel() {
 
     private val _pickedImageUiState = MutableStateFlow<PickedPaymentImageUiState>(PickedPaymentImageUiState.NoImageSelected)   // Saying that the image starts as not selected always when the screen is started
     val pickedImageUiState = _pickedImageUiState.asStateFlow()
@@ -51,7 +49,12 @@ class PaymentPreparationViewModel @Inject constructor(
 
     fun onPaymentSendClicked() {
         viewModelScope.launch {
-            paymentRepository.uploadSelectedOrder()
+            if (_pickedImageUiState.value is PickedPaymentImageUiState.ImageAlreadySelected) {
+                paymentRepository.confirmSelectedOrder()
+            }
+            else {
+                // TODO: Else, show a snackbar
+            }
         }
     }
 
@@ -75,19 +78,19 @@ class PaymentPreparationViewModel @Inject constructor(
 
     val paymentInfoUiState: StateFlow<PaymentPreparationUiState> = combine(
         restaurantRepository.observeRestaurantById(restaurantId),
-        paymentRepository.observeCurrentOrder()
+        paymentRepository.observeCurrentOrder(),
     ) { restaurant, orderSelections ->
+
         if (restaurant == null) {
             PaymentPreparationUiState.Error("Restaurant not found")
         } else {
             val totalCents = orderSelections.sumOf { it.quantity * it.historicalUnitPriceInCents }
-            
-            PaymentPreparationUiState.Success(
+            PaymentPreparationUiState.CheckIn(
                 PaymentPreparationUiModel(
                     restaurantLogoUrl = restaurant.logoUrl,
                     totalPayment = totalCents.toCurrencyFormat(),
                     paymentQrCodeUrl = restaurant.paymentQrUrl ?: "",
-                    phoneNumber = restaurant.phoneNumberToPay.toString() ?: ""
+                    phoneNumber = restaurant.phoneNumberToPay.toString() ?: "",
                 )
             )
         }

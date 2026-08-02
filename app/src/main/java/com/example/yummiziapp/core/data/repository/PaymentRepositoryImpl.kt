@@ -9,7 +9,6 @@ import com.example.yummiziapp.core.data.local.dao.LoggedUserDao
 import com.example.yummiziapp.core.data.local.dao.MenuDao
 import com.example.yummiziapp.core.data.local.dao.PaymentDao
 import com.example.yummiziapp.core.data.local.dao.RequestDao
-import com.example.yummiziapp.core.data.local.dao.RestaurantDao
 import com.example.yummiziapp.core.data.local.entities.OrderSelection
 import com.example.yummiziapp.core.data.network.api.PaymentApi
 import com.example.yummiziapp.core.data.network.model.mappers.createSendOrderDto
@@ -66,7 +65,7 @@ class PaymentRepositoryImpl @Inject constructor(
 //        }
     }
 
-    override suspend fun uploadSelectedOrder() {    // TODO: Update the state of the request to PAID
+    override suspend fun confirmSelectedOrder() {    // TODO: Update the state of the request to PAID
         // Get the current "READY" request and extract its ID and the Restaurant ID
         val readyRequest = requestDao.getLatestReadyRequest()
             ?: throw IllegalStateException("No READY request found")
@@ -96,7 +95,9 @@ class PaymentRepositoryImpl @Inject constructor(
         // POST the sendOrderReadyToBePaidDto with the api function "selectOrder"
         val response = yummiziApi.selectOrder(payload)
 
-        if (response.isSuccessful) {
+        if (response.isSuccessful) {    // TODO: Also return the time when the customer should arrive, the client-side doesn't decide that
+            requestDao.updateRequestStatus(readyRequest.requestId, RequestStatusToken.PAID)
+
             // Receive the response with the total price and return it
             val totalPriceInCentsFromRemote = response.body()?.totalPriceInCents
                 ?: throw IllegalStateException("Empty response body")
@@ -119,24 +120,58 @@ class PaymentRepositoryImpl @Inject constructor(
         paymentDao.getOrderSelections()
     }
 
-//    override suspend fun getPaymentImageFromInternalStorage(filename: String): Result<File> = withContext(ioDispatcher) {
-//        //  TODO
-//    }
+    /**
+     * Retrieves the image handle from internal storage.
+     * Tries resolving with .png extension first; if not found or empty, falls back to .jpg.
+     */
+    override suspend fun getImageFile(fileName: String): Result<File> = runSuspendCatching {    /// Maybe it will be better to remove it later because the cleanest way to handle it is with the path in the repo
+        withContext(ioDispatcher) {
+
+            val readyRequest = requestDao.getLatestReadyRequest()
+                ?: throw IllegalStateException("No READY request found")
+
+            // Extracts base name regardless of whether 'fileName' contains an extension or not
+            val baseName = "current_payment_image_${readyRequest.requestId}"
+
+            // 1. Primary Attempt: Check for .png candidate
+            val pngCandidate = File(context.filesDir, "$baseName.png")
+            if (pngCandidate.isValidImageFile()) {
+                return@withContext pngCandidate
+            }
+
+            // 2. Fallback Attempt: Check for .jpg candidate
+            val jpgCandidate = File(context.filesDir, "$baseName.jpg")
+            if (jpgCandidate.isValidImageFile()) {
+                return@withContext jpgCandidate
+            }
+
+            throw FileNotFoundException(
+                "Image file for '$fileName' (tried .png, .jpg) does not exist in filesDir."
+            )
+        }
+    }
+    /**
+     * Internal extension for atomic file integrity check.
+     */
+    private fun File.isValidImageFile(): Boolean = exists() && length() > 0L
 
     // ... removeCurrenImageFromInternalStorage() ...
     // TODO
 
     override suspend fun savePaymentImageToInternalStorage(uri: Uri): Result<File> = withContext(ioDispatcher) {
         runCatching {
+            val readyRequest = requestDao.getLatestReadyRequest()
+                ?: throw IllegalStateException("No READY request found")
+
             // Generation handler
             val contentResolver = context.contentResolver
 
             // Determine file extension or default to jpg
             val mimeType = contentResolver.getType(uri)
-            val extension = if (mimeType?.contains("png") == true) "png" else "jpg"
+            val extension = if (mimeType?.contains("png") == true) "png" else "jpg" // I guess it doesn't cover all extensions, but maybe it's ok because the phones' SS has these extension
 
             // Shaping output
-            val targetFile = File(context.cacheDir, "selected_image_${Uuid.random()}.$extension")   // TODO: Change that random UUID by a timestamp, so we can use it later in the logic to get or delete it.
+            val targetFile = File(context.cacheDir, "current_payment_image_${readyRequest.requestId}.$extension")   // TODO: Change that random UUID by a timestamp, so we can use it later in the logic to get or delete it.
 
             // Byte Streaming and Copying
             contentResolver.openInputStream(uri)?.use { inputStream ->
@@ -146,7 +181,14 @@ class PaymentRepositoryImpl @Inject constructor(
             } ?: throw IllegalStateException("Unable to open input stream for Uri: $uri")
 
 
-//            // Create the entity using the file's absolute path
+
+            targetFile
+        }
+    }
+}
+
+
+//            // Create the entity using the file's absolute path   // TODO
 //            val payment = PaymentEntity(
 //                amountInCents = amountCents,
 //                imagePath = targetFile.absolutePath //  "Houses/cache/payment_xyz.jpg"
@@ -154,8 +196,3 @@ class PaymentRepositoryImpl @Inject constructor(
 //
 //            // Save the text path to Room
 //            paymentDao.insertPayment(payment)
-
-            targetFile
-        }
-    }
-}

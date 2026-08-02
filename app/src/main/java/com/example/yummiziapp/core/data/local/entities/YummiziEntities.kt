@@ -61,7 +61,7 @@ data class Restaurant(  // TODO: This is the entity. And the domain should be an
         )
     ],
     indices = [Index(value = ["requestId"]), Index(value = ["dishId"])]
-)
+)                                           // TODO: It's possible that we need to create a Order object
 data class OrderSelection(  /// Should I include the restaurant here? I ask because it's already in the request and it's associated
     val requestId: Uuid,
     val dishId: Uuid,

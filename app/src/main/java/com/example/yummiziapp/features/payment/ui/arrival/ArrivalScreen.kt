@@ -1,9 +1,12 @@
-package com.example.yummiziapp.features.payment.ui.beforepay
+package com.example.yummiziapp.features.payment.ui.arrival
 
-import android.util.Log
+import com.example.yummiziapp.features.payment.ui.checkin.PaymentPreparationUiState
+import com.example.yummiziapp.features.payment.ui.checkin.PaymentPreparationViewModel
+import com.example.yummiziapp.features.payment.ui.checkin.PickedPaymentImageUiState
+
+
 //import androidx.compose.ui.tooling.preview.Preview
 //import com.example.yummiziapp.core.designsystem.theme.AsyncYummiziImage
-import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -25,7 +28,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -45,26 +47,14 @@ import com.example.yummiziapp.core.designsystem.theme.YummiziTheme
 
 //@Preview
 @Composable
-fun PaymentPreparationScreen(
+fun ArrivalScreen(
     modifier: Modifier = Modifier,
-    viewModel: PaymentPreparationViewModel = hiltViewModel()
+    viewModel: ArrivalViewModel = hiltViewModel()
 ) {
     val spacing = YummiziTheme.spacing
 
-    Log.w("MyActivity", "🔎🔎  1")
-
-    val pickedImageUiState by viewModel.pickedImageUiState.collectAsStateWithLifecycle()
-    val paymentInfoUiState by viewModel.paymentInfoUiState.collectAsStateWithLifecycle()
-
-    Log.w("MyActivity", "🔎🔎  2")
-
-    // System Photo Picker launcher
-    val photoPickerLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.PickVisualMedia()
-    ) { uri ->
-        viewModel.onImagePicked(uri)
-    }
-
+    val paymentImage by viewModel.paymentImage.collectAsStateWithLifecycle()
+    val arrivalInfoUiState by viewModel.arrivalInfoUiState.collectAsStateWithLifecycle()
 
     Box(
         modifier = modifier
@@ -84,9 +74,9 @@ fun PaymentPreparationScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            when (val state = paymentInfoUiState) {
+            when (val state = arrivalInfoUiState) {
                 is PaymentPreparationUiState.Loading -> {
-                   // TODO: Put a block that contains a loading animation
+                    // TODO: Put a block that contains a loading animation
                     Text(
                         text = "Loading data...",
                         textAlign = TextAlign.Center,
@@ -94,9 +84,9 @@ fun PaymentPreparationScreen(
                         style = YummiziTheme.typography.teacherFontVar3
                     )
                 }
-                is PaymentPreparationUiState.Success -> {
+                is PaymentPreparationUiState.CheckIn -> {
                     AsyncYummiziImage(    // Restaurant logo
-                        model = state.restaurantInfo.restaurantLogoUrl, // Placeholder URL
+                        model = state.restaurantInfo.restaurantLogoUrl,
                         contentDescription = null,
                         modifier = Modifier.weight(1f)
                     )
@@ -113,7 +103,7 @@ fun PaymentPreparationScreen(
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(   // Price
-                            text = "S/. ${state.restaurantInfo.totalPayment}", // Placeholder for decimal number
+                            text = "S/. ${state.restaurantInfo.totalPayment}",
                             style = YummiziTheme.typography.leaguespartanFontVar4,
                             color = YummiziTheme.colors.yummiziBlack
                         )
@@ -220,7 +210,9 @@ fun PaymentPreparationScreen(
                                     vertical = spacing.regularPadding,
                                     horizontal = spacing.bigPadding
                                 )
-                                .clickable{ viewModel.onPaymentSendClicked() },
+                                .clickable{
+                                    viewModel.onPaymentSendClicked()
+                                },
                             contentAlignment = Alignment.Center
                         ) {
                             Text(

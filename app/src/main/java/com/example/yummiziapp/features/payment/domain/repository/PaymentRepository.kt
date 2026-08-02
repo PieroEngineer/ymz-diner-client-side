@@ -15,5 +15,5 @@ interface PaymentRepository {
 
     suspend fun getCurrentOrder(): List<OrderSelection>
 
-    suspend fun uploadSelectedOrder()
+    suspend fun confirmSelectedOrder()
 }
