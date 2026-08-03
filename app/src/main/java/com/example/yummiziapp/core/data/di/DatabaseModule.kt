@@ -12,6 +12,7 @@ import com.example.yummiziapp.core.data.local.dao.RestaurantDao
 import com.example.yummiziapp.core.data.local.dao.LoggedUserDao
 import com.example.yummiziapp.core.data.local.dao.RequestDao
 import com.example.yummiziapp.core.data.local.dao.MenuDao
+import com.example.yummiziapp.core.data.local.dao.OrderDao
 import com.example.yummiziapp.core.data.local.dao.PaymentDao
 import com.example.yummiziapp.core.data.local.dao.PreferenceDao
 import com.example.yummiziapp.core.data.local.db.YummiziDatabase
@@ -28,7 +29,7 @@ object DatabaseModule {
             YummiziDatabase::class.java,
             "yummizi_db"
         )
-            //X.fallbackToDestructiveMigration(dropAllTables = true)   //TODO: Remove in production
+            .fallbackToDestructiveMigration(true)   // TODO: Remove in production
             .build()
     }
 
@@ -49,4 +50,7 @@ object DatabaseModule {
 
     @Provides
     fun providePaymentDao(db: YummiziDatabase): PaymentDao = db.paymentDao()
+
+    @Provides
+    fun provideOrderDao(db: YummiziDatabase): OrderDao = db.orderDao()
 }

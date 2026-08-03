@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.Flow
 interface PaymentDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertOrderSelections(selections: List<OrderSelection>)
+    suspend fun insertOrderSelections(selections: List<OrderSelection>) //cp: Include the order ID
 
     @Query("DELETE FROM order_selections")
     suspend fun deleteAllOrderSelections()

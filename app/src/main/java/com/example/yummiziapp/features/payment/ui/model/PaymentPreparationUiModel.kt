@@ -8,4 +8,5 @@ data class PaymentPreparationUiModel(
     val totalPayment: String,
     val paymentQrCodeUrl: String,
     val phoneNumber: String,
+    val imageReady: Boolean
 )

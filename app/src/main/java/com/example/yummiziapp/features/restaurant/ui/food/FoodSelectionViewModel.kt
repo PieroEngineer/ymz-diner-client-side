@@ -59,7 +59,7 @@ class FoodSelectionViewModel @Inject constructor(   //TODO: Change the way of ho
     }
 
     private suspend fun initializeOrder() {
-        val currentOrder = paymentRepository.getCurrentOrder()
+        val currentOrder = paymentRepository.getCurrentOrderSelections()
         if (currentOrder.isNotEmpty()) {
             _orderMap.update {
                 currentOrder.associate { it.dishId to it.quantity }

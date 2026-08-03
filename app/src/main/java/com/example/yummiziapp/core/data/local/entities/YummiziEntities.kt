@@ -9,6 +9,8 @@ import com.example.yummiziapp.core.data.local.model.RequestStatusToken
 //X import com.example.yummiziapp.features.request.data.model.QueueStatus
 import kotlin.uuid.Uuid
 import kotlinx.serialization.Serializable
+import kotlin.time.Instant
+
 
 @Serializable
 @Entity(tableName = "logged_user")
@@ -51,7 +53,28 @@ data class Restaurant(  // TODO: This is the entity. And the domain should be an
 
 @Entity(
     tableName = "order_selections",
-    primaryKeys = ["requestId", "dishId"],
+    foreignKeys = [
+        ForeignKey(
+            entity = Order::class,    /// Order::class,?
+            parentColumns = ["orderId"], ///["orderId"],?
+            childColumns = ["orderId"],
+            onDelete = ForeignKey.CASCADE
+        )
+    ],
+    indices = [Index(value = ["orderId"])] // Indexing FK column speeds up child joins
+)
+data class OrderSelection(
+    @PrimaryKey val selectionId: Uuid,
+    val orderId: Uuid,
+    val dishId: Uuid,
+    val dishName: String,
+    val quantity: Int,
+    val historicalUnitPriceInCents: Int // It's just local, it doesn't go in the payload to send.
+//    val paymentMethod: String // TODO
+)
+
+@Entity(
+    tableName = "orders",
     foreignKeys = [
         ForeignKey(
             entity = Request::class,
@@ -60,15 +83,15 @@ data class Restaurant(  // TODO: This is the entity. And the domain should be an
             onDelete = ForeignKey.CASCADE
         )
     ],
-    indices = [Index(value = ["requestId"]), Index(value = ["dishId"])]
-)                                           // TODO: It's possible that we need to create a Order object
-data class OrderSelection(  /// Should I include the restaurant here? I ask because it's already in the request and it's associated
+    indices = [Index(value = ["requestId"], unique = true)] // Enforces 1-to-1 relationship & speeds up queries
+)
+data class Order(   // TODO: Include a some kind of "OrderStatus" that defines if the order is ready (no null values on its attributes) or not
+    @PrimaryKey val orderId: Uuid,
     val requestId: Uuid,
-    val dishId: Uuid,
-    val dishName: String,
-    val quantity: Int,
-    val historicalUnitPriceInCents: Int // It's just local, it doesn't go in the payload to send.
-//    val paymentMethod: String // TODO
+    val expectedArrivalDatetime: Instant? = null,
+    val paymentImageRelativePath: String? = null,
+    val localOrderCreationTimestamp: Instant? = null,   // TODO: Consider the possibility that the time starts since the user enters to the food selection
+    val totalPriceInCentsFromBackend: Int? = null
 )
 
 @Entity(
@@ -129,12 +152,12 @@ data class MenuPage(
 )
 data class Dish(
     @PrimaryKey val id: Uuid,
+    val menuPageId: Uuid,
     val name: String,
     val imageUrl: String,
     val priceCents: Int,
     val prepTime: Int, // In minutes
     val isOutOfStock: Boolean = false,
-    val menuPageId: Uuid,
     val coordinateXInMenu: Double,  //TODO: Later change it by section area of the menu image (rectangles), not by the a small button
     val coordinateYInMenu: Double,
     val description: String

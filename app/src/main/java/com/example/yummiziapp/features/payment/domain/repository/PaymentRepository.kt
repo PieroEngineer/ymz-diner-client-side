@@ -1,6 +1,7 @@
 package com.example.yummiziapp.features.payment.domain.repository
 
 import android.net.Uri
+import com.example.yummiziapp.core.data.local.entities.Order
 import com.example.yummiziapp.core.data.local.entities.OrderSelection
 import kotlinx.coroutines.flow.Flow
 import java.io.File
@@ -8,12 +9,14 @@ import kotlin.uuid.Uuid
 
 interface PaymentRepository {
     suspend fun savePaymentImageToInternalStorage(uri: Uri): Result<File>
-
     suspend fun selectOrder(orderMap: Map<Uuid, Int>)
+    suspend fun getCurrentOrderSelections(): List<OrderSelection>
 
-    fun observeCurrentOrder(): Flow<List<OrderSelection>>
+    suspend fun getImageFile(): Result<File>
 
-    suspend fun getCurrentOrder(): List<OrderSelection>
+    fun observeLatestOrder(): Flow<Order>
 
-    suspend fun confirmSelectedOrder()
+    fun observeCurrentOrderSelections(): Flow<List<OrderSelection>>
+
+    suspend fun confirmSelectedOrder(paymentImageRelativePath: String)
 }

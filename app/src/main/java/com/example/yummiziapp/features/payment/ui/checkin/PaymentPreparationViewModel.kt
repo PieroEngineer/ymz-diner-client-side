@@ -8,13 +8,16 @@ import com.example.yummiziapp.core.utils.toCurrencyFormat
 import com.example.yummiziapp.features.payment.domain.repository.PaymentRepository
 import com.example.yummiziapp.features.restaurant.domain.repository.RestaurantRepository
 import com.example.yummiziapp.features.payment.ui.model.PaymentPreparationUiModel
+import com.example.yummiziapp.features.user.ui.specification.SpecificationUiEvents
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -29,13 +32,13 @@ class PaymentPreparationViewModel @Inject constructor(
 )  : ViewModel() {
 
     private val _pickedImageUiState = MutableStateFlow<PickedPaymentImageUiState>(PickedPaymentImageUiState.NoImageSelected)   // Saying that the image starts as not selected always when the screen is started
-    val pickedImageUiState = _pickedImageUiState.asStateFlow()
-
+    val pickedImageUiState = _pickedImageUiState.asStateFlow() /// Ask if it's a bad practice to use this
 
     private val restaurantIdString: String = checkNotNull(savedStateHandle["restaurantId"])
-
     private val restaurantId = Uuid.parse(restaurantIdString)   /// Maybe it's not necessary here because there is only one reatuarant READY at the time
 
+    private val _effect = Channel<PaymentPreparationUiEvents>(Channel.BUFFERED)
+    val navEffect = _effect.receiveAsFlow()
 
     init{   // TODO: Remove all the "init" and replace them with "onStart" in flows (Gemini "📱 Kotlin expert 3.0" has the way)
         viewModelScope.launch {
@@ -49,8 +52,10 @@ class PaymentPreparationViewModel @Inject constructor(
 
     fun onPaymentSendClicked() {
         viewModelScope.launch {
-            if (_pickedImageUiState.value is PickedPaymentImageUiState.ImageAlreadySelected) {
-                paymentRepository.confirmSelectedOrder()
+            val currentPickedImageUiState = _pickedImageUiState.value
+            if (currentPickedImageUiState is PickedPaymentImageUiState.ImageAlreadySelected) {
+                paymentRepository.confirmSelectedOrder(currentPickedImageUiState.selectedFile.name)
+                _effect.send(PaymentPreparationUiEvents.NavigateToArrival(restaurantId))
             }
             else {
                 // TODO: Else, show a snackbar
@@ -78,19 +83,23 @@ class PaymentPreparationViewModel @Inject constructor(
 
     val paymentInfoUiState: StateFlow<PaymentPreparationUiState> = combine(
         restaurantRepository.observeRestaurantById(restaurantId),
-        paymentRepository.observeCurrentOrder(),
-    ) { restaurant, orderSelections ->
+        paymentRepository.observeCurrentOrderSelections(),    // TODO: Should I change it for an observer that only observes the total cost?
+        _pickedImageUiState
+    ) { restaurant, orderSelections, pickedImageUiState ->
+
+        val imageReady = pickedImageUiState is PickedPaymentImageUiState.ImageAlreadySelected
 
         if (restaurant == null) {
             PaymentPreparationUiState.Error("Restaurant not found")
         } else {
-            val totalCents = orderSelections.sumOf { it.quantity * it.historicalUnitPriceInCents }
+            val totalCents = orderSelections.sumOf { it.quantity * it.historicalUnitPriceInCents }  // TODO: Consider that this price should be from the backend and not from local
             PaymentPreparationUiState.CheckIn(
                 PaymentPreparationUiModel(
                     restaurantLogoUrl = restaurant.logoUrl,
                     totalPayment = totalCents.toCurrencyFormat(),
                     paymentQrCodeUrl = restaurant.paymentQrUrl ?: "",
                     phoneNumber = restaurant.phoneNumberToPay.toString() ?: "",
+                    imageReady = imageReady
                 )
             )
         }

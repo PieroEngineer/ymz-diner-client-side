@@ -15,7 +15,7 @@ import coil3.request.crossfade
  */
 @Composable
 fun AsyncYummiziImage(
-    model: String?,
+    model: Any?,    // "String" and "File" are supported
     contentDescription: String?,
     modifier: Modifier = Modifier,
     contentScale: ContentScale = ContentScale.Fit,

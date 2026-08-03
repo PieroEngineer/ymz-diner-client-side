@@ -6,6 +6,7 @@ import com.example.yummiziapp.core.data.local.model.RequestStatusToken
 import kotlin.uuid.Uuid
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import kotlin.time.Instant
 
 class YummiziConverters {
 
@@ -50,4 +51,17 @@ class YummiziConverters {
 
     @TypeConverter
     fun toAvailableSpecificsTokenList(value: String): List<AvailableSpecificsToken> = json.decodeFromString(value)
+
+    // --- Instants ---
+
+    @TypeConverter
+    fun fromEpochMilliseconds(value: Long?): Instant? {
+        return value?.let { Instant.fromEpochMilliseconds(it) }
+    }
+
+    @TypeConverter
+    fun toEpochMilliseconds(instant: Instant?): Long? {
+        return instant?.toEpochMilliseconds()
+    }
+
 }

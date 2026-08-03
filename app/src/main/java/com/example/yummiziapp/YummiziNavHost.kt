@@ -8,6 +8,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.yummiziapp.features.navigation.YummiziRoute
 import com.example.yummiziapp.features.home.ui.feed.HomeScreen
+import com.example.yummiziapp.features.payment.ui.arrival.ArrivalScreen
 import com.example.yummiziapp.features.payment.ui.checkin.PaymentPreparationScreen
 import com.example.yummiziapp.features.restaurant.ui.food.FoodSelectionScreen
 import com.example.yummiziapp.features.restaurant.ui.preview.MenuPreviewScreen
@@ -71,11 +72,12 @@ fun YummiziNavHost(
 
         // Jetpack Navigation auto-generates the internal parser bindings!
         composable<YummiziRoute.MenuPreview> {
-            MenuPreviewScreen()
+            MenuPreviewScreen(modifier = modifier)
         }
 
         composable<YummiziRoute.FoodSelection> {
             FoodSelectionScreen(
+                modifier = modifier,
                 onOrderConfirmed = { id ->
                     navController.navigate(YummiziRoute.PaymentPreparation(restaurantId = id.toString()))
                 }
@@ -83,7 +85,15 @@ fun YummiziNavHost(
         }
 
         composable<YummiziRoute.PaymentPreparation> {
-            PaymentPreparationScreen()
+            PaymentPreparationScreen(
+                onPaymentDoneNav = { id ->
+                    navController.navigate(YummiziRoute.Arrival(restaurantId = id.toString()))
+                }
+            )
+        }
+
+        composable<YummiziRoute.Arrival> {
+            ArrivalScreen()
         }
     }
 }

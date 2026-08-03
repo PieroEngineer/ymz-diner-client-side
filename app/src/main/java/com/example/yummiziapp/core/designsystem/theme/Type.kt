@@ -27,7 +27,8 @@ data class YummiziTypography (
     val leaguespartanFontVar1: TextStyle,
     val leaguespartanFontVar2: TextStyle,
     val leaguespartanFontVar3: TextStyle,
-    val leaguespartanFontVar4: TextStyle
+    val leaguespartanFontVar4: TextStyle,
+    val leaguespartanFontVar5: TextStyle
 )
 
 val YummiziTypographies = YummiziTypography(
@@ -131,6 +132,12 @@ val YummiziTypographies = YummiziTypography(
         fontFamily = FontFamily(Font(R.font.league_spartan)),
         fontWeight = FontWeight.Bold,
         fontSize = 30.sp
+    ),
+
+    leaguespartanFontVar5 = TextStyle(
+        fontFamily = FontFamily(Font(R.font.league_spartan)),
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 28.sp
     )
 
 )

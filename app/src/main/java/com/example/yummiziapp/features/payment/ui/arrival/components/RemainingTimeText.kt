@@ -24,8 +24,8 @@ fun RemainingTimeText(
     targetInstant: Instant,
     expiredText: String = "Tiempo finalizado",
 
-    style: TextStyle = MaterialTheme.typography.bodyMedium, //X
-    color: Color = Color.Unspecified                                         //
+    style: TextStyle,
+    color: Color,
 ) {
     // Isolated state producer: Updates once per second without triggering parent recomposition
     val remainingFormattedText by produceState(
@@ -62,7 +62,7 @@ private fun formatRemainingTime(
     }
     val duration = target - now
     // Destructure minutes and seconds at the same time
-    val (minutes, seconds) = duration.toComponents { minutes, seconds, _, _ ->
+    val (minutes, seconds) = duration.toComponents { _, minutes, seconds, _ ->
         Pair(minutes, seconds)
     }
 

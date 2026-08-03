@@ -1,5 +1,6 @@
 package com.example.yummiziapp.features.payment.ui.checkin
 
+import com.example.yummiziapp.features.payment.ui.model.ArrivalUiModel
 import com.example.yummiziapp.features.payment.ui.model.PaymentPreparationUiModel
 
 sealed interface PaymentPreparationUiState{

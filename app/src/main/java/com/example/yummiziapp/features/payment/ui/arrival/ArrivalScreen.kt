@@ -1,14 +1,8 @@
 package com.example.yummiziapp.features.payment.ui.arrival
 
-import com.example.yummiziapp.features.payment.ui.checkin.PaymentPreparationUiState
-import com.example.yummiziapp.features.payment.ui.checkin.PaymentPreparationViewModel
-import com.example.yummiziapp.features.payment.ui.checkin.PickedPaymentImageUiState
 
 
 //import androidx.compose.ui.tooling.preview.Preview
-//import com.example.yummiziapp.core.designsystem.theme.AsyncYummiziImage
-import androidx.activity.result.PickVisualMediaRequest
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -22,28 +16,29 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
-import androidx.compose.material3.VerticalDivider
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.dropShadow
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.yummiziapp.R
 import com.example.yummiziapp.core.designsystem.theme.AsyncYummiziImage
 import com.example.yummiziapp.core.designsystem.theme.YummiziTheme
+import com.example.yummiziapp.features.payment.ui.arrival.components.RemainingTimeText
+import com.example.yummiziapp.features.payment.ui.arrival.components.TimeProgressBar
+import java.io.File
 
 //@Preview
 @Composable
@@ -53,7 +48,6 @@ fun ArrivalScreen(
 ) {
     val spacing = YummiziTheme.spacing
 
-    val paymentImage by viewModel.paymentImage.collectAsStateWithLifecycle()
     val arrivalInfoUiState by viewModel.arrivalInfoUiState.collectAsStateWithLifecycle()
 
     Box(
@@ -75,7 +69,7 @@ fun ArrivalScreen(
         ) {
 
             when (val state = arrivalInfoUiState) {
-                is PaymentPreparationUiState.Loading -> {
+                is ArrivalUiState.Loading -> {
                     // TODO: Put a block that contains a loading animation
                     Text(
                         text = "Loading data...",
@@ -84,9 +78,14 @@ fun ArrivalScreen(
                         style = YummiziTheme.typography.teacherFontVar3
                     )
                 }
-                is PaymentPreparationUiState.CheckIn -> {
+                is ArrivalUiState.Success -> {
+                    val context = LocalContext.current
+                    val receiptFile = remember(state.arrivalInfo.paymentImagePath) {
+                        File(context.filesDir, state.arrivalInfo.paymentImagePath)
+                    }
+
                     AsyncYummiziImage(    // Restaurant logo
-                        model = state.restaurantInfo.restaurantLogoUrl,
+                        model = state.arrivalInfo.restaurantLogoUrl,
                         contentDescription = null,
                         modifier = Modifier.weight(1f)
                     )
@@ -103,7 +102,7 @@ fun ArrivalScreen(
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(   // Price
-                            text = "S/. ${state.restaurantInfo.totalPayment}",
+                            text = "S/. ${state.arrivalInfo.totalPayment}",
                             style = YummiziTheme.typography.leaguespartanFontVar4,
                             color = YummiziTheme.colors.yummiziBlack
                         )
@@ -117,112 +116,53 @@ fun ArrivalScreen(
 
                         Spacer(modifier = Modifier.height(spacing.mediumSeparation))
 
-                        Box(    // Payment methods' logos
-                            modifier = Modifier
-                                .fillMaxWidth(.5f)
-                        ) {
-                            Image(
-                                painter = painterResource(id = R.drawable.yape_logo),
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .size(spacing.hugeIconSize)
-                                    .align(Alignment.CenterStart)
-                                    .fillMaxHeight()
-                            )
+                        Text(
+                            text = "¡Pago enviado!",
+                            textAlign = TextAlign.Center,
+                            color = YummiziTheme.colors.yummiziDarkBlue,
+                            style = YummiziTheme.typography.leaguespartanFontVar4,
+                        )
 
-                            Image(
-                                painter = painterResource(id = R.drawable.plin_logo),
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .size(spacing.hugeIconSize)
-                                    .align(Alignment.CenterEnd)
-                                    .fillMaxHeight()
-                            )
-                        }
+                        Spacer(modifier = Modifier.height(spacing.mediumSeparation))
 
-                        Spacer(modifier = Modifier.height(spacing.tinySeparation))
+                        HorizontalDivider(
+                            thickness = spacing.smallLineThickness,
+                            color = YummiziTheme.colors.yummiziGray,
+                            modifier = Modifier.fillMaxWidth(.3f)
+                        )
 
-                        AsyncYummiziImage(    // Payment QR
-                            model = state.restaurantInfo.paymentQrCodeUrl,
+                        Spacer(modifier = Modifier.height(spacing.mediumSeparation))
+
+                        AsyncYummiziImage(
+                            model = receiptFile,
                             contentDescription = null,
-                            modifier = Modifier.size(spacing.bigImageSize)
+                            modifier = Modifier//.size(spacing.bigImageSize)
+                                .weight(1f)
                         )
 
                         Spacer(modifier = Modifier.height(spacing.mediumSeparation))
 
                         Text(
-                            text = "O al número",
-                            style = YummiziTheme.typography.comfortaaFontVar3,
-                            color = YummiziTheme.colors.yummiziBlack,
+                            text = "Esperando tu llegada",
+                            textAlign = TextAlign.Center,
+                            color = YummiziTheme.colors.yummiziLightOrange,
+                            style = YummiziTheme.typography.leaguespartanFontVar5,
+                        )
+
+                        RemainingTimeText(
+                            targetInstant = state.arrivalInfo.waitEndsDatetime,
+                            style = YummiziTheme.typography.leaguespartanFontVar4,
+                            color = YummiziTheme.colors.yummiziLightOrange,
+                        )
+
+                        Spacer(modifier = Modifier.height(spacing.mediumSeparation))
+
+                        TimeProgressBar(
+                            startInstant = state.arrivalInfo.waitBeginsDatetime,
+                            endInstant = state.arrivalInfo.waitEndsDatetime,
                         )
 
                         Spacer(modifier = Modifier.height(spacing.smallSeparation))
-
-                        Row(    // Copiable phone number box
-                            modifier = Modifier
-//X                        .fillMaxWidth(.5f)
-                                .weight(1f)
-                                .shadow(
-                                    elevation = 4.dp,
-                                    shape = RoundedCornerShape(10.dp)
-                                )
-                                .clip(RoundedCornerShape(spacing.smallCornerRadius))
-                                .background(YummiziTheme.colors.yummiziWhite)
-                                .padding(
-                                    vertical = spacing.tinyPadding,
-                                    horizontal = spacing.mediumPadding
-                                ),
-                            verticalAlignment = Alignment.CenterVertically
-
-                        ) {
-                            Text(
-                                text = state.restaurantInfo.phoneNumber,
-                                style = YummiziTheme.typography.comfortaaFontVar1,
-                                color = YummiziTheme.colors.yummiziDarkBlue,
-                                textAlign = TextAlign.Center
-                            )
-
-                            Spacer(modifier = Modifier.width(spacing.mediumSeparation))
-
-                            Image(
-                                painter = painterResource(id = R.drawable.copy_icon),
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .size(spacing.smallIconSize)
-                            )
-                        }
-
-                        Spacer(modifier = Modifier.height(spacing.smallSeparation))
-
-                        Text(
-                            text = "Presionar el número para copiarlo",
-                            style = YummiziTheme.typography.teacherFontVar6,
-                            color = YummiziTheme.colors.yummiziGray
-                        )
-
-                        Spacer(modifier = Modifier.weight(.9f))
-
-                        Box(    // Payment confirmation button
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(40)) // 40%
-                                .background(YummiziTheme.colors.yummiziDarkBlue)
-                                .padding(
-                                    vertical = spacing.regularPadding,
-                                    horizontal = spacing.bigPadding
-                                )
-                                .clickable{
-                                    viewModel.onPaymentSendClicked()
-                                },
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = "Confirmar pago",
-                                style = YummiziTheme.typography.comfortaaFontVar3,
-                                color = YummiziTheme.colors.yummiziWhite
-                            )
-                        }
-
-                        Spacer(modifier = Modifier.weight(0.3f))
 
                         HorizontalDivider(
                             thickness = spacing.smallLineThickness,
@@ -238,10 +178,10 @@ fun ArrivalScreen(
                         )
                     }
                 }
-                is PaymentPreparationUiState.Error -> {
-                    // TODO: Put a block that contains a erro message
+                is ArrivalUiState.Error -> {
+                    // TODO: Put a block that contains a error message
                     Text(
-                        text = "There was an error",
+                        text = "Error: Por favor, comunicarse con Yummizi y asista al restaurante (E#1#${state.message})",
                         textAlign = TextAlign.Center,
                         color = YummiziTheme.colors.yummiziDarkBlue,
                         style = YummiziTheme.typography.teacherFontVar3
@@ -252,137 +192,89 @@ fun ArrivalScreen(
 
             Spacer(modifier = Modifier.height(spacing.mediumSeparation))
 
-            Row(    // Complementary frame
+            Column(    // Complementary frame
                 modifier = Modifier
                     .weight(2f)
                     .clip(RoundedCornerShape(spacing.mediumCornerRadius))
                     .background(YummiziTheme.colors.yummiziWhite)
                     .padding(spacing.bigPadding),
-                verticalAlignment = Alignment.CenterVertically
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                when (val state = pickedImageUiState) {
-                    is PickedPaymentImageUiState.NoImageSelected -> {
-                        Row(    // Upload image button
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .dropShadow(shape = RoundedCornerShape(12.dp)) {
-                                    alpha = 0.5f                                  // High opacity to make it visible
-                                    radius = 20f                                 // Soft blur radius
-                                    spread = 2f                               // Expands the shadow size
-                                    offset = Offset(8f, 12f) // Pushes shadow down
-                                }
-                                .clip(RoundedCornerShape(spacing.mediumCornerRadius))
-                                .background(YummiziTheme.colors.yummiziDarkBlue)
-                                .padding(
-                                    horizontal = spacing.mediumPadding,
-                                    vertical = spacing.smallPadding
-                                )
-                                .clickable {
-                                    photoPickerLauncher.launch(
-                                        PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
-                                    )
-                                },
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
+                Text(   // Price
+                    text = "¿Necesitas ayuda?",
+                    style = YummiziTheme.typography.leaguespartanFontVar4,
+                    color = YummiziTheme.colors.yummiziBlack
+                )
 
-                            Spacer(modifier = Modifier.weight(1f))
+                Spacer(modifier = Modifier.height(spacing.smallSeparation))
 
-                            Text(
-                                text = "Subir pago aquí",
-                                style = YummiziTheme.typography.comfortaaFontVar4,
-                                color = YummiziTheme.colors.yummiziWhite,
-                                textAlign = TextAlign.Center
+                HorizontalDivider(
+                    thickness = spacing.smallLineThickness,
+                    color = YummiziTheme.colors.yummiziGray
+                )
+
+                Spacer(modifier = Modifier.height(spacing.mediumSeparation))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ){
+                    Box(    // Payment confirmation button
+                        modifier = Modifier
+                            .dropShadow(shape = RoundedCornerShape(15)) {
+                                alpha = 0.5f                                  // High opacity to make it visible
+                                radius = 20f                                 // Soft blur radius
+                                spread = 2f                               // Expands the shadow size
+                                offset = Offset(8f, 12f) // Pushes shadow down
+                            }
+                            .clip(RoundedCornerShape(15)) // 50%
+                            .background(YummiziTheme.colors.yummiziWhite)
+                            .padding(
+                                vertical = spacing.regularPadding,
+                                horizontal = spacing.bigPadding
                             )
-
-                            Spacer(modifier = Modifier.width(spacing.regularSeparation))
-
-                            Image(
-                                painter = painterResource(id = R.drawable.picture_icon),
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .size(spacing.bigIconSize)
-                                    .fillMaxHeight()
-                            )
-
-                            Spacer(modifier = Modifier.weight(1f))
-                        }
-                    }
-
-                    is PickedPaymentImageUiState.LoadingImageSelected -> {
+                            .clickable {
+                                // TODO
+                            },
+                        contentAlignment = Alignment.Center
+                    ) {
                         Text(
-                            text = "Cargando imagen",
-                            style = YummiziTheme.typography.comfortaaFontVar4,
+                            text = "Contactar\nrestaurante",
+                            style = YummiziTheme.typography.comfortaaFontVar3,
+                            color = YummiziTheme.colors.yummiziDarkBlue,
                             textAlign = TextAlign.Center
                         )
                     }
 
-                    is PickedPaymentImageUiState.ImageAlreadySelected -> {
-                        Row(
-                            modifier = Modifier.fillMaxSize(),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            // Payment image
-                            AsyncYummiziImage(
-                                model = state.selectedFile.absolutePath,
-                                contentDescription = null,
-                                modifier = Modifier.size(spacing.mediumImageSize)
-                            )
+                    Spacer(modifier = Modifier.weight(1f))
 
-                            // Vertical separator line
-                            VerticalDivider(
-                                thickness = spacing.smallLineThickness,
-                                color = YummiziTheme.colors.yummiziGray
-                            )
-
-                            Column(
-                                modifier = Modifier.weight(1f),
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
-                                Text(
-                                    text = "¡ Imagen subida !",
-                                    style = YummiziTheme.typography.comfortaaFontVar1,
-                                    color = YummiziTheme.colors.yummiziDarkBlue,
-                                    textAlign = TextAlign.Center
-                                )
-
-                                // Change button
-                                Box(    // Payment confirmation button
-                                    modifier = Modifier
-                                        .dropShadow(shape = RoundedCornerShape(50)) {
-                                            alpha =
-                                                0.5f                                  // High opacity to make it visible
-                                            radius = 20f                                 // Soft blur radius
-                                            spread =
-                                                2f                               // Expands the shadow size
-                                            offset = Offset(8f, 12f) // Pushes shadow down
-                                        }
-                                        .clip(RoundedCornerShape(50)) // 50%
-                                        .background(YummiziTheme.colors.yummiziWhite)
-                                        .padding(
-                                            vertical = spacing.regularPadding,
-                                            horizontal = spacing.bigPadding
-                                        )
-                                        .clickable {
-                                            photoPickerLauncher.launch(
-                                                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
-                                            )
-                                        },
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Text(
-                                        text = "Cambiar",
-                                        style = YummiziTheme.typography.comfortaaFontVar3,
-                                        color = YummiziTheme.colors.yummiziDarkBlue,
-                                        textAlign = TextAlign.Center
-                                    )
-                                }
+                    Box(    // Payment confirmation button
+                        modifier = Modifier
+                            .dropShadow(shape = RoundedCornerShape(15)) {
+                                alpha = 0.5f                                  // High opacity to make it visible
+                                radius = 20f                                 // Soft blur radius
+                                spread = 2f                               // Expands the shadow size
+                                offset = Offset(8f, 12f) // Pushes shadow down
                             }
-
-                        }
+                            .clip(RoundedCornerShape(15)) // 50%
+                            .background(YummiziTheme.colors.yummiziWhite)
+                            .padding(
+                                vertical = spacing.regularPadding,
+                                horizontal = spacing.bigPadding
+                            )
+                            .clickable {
+                                // TODO
+                            },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "Contactar\nYummizi",
+                            style = YummiziTheme.typography.comfortaaFontVar3,
+                            color = YummiziTheme.colors.yummiziDarkBlue,
+                            textAlign = TextAlign.Center
+                        )
                     }
                 }
-
-
             }
         }
     }

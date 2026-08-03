@@ -25,9 +25,11 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.dropShadow
 import androidx.compose.ui.draw.shadow
@@ -41,14 +43,26 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.yummiziapp.R
 import com.example.yummiziapp.core.designsystem.theme.AsyncYummiziImage
 import com.example.yummiziapp.core.designsystem.theme.YummiziTheme
+import com.example.yummiziapp.features.user.ui.specification.SpecificationUiEvents
+import kotlin.uuid.Uuid
 
 //@Preview
 @Composable
 fun PaymentPreparationScreen(
     modifier: Modifier = Modifier,
+    onPaymentDoneNav: (Uuid) -> Unit,
     viewModel: PaymentPreparationViewModel = hiltViewModel()
 ) {
+
     val spacing = YummiziTheme.spacing
+
+    LaunchedEffect(Unit) {
+        viewModel.navEffect.collect { effect ->
+            when (effect) {
+                is PaymentPreparationUiEvents.NavigateToArrival -> { onPaymentDoneNav(effect.restaurantId) }
+            }
+        }
+    }
 
     val pickedImageUiState by viewModel.pickedImageUiState.collectAsStateWithLifecycle()
     val paymentInfoUiState by viewModel.paymentInfoUiState.collectAsStateWithLifecycle()
@@ -209,6 +223,7 @@ fun PaymentPreparationScreen(
                         Box(    // Payment confirmation button
                             modifier = Modifier
                                 .clip(RoundedCornerShape(40)) // 40%
+                                .alpha(if (state.restaurantInfo.imageReady) 1.0f else 0.4f)
                                 .background(YummiziTheme.colors.yummiziDarkBlue)
                                 .padding(
                                     vertical = spacing.regularPadding,
@@ -353,11 +368,9 @@ fun PaymentPreparationScreen(
                                 Box(    // Payment confirmation button
                                     modifier = Modifier
                                         .dropShadow(shape = RoundedCornerShape(50)) {
-                                            alpha =
-                                                0.5f                                  // High opacity to make it visible
+                                            alpha = 0.5f                                  // High opacity to make it visible
                                             radius = 20f                                 // Soft blur radius
-                                            spread =
-                                                2f                               // Expands the shadow size
+                                            spread = 2f                               // Expands the shadow size
                                             offset = Offset(8f, 12f) // Pushes shadow down
                                         }
                                         .clip(RoundedCornerShape(50)) // 50%

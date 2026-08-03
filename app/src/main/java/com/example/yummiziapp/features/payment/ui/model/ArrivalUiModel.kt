@@ -1,11 +1,13 @@
 package com.example.yummiziapp.features.payment.ui.model
 
+import java.io.File
 import kotlin.time.Instant
 
 data class ArrivalUiModel(
     val restaurantLogoUrl: String,
     // val restaurantName: String //TODO
+    val paymentImagePath: String,
     val totalPayment: String,
-    val WaitBeginsDatetime: Instant,
-    val WaitEndsDatetime: Instant,
+    val waitBeginsDatetime: Instant,
+    val waitEndsDatetime: Instant,
 )
