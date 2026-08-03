@@ -2,10 +2,14 @@ package com.example.yummiziapp.features.home.ui.feed.components
 
 import android.util.Log
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -21,6 +25,7 @@ import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInWindow
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.toSize
 import androidx.compose.ui.zIndex
 import com.example.yummiziapp.core.designsystem.theme.YummiziTheme
@@ -44,95 +49,128 @@ fun SelectionFrame(
                 val position = coordinates.positionInWindow()
                 val size = coordinates.size.toSize()
                 onBoundsChanged(Rect(position, size))
-            },
-        ){
+            }
+    ){
 
-        Box(    // Second container (Only block)
+        Column( // Container (Main content + bellow border)
             modifier = Modifier
                 .fillMaxWidth()
+                .fillMaxHeight(.93f)
                 .align(Alignment.BottomCenter)
         ){
-            DiffRoundedCornersRect(
+            Box(    // Container (Main content + connection of bellow border)
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight(.93f),
-                topStart = spacing.mediumCornerRadius,
-                topEnd = spacing.bigCornerRadius,
-                bottomStart = spacing.bigCornerRadius,
-                bottomEnd = spacing.mediumCornerRadius
-            )
-
-            Row(    // Content
-                modifier = Modifier
-                    .padding(horizontal = spacing.regularPadding)
-                    .fillMaxWidth()
-                    .align(Alignment.Center),
-                verticalAlignment = Alignment.CenterVertically
+                    .weight(1f)
             ){
-                when (val state = activeRestaurantsUiState) {
-                    is ActiveRestaurantsUiState.Loading -> {
-                        Text(
-                            text = "Loading data...",
-                            color = YummiziTheme.colors.yummiziDarkBlue,
-                            style = YummiziTheme.typography.teacherFontVar3
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(spacing.bigCornerRadius)
+                        .background(YummiziTheme.colors.yummiziDarkOrange)
+                        .align(Alignment.BottomCenter)
+                ){}
+
+                Row(    // Main content
+                    modifier = Modifier
+                        .clip(
+                            RoundedCornerShape(
+                                topStart = spacing.mediumCornerRadius,
+                                topEnd = spacing.bigCornerRadius,
+                                bottomStart = spacing.bigCornerRadius,
+                                bottomEnd = spacing.mediumCornerRadius
+                            )
                         )
-                    }
-                    is ActiveRestaurantsUiState.PendingStatus -> {
-                        val selectedRestaurants = state.restaurants
+                        .background(YummiziTheme.colors.yummiziLightOrange2)
+                        .padding(horizontal = spacing.regularPadding)
+                        .fillMaxSize()
+                        .align(Alignment.BottomCenter),
+                    verticalAlignment = Alignment.CenterVertically
+                ){
+                    when (val state = activeRestaurantsUiState) {
+                        is ActiveRestaurantsUiState.Loading -> {
+                            Text(
+                                text = "Loading data...",
+                                color = YummiziTheme.colors.yummiziDarkBlue,
+                                style = YummiziTheme.typography.teacherFontVar3
+                            )
+                        }
+                        is ActiveRestaurantsUiState.PendingStatus -> {
+                            val selectedRestaurants = state.restaurants
 
-                        Text(   // Information message
-                            text = if (selectedRestaurants.isNotEmpty()) "Haciendo cola\nen ${selectedRestaurants.size} local${if (selectedRestaurants.size>1) "es" else ""}" else "Mantén presionado\n y arrastra restaurantes\naquí...",
-                            color = YummiziTheme.colors.yummiziWhite.copy(alpha = if (selectedRestaurants.isNotEmpty()) 1f else .6f),
-                            style = YummiziTheme.typography.teacherFontVar2
-                        )
-
-                        Spacer(Modifier.width(spacing.bigSeparation))
-
-                        if(selectedRestaurants.isNotEmpty()){    // With restaurants -> Restaurant logos
-
-                            StackImagesHorizontally(
-                                Modifier
-                                    .height(spacing.smallImageSize)
-                                    .fillMaxWidth(),
-
-                                selectedRestaurants.mapNotNull{it?.logoUrl}
+                            Text(   // Information message
+                                text = if (selectedRestaurants.isNotEmpty()) "Haciendo cola\nen ${selectedRestaurants.size} local${if (selectedRestaurants.size>1) "es" else ""}" else "Mantén presionado\n y arrastra restaurantes\naquí...",
+                                color = YummiziTheme.colors.yummiziWhite.copy(alpha = if (selectedRestaurants.isNotEmpty()) 1f else .6f),
+                                style = YummiziTheme.typography.teacherFontVar2
                             )
 
+                            Spacer(Modifier.width(spacing.bigSeparation))
+
+                            if(selectedRestaurants.isNotEmpty()){    // With restaurants -> Restaurant logos
+
+                                StackImagesHorizontally(
+                                    Modifier
+                                        .height(spacing.smallImageSize)
+                                        .fillMaxWidth(),
+
+                                    selectedRestaurants.mapNotNull{it?.logoUrl}
+                                )
+
+                            }
+                            else{    // Without restaurants -> Placeholder image
+                                Image(
+                                    painter = painterResource(R.drawable.placeholder_select),
+                                    contentDescription = null,
+                                    modifier = Modifier
+                                        .size(spacing.mediumImageSize)
+                                )
+                            }
                         }
-                        else{    // Without restaurants -> Placeholder image
-                            Image(
-                                painter = painterResource(R.drawable.placeholder_select),
+                        is ActiveRestaurantsUiState.ReadyStatus ->{
+                            val readyRestaurant = state.restaurant
+
+                            AsyncYummiziImage(
+                                model = readyRestaurant.logoUrl,
                                 contentDescription = null,
                                 modifier = Modifier
-                                    .size(spacing.mediumImageSize)
+                                    .height(spacing.smallImageSize)
+                                    .clip(RoundedCornerShape(spacing.mediumCornerRadius))
+                            )
+
+                            Spacer(Modifier.width(spacing.bigSeparation))
+
+                            Text(   // Information message
+                                text = "${readyRestaurant.name} te espera",
+                                color = YummiziTheme.colors.yummiziWhite,
+                                style = YummiziTheme.typography.teacherFontVar2
                             )
                         }
-                    }
-                    is ActiveRestaurantsUiState.ReadyStatus ->{
-                        val readyRestaurant = state.restaurant
-
-                        AsyncYummiziImage(
-                            model = readyRestaurant.logoUrl,
-                            contentDescription = null,
-                            modifier = Modifier
-                                .height(spacing.smallImageSize)
-                                .clip(RoundedCornerShape(spacing.mediumCornerRadius))
-                        )
-
-                        Spacer(Modifier.width(spacing.bigSeparation))
-
-                        Text(   // Information message
-                            text = "${readyRestaurant.name} te espera",
-                            color = YummiziTheme.colors.yummiziWhite,
-                            style = YummiziTheme.typography.teacherFontVar2
-                        )
-                    }
-                    is ActiveRestaurantsUiState.Error -> {
-                        Log.d("MyActivity", "🚩  There was an error when displaying the restaurants in the orange frame...\n")
+                        is ActiveRestaurantsUiState.Error -> {
+                            Log.d("MyActivity", "🚩  There was an error when displaying the restaurants in the orange frame...\n")
+                        }
                     }
                 }
+            }
 
-
+            Box(    // Container (Bellow border)
+                modifier = Modifier
+//                    .defaultMinSize(minHeight = spacing.bigCornerRadius)
+                    .clip(
+                        RoundedCornerShape(
+                            bottomStart = spacing.bigCornerRadius,
+                            bottomEnd = spacing.mediumCornerRadius
+                        )
+                    )
+                    .fillMaxWidth()
+                    .background(YummiziTheme.colors.yummiziDarkOrange)
+            ){
+                Text(
+                    text = "Presiona aquí",
+                    color = YummiziTheme.colors.yummiziWhite,
+                    style = YummiziTheme.typography.teacherFontVar3,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                )
             }
         }
 

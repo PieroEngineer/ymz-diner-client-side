@@ -16,7 +16,7 @@ import androidx.compose.ui.unit.dp
 import com.example.yummiziapp.core.designsystem.theme.YummiziTheme
 
 @Composable
-fun DiffRoundedCornersRect(
+fun DiffRoundedCornersRect( //TODO: Delete this composable. The rounded corners are made with "RoundedCornerShape"
     modifier: Modifier = Modifier,
 
     shadowOn: Boolean = true,

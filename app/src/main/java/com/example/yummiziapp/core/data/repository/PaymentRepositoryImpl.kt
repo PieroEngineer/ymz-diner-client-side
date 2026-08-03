@@ -133,13 +133,6 @@ class PaymentRepositoryImpl @Inject constructor(
 
             orderDao.updateOrder(officialOrder)
 
-//X            orderDao.insertOrderWithSelections(
-//                OrderWithSelectionsRelation(
-//                    newOrder,
-//                    orderSelection
-//                )
-//            )
-
             if (totalPriceInCentsFromLocal != totalPriceInCentsFromRemote) {
                 Log.d("MyActivity", "\n🚩💲  The local price doesn't match with the remote price:\n  Local: $totalPriceInCentsFromLocal\n  Remote: $totalPriceInCentsFromRemote")
             }

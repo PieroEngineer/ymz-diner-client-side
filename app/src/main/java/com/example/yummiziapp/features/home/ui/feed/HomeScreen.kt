@@ -115,7 +115,7 @@ fun HomeScreen(
             Spacer(Modifier.height(spacing.mediumSeparation))
 
             // Frame part
-            SelectionFrame( // TODO: Once there is a request is Ready, this frame only works to go to the Menu display
+            SelectionFrame(
                 modifier = Modifier
                     .height(spacing.frameHeight)
                     .graphicsLayer {
