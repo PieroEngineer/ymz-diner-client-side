@@ -55,6 +55,31 @@ interface RestaurantDao {
         pendingStatuses: List<RequestStatusToken> = listOf(RequestStatusToken.QUEUED, RequestStatusToken.ACCEPTED)
         ): Flow<RestaurantWithStatus?>    /// Should I include safety checks?
 
+//X
+//    @Query("""
+//        SELECT
+//            restaurants.*,
+//            COALESCE(requests.status, 'IDLE') as requestStatus
+//        FROM restaurants
+//        LEFT JOIN requests ON restaurants.id = requests.restaurantId
+//        AND (requests.status IS NULL OR requests.status IN (:noPendingStatuses))
+//        LIMIT 1
+//    """)
+    @Query("""
+    SELECT 
+        restaurants.*, 
+        requests.status as requestStatus 
+    FROM restaurants 
+    JOIN requests ON restaurants.id = requests.restaurantId
+    WHERE requests.userId = :userId
+    AND requests.status IN (:noPendingStatuses)
+    LIMIT 1
+""")
+    fun observeNoPendingRestaurantWithStatus(   // TODO: Change the name of No pending
+        userId: Uuid,
+        noPendingStatuses: List<RequestStatusToken> = listOf(RequestStatusToken.PAID, RequestStatusToken.READY)
+    ): Flow<RestaurantWithStatus?>
+
     /**
      * Even though we JOIN with the requests table to filter the results,
      * we only SELECT restaurants.*, so Room maps it directly to a List<Restaurant>.

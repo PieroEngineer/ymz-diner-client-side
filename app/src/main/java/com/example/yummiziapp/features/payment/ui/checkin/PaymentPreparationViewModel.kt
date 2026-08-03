@@ -45,7 +45,6 @@ class PaymentPreparationViewModel @Inject constructor(
             fetchPaymentInfo()
         }
     }
-
     private suspend fun fetchPaymentInfo(){
         restaurantRepository.fetchPaymentInfo(restaurantId)
     }

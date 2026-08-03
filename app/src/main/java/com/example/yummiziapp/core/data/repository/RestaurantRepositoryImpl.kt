@@ -47,6 +47,7 @@ class RestaurantRepositoryImpl @Inject constructor(
         /// Does it need a transaction?
         restaurantDao.clearRestaurantsFromFeed()
         requestDao.clearAll()
+        Log.d("MyActivity", "🧹  Already cleaned\n")
     }
 
     override suspend fun fetchPaymentInfo(restaurantId: Uuid) {
@@ -169,9 +170,9 @@ class RestaurantRepositoryImpl @Inject constructor(
         return restaurantDao.observePendingRestaurants(currentUserId)
     }
 
-    override fun observeReadyRestaurants(): Flow<Restaurant?> {
+    override fun observeNoPendingRestaurantWithStatus(): Flow<RestaurantWithStatus?> {
         val currentUserId = Uuid.parse("00000000-0000-4000-a000-000000000000")
-        return restaurantDao.observeReadyRestaurant(currentUserId)
+        return restaurantDao.observeNoPendingRestaurantWithStatus(currentUserId)
     }
 
     private suspend fun syncWebSocketToRoom() = withContext(ioDispatcher) {

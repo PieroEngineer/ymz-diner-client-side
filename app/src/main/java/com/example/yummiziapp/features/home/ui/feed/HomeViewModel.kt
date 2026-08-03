@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.yummiziapp.core.data.local.entities.Restaurant
+import com.example.yummiziapp.core.data.local.model.RequestStatusToken
 import com.example.yummiziapp.features.user.domain.repository.UserRepository
 import com.example.yummiziapp.features.home.domain.usecase.GetCategorizedFeedUseCase
 import com.example.yummiziapp.features.home.ui.model.SectionUiModel
@@ -74,35 +75,19 @@ class HomeViewModel @Inject constructor(
     // On the other hand, if there is at least one "PAID", the restaurant selection screen only show that
     // restaurant in the white frame as with stated in Canva
 
-    //X
-//    val pendingRestaurants: StateFlow<List<Restaurant>> = restaurantRepository
-//        .observePendingRestaurants()
-//        .stateIn(
-//            scope = viewModelScope,
-//            started = SharingStarted.WhileSubscribed(5000),
-//            initialValue = emptyList()
-//        )
-
-    //X
-    // val readyRestaurants: StateFlow<Restaurant> = restaurantRepository
-    //  .observeReadyRestaurants()
-    //  .stateIn(
-    //      scope = viewModelScope,
-    //      started = SharingStarted.WhileSubscribed(5000),
-    //      initialValue = emptyList()
-    //  )
-
-
     // This is to update the orange frame
     val activeRestaurantsUiState: StateFlow<ActiveRestaurantsUiState> = combine(
         restaurantRepository.observePendingRestaurants(),
-        restaurantRepository.observeReadyRestaurants()
-    ) { pendingRestaurants, readyRestaurant ->
-        if (readyRestaurant == null) {
+        restaurantRepository.observeNoPendingRestaurantWithStatus()
+    ) { pendingRestaurants, noPendingRestaurant ->
+        if (noPendingRestaurant == null) {
+            Log.d("MyActivity", "Restaurant with status is null, so trasnmit pending restaurants: $pendingRestaurants")
+
             ActiveRestaurantsUiState.PendingStatus(pendingRestaurants)
         }
         else{
-            ActiveRestaurantsUiState.ReadyStatus(readyRestaurant)
+            Log.d("MyActivity", "Restaurant with status is not null, so trasnmit ready restaurant: $noPendingRestaurant")
+            ActiveRestaurantsUiState.ReadyStatus(noPendingRestaurant)
         }
     }
     .stateIn(
@@ -110,6 +95,25 @@ class HomeViewModel @Inject constructor(
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = ActiveRestaurantsUiState.Loading
     )
+
+    fun onSelectionFrameClicked(){
+        viewModelScope.launch {
+            if (activeRestaurantsUiState.value is ActiveRestaurantsUiState.ReadyStatus){
+
+                val currentState = activeRestaurantsUiState.value as? ActiveRestaurantsUiState.ReadyStatus ?: return@launch
+
+                if(currentState.restaurantWithStatus.requestStatus == RequestStatusToken.PAID){
+                    _effect.send(HomeUiEvents.NavigateToPaidRestaurant( currentState.restaurantWithStatus.restaurant.id ))
+                }
+                else {
+                    _effect.send(HomeUiEvents.NavigateToReadyRestaurantMenu( currentState.restaurantWithStatus.restaurant.id ))
+                }
+            }
+            else{
+                _effect.send(HomeUiEvents.NavigateToRestaurantSelectionFrame(null))
+            }
+        }
+    }
 
     private suspend fun clearFeed() {
         try {
@@ -138,19 +142,6 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    fun onSelectionFrameClicked(){
-        viewModelScope.launch {
-            if (activeRestaurantsUiState.value is ActiveRestaurantsUiState.ReadyStatus){
-
-                val currentState = activeRestaurantsUiState.value as? ActiveRestaurantsUiState.ReadyStatus ?: return@launch
-
-                _effect.send(HomeUiEvents.NavigateToReadyRestaurantMenu( currentState.restaurant.id ))
-            }
-            else{
-                _effect.send(HomeUiEvents.NavigateToRestaurantSelectionFrame(null))
-            }
-        }
-    }
 
     fun onYouClicked(){
         viewModelScope.launch {

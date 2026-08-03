@@ -31,7 +31,7 @@ import com.example.yummiziapp.core.data.local.entities.Restaurant
         OrderSelection::class,
         Order::class
     ],
-    version = 2,
+    version = 1,
     exportSchema = false // TODO: Activate it when the app is ready to be released
 )
 @TypeConverters(YummiziConverters::class)

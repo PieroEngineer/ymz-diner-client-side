@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -27,11 +26,10 @@ import androidx.compose.ui.layout.positionInWindow
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.toSize
-import androidx.compose.ui.zIndex
 import com.example.yummiziapp.core.designsystem.theme.YummiziTheme
 import com.example.yummiziapp.R
+import com.example.yummiziapp.core.data.local.model.RequestStatusToken
 import com.example.yummiziapp.core.designsystem.theme.AsyncYummiziImage
-import com.example.yummiziapp.core.ui.components.DiffRoundedCornersRect
 import com.example.yummiziapp.features.home.ui.feed.ActiveRestaurantsUiState
 
 @Composable
@@ -68,7 +66,7 @@ fun SelectionFrame(
                         .height(spacing.bigCornerRadius)
                         .background(YummiziTheme.colors.yummiziDarkOrange)
                         .align(Alignment.BottomCenter)
-                ){}
+                )
 
                 Row(    // Main content
                     modifier = Modifier
@@ -126,10 +124,10 @@ fun SelectionFrame(
                             }
                         }
                         is ActiveRestaurantsUiState.ReadyStatus ->{
-                            val readyRestaurant = state.restaurant
+                            val readyRestaurantWithStatus = state.restaurantWithStatus
 
                             AsyncYummiziImage(
-                                model = readyRestaurant.logoUrl,
+                                model = readyRestaurantWithStatus.restaurant.logoUrl,
                                 contentDescription = null,
                                 modifier = Modifier
                                     .height(spacing.smallImageSize)
@@ -139,7 +137,7 @@ fun SelectionFrame(
                             Spacer(Modifier.width(spacing.bigSeparation))
 
                             Text(   // Information message
-                                text = "${readyRestaurant.name} te espera",
+                                text = if (readyRestaurantWithStatus.requestStatus == RequestStatusToken.PAID) "Por favor, compartenos tu\núltima experiencia :D" else "${readyRestaurantWithStatus.restaurant.name} te espera",
                                 color = YummiziTheme.colors.yummiziWhite,
                                 style = YummiziTheme.typography.teacherFontVar2
                             )

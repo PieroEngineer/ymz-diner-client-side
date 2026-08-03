@@ -54,6 +54,7 @@ fun HomeScreen(
     onRestaurantSelectionNavigation: (Uuid?) -> Unit,
     onRestaurantSelected: (Uuid) -> Unit,
     onReadyRestaurantSelected: (Uuid) -> Unit,
+        onPaidRestaurantSelected: (Uuid) -> Unit,
     onPreferenceNavigation: () -> Unit,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
@@ -65,6 +66,7 @@ fun HomeScreen(
                 is HomeUiEvents.NavigateToRestaurantSelectionFrame -> { onRestaurantSelectionNavigation(effect.restaurantId) }
                 is HomeUiEvents.NavigateToRestaurantMenuPreview -> { onRestaurantSelected(effect.restaurantId) }
                 is HomeUiEvents.NavigateToReadyRestaurantMenu -> { onReadyRestaurantSelected(effect.restaurantId) }
+                is HomeUiEvents.NavigateToPaidRestaurant -> { onPaidRestaurantSelected(effect.restaurantId) }
                 is HomeUiEvents.ShowConnectionError -> { /* ... */ }
                 is HomeUiEvents.NavigateToPreferences -> { onPreferenceNavigation() }
             }

@@ -29,7 +29,7 @@ object DatabaseModule {
             YummiziDatabase::class.java,
             "yummizi_db"
         )
-            .fallbackToDestructiveMigration(true)   // TODO: Remove in production
+//            .fallbackToDestructiveMigration(true)   // TODO: Remove in production
             .build()
     }
 
