@@ -62,16 +62,16 @@ val YummiziTypographies = YummiziTypography(
         fontSize = 26.sp
     ),
 
-    teacherFontVar7 = TextStyle(
-        fontFamily = FontFamily(Font(R.font.teachers_variable)),
-        fontWeight = FontWeight.Bold,
-        fontSize = 30.sp
-    ),
-
     teacherFontVar6 = TextStyle(
         fontFamily = FontFamily(Font(R.font.teachers_variable)),
         fontWeight = FontWeight.SemiBold,
         fontSize = 12.sp
+    ),
+
+    teacherFontVar7 = TextStyle(
+        fontFamily = FontFamily(Font(R.font.teachers_variable)),
+        fontWeight = FontWeight.Bold,
+        fontSize = 30.sp
     ),
 
     comfortaaFontVar1 = TextStyle(

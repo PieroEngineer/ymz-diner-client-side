@@ -125,7 +125,7 @@ class PaymentRepositoryImpl @Inject constructor(
             val officialOrder = Order(   // TODO: Move it above and create a mapper for it
                 orderId = readyRequest.requestId,   /// Is it ok that I use the request ID here?
                 paymentImageRelativePath = paymentImageRelativePath,
-                expectedArrivalDatetime = Clock.System.now() + 15.minutes,  // TODO: Change this mockup estimation when the restaurants are able to set the arrival time
+                expectedArrivalDatetime = Clock.System.now() + readyRequest.arrivalTimeInMinutes.minutes,
                 requestId = readyRequest.requestId,
                 localOrderCreationTimestamp = Clock.System.now(),
                 totalPriceInCentsFromBackend = totalPriceInCentsFromRemote,

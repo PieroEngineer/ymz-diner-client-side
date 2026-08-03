@@ -7,6 +7,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -29,10 +30,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 //import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -47,8 +50,12 @@ fun AcceptanceConfirmationModal(
     modifier: Modifier = Modifier,
     isOpen: Boolean = false,
     onDismissRequest: () -> Unit = {},
-    onConfirmationTriggered: () -> Unit = {}
+    onConfirmationTriggered: () -> Unit = {},
+    onBackgroundTap: () -> Unit = {},
+    maxWaitingTimeInMinutes: Int
 ) {
+    val spacing = YummiziTheme.spacing
+
     // 🛡️ Hardware Back Button Interception
     if (isOpen) {
         BackHandler { onDismissRequest() }
@@ -72,33 +79,45 @@ fun AcceptanceConfirmationModal(
                     .pointerInput(Unit) {
                         // 🚀 Swallow all touch configurations so background elements are completely frozen!
                     }
+                    .clickable { onBackgroundTap() }
             )
 
             // 📦 2. THE POP-UP FRAME
             Card(
-                shape = RoundedCornerShape(24.dp),
+                shape = RoundedCornerShape(spacing.mediumCornerRadius),
                 modifier = modifier
                     .fillMaxWidth(0.85f)
-                    .padding(16.dp)
+                    .padding(spacing.bigPadding)
             ) {
                 Column(
                     modifier = Modifier
                         .background(YummiziTheme.colors.yummiziWhite)
-                        .padding(24.dp),
+                        .padding(spacing.bigPadding),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = "Confirmar acción",
+                        text = "Confirmo mi llegada en ${maxWaitingTimeInMinutes} minutos",
                         color = YummiziTheme.colors.yummiziDarkBlue,
-                        style = YummiziTheme.typography.teacherFontVar2
+                        style = YummiziTheme.typography.teacherFontVar2,
+                        textAlign = TextAlign.Center
                     )
 
-                    Spacer(modifier = Modifier.height(24.dp))
+                    Spacer(modifier = Modifier.height(spacing.bigSeparation))
 
                     // 🚀 3. SLIDE-TO-ACTION COMPONENT
                     SlideToConfirm(
                         onConfirm = onConfirmationTriggered
                     )
+
+                    Spacer(modifier = Modifier.height(spacing.bigSeparation))
+
+                    Text(
+                        text = "Una vez confirme este restaurante,\nlas otras solicitudes serán canceladas",
+                        color = YummiziTheme.colors.yummiziLightOrange,
+                        style = YummiziTheme.typography.teacherFontVar6,
+                        textAlign = TextAlign.Center
+                    )
+
                 }
             }
 
@@ -116,10 +135,13 @@ private fun SlideToConfirm(
     onConfirm: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val density = LocalDensity.current  // TODO: Change the hardcoded values to theme values
-    val thumbSize = 56.dp
-    val trackHeight = 64.dp
-    val thumbPadding = 4.dp
+    val density = LocalDensity.current
+
+    val spacing = YummiziTheme.spacing
+
+    val thumbSize = 56.dp                  // TODO: Change the hardcoded values to theme values
+    val trackHeight = 64.dp               //
+    val thumbPadding = 4.dp           //
     
     val thumbSizePx = with(density) { thumbSize.toPx() }
     val trackPaddingPx = with(density) { thumbPadding.toPx() }
@@ -189,8 +211,13 @@ private fun SlideToConfirm(
             Icon(
                 painter = painterResource(R.drawable.row_btn),
                 contentDescription = null,
+
                 tint = Color.White,
-                modifier = Modifier.size(28.dp)
+                // Rotate 90 degrees
+                modifier = Modifier
+                    .size(28.dp)
+                    .rotate(90f)
+
             )
         }
     }

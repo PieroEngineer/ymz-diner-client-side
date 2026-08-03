@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -194,6 +193,7 @@ fun SpecificationScreen(
         }
 
         // Insert the Modal at the absolute bottom of the root Box structure
+        val focusedRestaurantState = uiRestaurantState
         AcceptanceConfirmationModal(
             isOpen = isConfirmationPopupVisible,
             onDismissRequest = { isConfirmationPopupVisible = false },
@@ -203,7 +203,11 @@ fun SpecificationScreen(
 
                 // Instruct the ViewModel brain to fire off the background business tasks
                 viewModel.onAcceptanceConfirmed()
-            }
+            },
+            onBackgroundTap = { isConfirmationPopupVisible = false },
+
+            maxWaitingTimeInMinutes = if (focusedRestaurantState is RestaurantSpecificationUiState.FocusingRestaurant) focusedRestaurantState.restaurant.maxWaitingTimeInMinutes else 0   // TODO: Change the zero by null and implement it internally
+
         )
 
     }

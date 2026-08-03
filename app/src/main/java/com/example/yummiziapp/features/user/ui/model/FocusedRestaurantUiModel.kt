@@ -9,5 +9,4 @@ data class FocusedRestaurantUiModel(
     val distanceKm: Int,
     val name: String,
     val maxWaitingTimeInMinutes: Int
-    // TODO: Later include the conditions and company here
 )
