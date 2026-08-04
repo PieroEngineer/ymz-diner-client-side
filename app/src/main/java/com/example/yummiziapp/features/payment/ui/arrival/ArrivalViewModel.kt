@@ -4,19 +4,23 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.yummiziapp.core.data.local.entities.Order
+import com.example.yummiziapp.core.data.local.model.FeedbackLevelToken
 import com.example.yummiziapp.core.utils.toCurrencyFormat
 import com.example.yummiziapp.features.payment.domain.repository.PaymentRepository
 import com.example.yummiziapp.features.payment.ui.model.ArrivalUiModel
+import com.example.yummiziapp.features.payment.ui.model.FeedbackUiState
 import com.example.yummiziapp.features.restaurant.domain.repository.RestaurantRepository
-import com.example.yummiziapp.features.user.ui.specification.UserSpecificationUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import javax.inject.Inject
+import kotlin.time.Clock
 import kotlin.uuid.Uuid
 
 @HiltViewModel
@@ -30,19 +34,49 @@ class ArrivalViewModel @Inject constructor(
 
     private val restaurantId = Uuid.parse(restaurantIdString)
 
+    private val _isTimeExpired = MutableStateFlow(false)
+
+    private val _feedbackUiState = MutableStateFlow(FeedbackUiState())
+    val feedbackUiState: StateFlow<FeedbackUiState> = _feedbackUiState.asStateFlow()
+
+    fun onDescriptionChanged(newText: String) {
+        _feedbackUiState.update { currentState ->
+            currentState.copy(description = newText)
+        }
+    }
+
+    fun onConformityDegreeChanged(newDegree: FeedbackLevelToken) {
+        _feedbackUiState.update { currentState ->
+            currentState.copy(conformityDegree = newDegree)
+        }
+    }
+
+    fun goToFeedbackState(event: ArrivalUiEvent){
+        when (event) {
+            is ArrivalUiEvent.OnToggleByTimeExpired -> { _isTimeExpired.update{ !it } }
+        }
+    }
+
     val arrivalInfoUiState: StateFlow<ArrivalUiState> = combine (
         paymentRepository.observeLatestOrder(),
         restaurantRepository.observeRestaurantById(restaurantId),
-    ) { order, restaurant ->
+        _isTimeExpired
+    ) { order, restaurant, isTimeExpired ->
+        val now = Clock.System.now()
+        if(isTimeExpired || (order.expectedArrivalDatetime != null && order.expectedArrivalDatetime < now)){
 
-            ArrivalUiState.Success( order.toUiModel(restaurant?.logoUrl ?: "" /* TODO: Modify this fallback */) ) as ArrivalUiState
+            val message = if (restaurant != null) "en ${restaurant.name}" else "anterior"
+            ArrivalUiState.CustomerArrived( message)
+        }else{
+            ArrivalUiState.CustomerArriving( order.toUiModel(restaurant?.logoUrl ?: "" /* TODO: Modify this fallback */) ) as ArrivalUiState
         }
-        .catch { e -> emit(ArrivalUiState.Error(e.message ?: "Unknown Error")) }
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = ArrivalUiState.Loading
-        )
+    }
+    .catch { e -> emit(ArrivalUiState.Error(e.message ?: "Unknown Error")) }
+    .stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = ArrivalUiState.Loading
+    )
 
     private fun Order.toUiModel(restaurantLogoUrl: String) = ArrivalUiModel(
         restaurantLogoUrl = restaurantLogoUrl,

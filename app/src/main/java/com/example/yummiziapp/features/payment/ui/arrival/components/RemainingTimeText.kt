@@ -1,13 +1,14 @@
 package com.example.yummiziapp.features.payment.ui.arrival.components
 
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
+import com.example.yummiziapp.features.payment.ui.arrival.ArrivalUiEvent
 import kotlinx.coroutines.delay
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.milliseconds
@@ -24,9 +25,14 @@ fun RemainingTimeText(
     targetInstant: Instant,
     expiredText: String = "Tiempo finalizado",
 
+    onTimeExpired: (ArrivalUiEvent) -> Unit,
+
     style: TextStyle,
     color: Color,
 ) {
+    // Ensure the coroutine always uses the latest callback without restarting the timer
+    val currentOnTimeExpired by rememberUpdatedState(onTimeExpired)
+
     // Isolated state producer: Updates once per second without triggering parent recomposition
     val remainingFormattedText by produceState(
         initialValue = formatRemainingTime(Clock.System.now(), targetInstant, expiredText),
@@ -38,6 +44,7 @@ fun RemainingTimeText(
             value = formatRemainingTime(now, targetInstant, expiredText)
 
             if (now > targetInstant || now == targetInstant) {
+                currentOnTimeExpired(ArrivalUiEvent.OnToggleByTimeExpired)
                 break // Stop coroutine execution once expired to save CPU
             }
             delay(1000L.milliseconds)

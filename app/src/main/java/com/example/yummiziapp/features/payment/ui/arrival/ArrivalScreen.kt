@@ -10,12 +10,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
@@ -36,7 +34,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.yummiziapp.R
 import com.example.yummiziapp.core.designsystem.theme.AsyncYummiziImage
 import com.example.yummiziapp.core.designsystem.theme.YummiziTheme
+import com.example.yummiziapp.features.payment.ui.arrival.components.ConformitySelector
 import com.example.yummiziapp.features.payment.ui.arrival.components.RemainingTimeText
+import com.example.yummiziapp.features.payment.ui.arrival.components.TextFieldForFeedback
 import com.example.yummiziapp.features.payment.ui.arrival.components.TimeProgressBar
 import java.io.File
 
@@ -78,7 +78,7 @@ fun ArrivalScreen(
                         style = YummiziTheme.typography.teacherFontVar3
                     )
                 }
-                is ArrivalUiState.Success -> {
+                is ArrivalUiState.CustomerArriving -> {
                     val context = LocalContext.current
                     val receiptFile = remember(state.arrivalInfo.paymentImagePath) {
                         File(context.filesDir, state.arrivalInfo.paymentImagePath)
@@ -153,6 +153,7 @@ fun ArrivalScreen(
                             targetInstant = state.arrivalInfo.waitEndsDatetime,
                             style = YummiziTheme.typography.leaguespartanFontVar4,
                             color = YummiziTheme.colors.yummiziLightOrange,
+                            onTimeExpired = { event -> viewModel.goToFeedbackState(event) }
                         )
 
                         Spacer(modifier = Modifier.height(spacing.mediumSeparation))
@@ -173,6 +174,106 @@ fun ArrivalScreen(
 
                         Text(
                             text = "¡ Gracias por ser parte de Yummizi !",
+                            textAlign = TextAlign.Center,
+                            style = YummiziTheme.typography.teacherFontVar6,
+                            color = YummiziTheme.colors.yummiziDarkOrange,
+                        )
+                    }
+                }
+                is ArrivalUiState.CustomerArrived -> {
+                    val feedbackUiState by viewModel.feedbackUiState.collectAsStateWithLifecycle()  /// Is it a bad practice to have to create this state here? If yes, maybe it could go in the "combine" and use it, but the time condition would run every keystroke
+
+                    Image(
+                        painter = painterResource(R.drawable.yummizi_logo),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .weight(1f)
+                            .clip(RoundedCornerShape(spacing.mediumCornerRadius * .75f))
+                    )
+
+                    Column( // Main frame
+                        modifier = Modifier
+                            .weight(7f)
+                            .clip(RoundedCornerShape(spacing.mediumCornerRadius))
+                            .background(YummiziTheme.colors.yummiziWhite)
+                            .padding(
+                                vertical = spacing.mediumPadding,
+                                horizontal = spacing.bigPadding
+                            ),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(   // Price
+                            text = "¡ Gracias por\ntu visita\n${state.topMessagePart} !",
+                            textAlign = TextAlign.Center,
+                            style = YummiziTheme.typography.leaguespartanFontVar4,
+                            color = YummiziTheme.colors.yummiziLightOrange
+                        )
+
+                        Spacer(modifier = Modifier.height(spacing.smallSeparation))
+
+                        HorizontalDivider(
+                            thickness = spacing.smallLineThickness,
+                            color = YummiziTheme.colors.yummiziGray
+                        )
+
+                        Spacer(modifier = Modifier.height(spacing.mediumSeparation))
+
+                        Text(
+                            text = "Yummizi también se alimenta 🍲\n\nPor favor, compártenos tu experiencia con Yummizi",
+                            textAlign = TextAlign.Center,
+                            color = YummiziTheme.colors.yummiziDarkBlue,
+                            style = YummiziTheme.typography.teacherFontVar3,
+                        )
+
+                        Spacer(modifier = Modifier.height(spacing.mediumSeparation))
+
+                        TextFieldForFeedback(
+                            modifier = Modifier.weight(1f),
+                            value = feedbackUiState.description,
+                            onValueChange = { viewModel.onDescriptionChanged(it) }
+                        )
+
+                        Spacer(modifier = Modifier.height(spacing.mediumSeparation))
+
+                        ConformitySelector(
+                            selectedConformity = feedbackUiState.conformityDegree,
+                            onConformitySelected = {conformity -> viewModel.onConformityDegreeChanged(conformity) }
+                        )
+
+                        Spacer(modifier = Modifier.height(spacing.mediumSeparation))
+
+                        Box(    // Payment confirmation button
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(40)) // 40%
+                                .background(YummiziTheme.colors.yummiziDarkBlue)
+                                .padding(
+                                    vertical = spacing.regularPadding,
+                                    horizontal = spacing.bigPadding
+                                )
+                                .clickable{
+
+                                },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "Listo",
+                                textAlign = TextAlign.Center,
+                                style = YummiziTheme.typography.comfortaaFontVar3,
+                                color = YummiziTheme.colors.yummiziWhite
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(spacing.smallSeparation))
+
+                        HorizontalDivider(
+                            thickness = spacing.smallLineThickness,
+                            color = YummiziTheme.colors.yummiziGray
+                        )
+
+                        Spacer(modifier = Modifier.height(spacing.smallSeparation))
+
+                        Text(
+                            text = "Tu opinión es muy importante para nosotros",
                             style = YummiziTheme.typography.teacherFontVar6,
                             color = YummiziTheme.colors.yummiziDarkOrange,
                         )
