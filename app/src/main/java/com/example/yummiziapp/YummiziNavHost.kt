@@ -96,7 +96,11 @@ fun YummiziNavHost(
         }
 
         composable<YummiziRoute.Arrival> {
-            ArrivalScreen()
+            ArrivalScreen(
+                onHomeClickedNav = {
+                    navController.navigate(YummiziRoute.Home)
+                }
+            )
         }
     }
 }

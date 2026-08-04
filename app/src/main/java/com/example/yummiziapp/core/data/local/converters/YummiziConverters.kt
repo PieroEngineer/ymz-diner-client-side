@@ -2,6 +2,7 @@ package com.example.yummiziapp.core.data.local.converters
 
 import androidx.room.TypeConverter
 import com.example.yummiziapp.core.data.local.model.AvailableSpecificsToken
+import com.example.yummiziapp.core.data.local.model.FeedbackLevelToken
 import com.example.yummiziapp.core.data.local.model.RequestStatusToken
 import kotlin.uuid.Uuid
 import kotlinx.serialization.encodeToString
@@ -44,6 +45,13 @@ class YummiziConverters {
 
     @TypeConverter
     fun toRequestStatusToken(value: String): RequestStatusToken = RequestStatusToken.valueOf(value)
+
+    // TODO: use when Feedback entity is implemented
+//    @TypeConverter
+//    fun fromFeedbackLevelToken(value: FeedbackLevelToken): String = value.name
+//
+//    @TypeConverter
+//    fun toFeedbackLevelToken(value: String): FeedbackLevelToken = FeedbackLevelToken.valueOf(value)
 
     // --- AvailableSpecificsToken Lists ---
     @TypeConverter

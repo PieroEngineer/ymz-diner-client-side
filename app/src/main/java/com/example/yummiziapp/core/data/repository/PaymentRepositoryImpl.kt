@@ -29,7 +29,7 @@ import kotlin.time.Duration.Companion.minutes
 import kotlin.uuid.Uuid
 
 /// Should I put a singleton in every repository?
-class PaymentRepositoryImpl @Inject constructor(
+class PaymentRepositoryImpl @Inject constructor(    // TODO: Change the name of "Payment" for another (Perhaps with "Order")
     private val paymentDao: PaymentDao,
     private val requestDao: RequestDao,
     private val menuDao: MenuDao,
@@ -152,6 +152,7 @@ class PaymentRepositoryImpl @Inject constructor(
     override suspend fun getCurrentOrderSelections(): List<OrderSelection> = withContext(ioDispatcher) {  /// Is this "withContext(ioDispatcher)" inefficient due it's a direct call?
         paymentDao.getOrderSelections()
     }
+
 
     /**
      * Retrieves the image handle from internal storage.

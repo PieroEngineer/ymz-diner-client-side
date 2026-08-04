@@ -19,6 +19,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,17 +39,29 @@ import com.example.yummiziapp.features.payment.ui.arrival.components.ConformityS
 import com.example.yummiziapp.features.payment.ui.arrival.components.RemainingTimeText
 import com.example.yummiziapp.features.payment.ui.arrival.components.TextFieldForFeedback
 import com.example.yummiziapp.features.payment.ui.arrival.components.TimeProgressBar
+import com.example.yummiziapp.features.user.ui.specification.SpecificationUiEvents
 import java.io.File
 
 //@Preview
 @Composable
 fun ArrivalScreen(
     modifier: Modifier = Modifier,
+    onHomeClickedNav: () -> Unit,
     viewModel: ArrivalViewModel = hiltViewModel()
 ) {
     val spacing = YummiziTheme.spacing
 
     val arrivalInfoUiState by viewModel.arrivalInfoUiState.collectAsStateWithLifecycle()
+
+    // Listen for the ViewModel's commands
+    LaunchedEffect(Unit) {
+        viewModel.navEffect.collect { effect ->
+            when (effect) {
+                is ArrivalUiEvent.NavigateToHome -> { onHomeClickedNav() }
+                else -> {}
+            }
+        }
+    }
 
     Box(
         modifier = modifier
@@ -251,7 +264,7 @@ fun ArrivalScreen(
                                     horizontal = spacing.bigPadding
                                 )
                                 .clickable{
-
+                                    viewModel.onFeedbackReady()
                                 },
                             contentAlignment = Alignment.Center
                         ) {

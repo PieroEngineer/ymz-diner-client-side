@@ -78,6 +78,8 @@ class RequestRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun clearAll() = requestDao.clearAll()
+
     override suspend fun leaveQueue(restaurantId: Uuid) = withContext(ioDispatcher) {
         val userId = loggedUserDao.getCurrentUserId() ?: Uuid.parse("00000000-0000-4000-a000-000000000000")
 

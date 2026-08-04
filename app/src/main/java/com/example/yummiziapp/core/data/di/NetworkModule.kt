@@ -1,6 +1,7 @@
 package com.example.yummiziapp.core.data.di
 
 import com.example.yummiziapp.BuildConfig
+import com.example.yummiziapp.core.data.network.api.FeedbackApi
 import com.example.yummiziapp.core.data.network.api.PaymentApi
 import com.example.yummiziapp.core.data.network.api.PreferenceApi
 import com.example.yummiziapp.core.data.network.api.RequestApi
@@ -47,6 +48,12 @@ object NetworkModule {
         return retrofit.create(PaymentApi::class.java)
     }
 
+    @Provides
+    @Singleton
+    fun provideFeedbackApi(retrofit: Retrofit): FeedbackApi {
+        return retrofit.create(FeedbackApi::class.java)
+    }
+
 
     @Provides
     @Singleton
@@ -89,7 +96,7 @@ object NetworkModule {
 
         return Retrofit.Builder()
 //            .baseUrl(BuildConfig.BASE_URL) // Pulls safely from the environment configuration we set up earlier!
-            .baseUrl("http://localhost:4566/_aws/execute-api/hyywk4scsj/prod/")
+            .baseUrl("http://localhost:4566/_aws/execute-api/xdkhvrty1q/prod/")
             .client(okHttpClient)
             .addConverterFactory(json.asConverterFactory(contentType))
             .build()

@@ -26,5 +26,6 @@ interface RequestRepository {
 
     suspend fun leaveQueue(restaurantId: Uuid)
 
+    suspend fun clearAll()
     suspend fun confirmAcceptance(restaurantId: Uuid)
 }
