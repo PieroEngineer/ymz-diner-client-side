@@ -51,7 +51,6 @@ fun AcceptanceConfirmationModal(
     isOpen: Boolean = false,
     onDismissRequest: () -> Unit = {},
     onConfirmationTriggered: () -> Unit = {},
-    onBackgroundTap: () -> Unit = {},
     maxWaitingTimeInMinutes: Int
 ) {
     val spacing = YummiziTheme.spacing
@@ -71,7 +70,7 @@ fun AcceptanceConfirmationModal(
             contentAlignment = Alignment.Center
         ) {
 
-            // 🔒 1. THE INTERCEPTION MASK (Locks screen inputs and darkens background)
+            // THE INTERCEPTION MASK (Locks screen inputs and darkens background)
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -79,10 +78,10 @@ fun AcceptanceConfirmationModal(
                     .pointerInput(Unit) {
                         // 🚀 Swallow all touch configurations so background elements are completely frozen!
                     }
-                    .clickable { onBackgroundTap() }
+                    .clickable { onDismissRequest() }
             )
 
-            // 📦 2. THE POP-UP FRAME
+            // THE POP-UP FRAME
             Card(
                 shape = RoundedCornerShape(spacing.mediumCornerRadius),
                 modifier = modifier

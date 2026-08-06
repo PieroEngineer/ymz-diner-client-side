@@ -78,7 +78,7 @@ class RequestRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun clearAll() = requestDao.clearAll()
+    override suspend fun clearAll() = requestDao.clearAll() // TODO: This function should have a logic to use different API functions: A function when there is only one request, and another when there are more.
 
     override suspend fun leaveQueue(restaurantId: Uuid) = withContext(ioDispatcher) {
         val userId = loggedUserDao.getCurrentUserId() ?: Uuid.parse("00000000-0000-4000-a000-000000000000")

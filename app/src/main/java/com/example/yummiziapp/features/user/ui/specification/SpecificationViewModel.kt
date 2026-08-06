@@ -9,10 +9,12 @@ import com.example.yummiziapp.core.data.local.entities.Restaurant
 import com.example.yummiziapp.core.data.local.model.RequestStatusToken
 import com.example.yummiziapp.features.request.domain.repository.RequestRepository
 import com.example.yummiziapp.features.restaurant.domain.repository.RestaurantRepository
+//import com.example.yummiziapp.features.restaurant.ui.model.RestaurantIdentityUiModel
 import com.example.yummiziapp.features.user.domain.repository.UserRepository
 import com.example.yummiziapp.features.user.ui.model.SelectedRestaurantUiModel
 import com.example.yummiziapp.features.user.ui.model.FocusedRestaurantUiModel
 import com.example.yummiziapp.features.user.ui.model.PendingRequestUiStatus
+import com.example.yummiziapp.features.user.ui.model.RestaurantIdentityUiModel
 import com.example.yummiziapp.features.user.ui.model.UserDetailsUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -22,9 +24,11 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.uuid.Uuid
@@ -44,6 +48,58 @@ class SpecificationViewModel @Inject constructor(
     private val _focusedRestaurantId = MutableStateFlow(restaurantIdReceivedFromNavigation) // TODO: consider to move it to the stateFlow that is bellow
 //    val focusedRestaurantId: StateFlow<Uuid?> = _focusedRestaurantId.asStateFlow()
 
+    private val initialRestaurantIdToRemove: Uuid? = null
+    private val _lastRestaurantIdThatTheyTriedRemove = MutableStateFlow(initialRestaurantIdToRemove)
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val restaurantIdentityUiState: StateFlow<RestaurantIdentityUiModel> = _lastRestaurantIdThatTheyTriedRemove
+        .flatMapLatest { restaurantId ->
+            if(restaurantId == null){
+                flowOf(RestaurantIdentityUiModel())
+            }
+            else{
+                restaurantRepository    /// Modify this state if more attributes of the restaurant is needed
+                    .observeRestaurantById(restaurantId)
+                    .map { restaurant ->
+                        if(restaurant == null) {
+                            RestaurantIdentityUiModel()
+                        }
+                        else{
+                            RestaurantIdentityUiModel(
+                                restaurantId = restaurant.id,
+                                imageUrl = restaurant.logoUrl,
+                                name = restaurant.name
+                            )
+                        }
+                    }
+            }
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = RestaurantIdentityUiModel()
+        )
+
+    fun onTryToRemoveRequest(restaurantId: Uuid){
+        _lastRestaurantIdThatTheyTriedRemove.update{ restaurantId }
+    }
+
+    fun leaveQueue(restaurantId: Uuid?) {  /// The restaurant ID can be got from the UI state and not as parameter, consider it as an alternative option
+
+        viewModelScope.launch {
+            try {
+                if(restaurantId != null){
+                    requestRepository.leaveQueue(restaurantId)
+                }
+            } catch (e: Exception) {
+                // This is where you tell the user the "Optimistic" part failed
+                Log.d("MyActivity", "🚩🚮 There was an error while trying to leave the queue  | $e\n")
+                //_effect.send(HomeScreenUiEvents.ShowError("Check your connection. Could not leave queue."))
+
+            }
+        }
+    }
+
     // 🔄 2. The Main UI State Machine Pipeline
     @OptIn(ExperimentalCoroutinesApi::class)
     val uiRestaurantState: StateFlow<RestaurantSpecificationUiState> = _focusedRestaurantId
@@ -52,7 +108,7 @@ class SpecificationViewModel @Inject constructor(
             if (restaurantId != null) {
                 Log.d("MyActivity", "🔎👉 Switching state mode to FOCUSED: $restaurantId")
 
-                restaurantRepository.observePendingRestaurantWithStatusById(restaurantId)
+                restaurantRepository.observePendingRestaurantWithStatusById(restaurantId)   /// Is it necessary to have an "observePendingRestaurantWithStatusById" if instead of a generic "observeRestaurantWithStatusById"
                     .map { currentRestaurant ->
                         if (currentRestaurant == null) {
                             RestaurantSpecificationUiState.Error("Restaurant data allocation corrupted or missing.")
@@ -222,21 +278,6 @@ class SpecificationViewModel @Inject constructor(
     fun onYouClicked() {
         viewModelScope.launch {
             _effect.send(SpecificationUiEvents.NavigateToPreferences)
-        }
-    }
-
-    fun leaveQueue(restaurantId: Uuid) {
-
-        viewModelScope.launch {
-            try {
-                requestRepository.leaveQueue(restaurantId)
-                //TODO: _effect.send(HomeScreenUiEvents.ShowSnackbar("You left the queue"))
-            } catch (e: Exception) {
-                // This is where you tell the user the "Optimistic" part failed
-                Log.d("MyActivity", "🚩🚮 There was an error while trying to leave the queue  | $e\n")
-                //_effect.send(HomeScreenUiEvents.ShowError("Check your connection. Could not leave queue."))
-
-            }
         }
     }
 }

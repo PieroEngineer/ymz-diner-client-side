@@ -1,6 +1,7 @@
 package com.example.yummiziapp.features.user.ui.specification
 
 import android.util.Log
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,6 +21,7 @@ import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.yummiziapp.core.designsystem.theme.YummiziTheme
+import com.example.yummiziapp.core.ui.components.CautionConfirmationModal
 import com.example.yummiziapp.core.ui.components.NavigationBar
 import com.example.yummiziapp.core.ui.components.SearchingArea
 import com.example.yummiziapp.features.user.ui.specification.components.CompanySection
@@ -55,6 +57,9 @@ fun SpecificationScreen(
     val uiRestaurantState by viewModel.uiRestaurantState.collectAsStateWithLifecycle()
     val uiUserState by viewModel.uiUserState.collectAsStateWithLifecycle()
     var isConfirmationPopupVisible by rememberSaveable { mutableStateOf(false) }
+    val restaurantIdentityUiState by viewModel.restaurantIdentityUiState.collectAsStateWithLifecycle()
+
+    var isTryingToCancelRequest by rememberSaveable { mutableStateOf(false) }
 
     Box(
         modifier = Modifier.fillMaxSize()
@@ -132,7 +137,9 @@ fun SpecificationScreen(
                             listedRestaurants = state.restaurants,
 
                             onRemoveRestaurant = { id ->
-                                viewModel.leaveQueue(id)
+                                viewModel.onTryToRemoveRequest(id)
+                                isTryingToCancelRequest = true
+//X                                viewModel.leaveQueue(id)
                             },
 
                             onQueuedRestaurantClicked = { id ->
@@ -192,6 +199,26 @@ fun SpecificationScreen(
 
         }
 
+        CautionConfirmationModal(
+            // TODO:  (#741)
+            modifier = Modifier,
+
+            isOpen = isTryingToCancelRequest,
+            onDismissRequest = { isTryingToCancelRequest = false },
+
+            restaurantImageUrl = restaurantIdentityUiState.imageUrl,
+            mainMessage = "¿Deseas cancelar tu solicitud de mesa en\n${restaurantIdentityUiState.name}?",
+            noOptimisticButtonText = "Cancelar\nsolicitud",
+            optimisticButtonText = "Mantener\nsolicitud",
+            complementaryMessage = "Podrás realizar la solicitud nuevamente",
+
+            onNoOptimisticOptionClicked = {
+                viewModel.leaveQueue(restaurantIdentityUiState.restaurantId)
+                isTryingToCancelRequest = false
+            },
+            onOptimisticOptionClicked = { isTryingToCancelRequest = false },
+        )
+
         // Insert the Modal at the absolute bottom of the root Box structure
         val focusedRestaurantState = uiRestaurantState
         AcceptanceConfirmationModal(
@@ -204,8 +231,6 @@ fun SpecificationScreen(
                 // Instruct the ViewModel brain to fire off the background business tasks
                 viewModel.onAcceptanceConfirmed()
             },
-            onBackgroundTap = { isConfirmationPopupVisible = false },
-
             maxWaitingTimeInMinutes = if (focusedRestaurantState is RestaurantSpecificationUiState.FocusingRestaurant) focusedRestaurantState.restaurant.maxWaitingTimeInMinutes else 0   // TODO: Change the zero by null and implement it internally
 
         )

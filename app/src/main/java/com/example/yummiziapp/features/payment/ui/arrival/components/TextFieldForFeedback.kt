@@ -46,7 +46,7 @@ fun TextFieldForFeedback(
             ) {
                 if (value.isEmpty()) {
                     Text(
-                        text = "Yo creo que yummizi fue ...\n\nLo que puede mejorar es ...\n\nMe gustó/disgustó que ...",
+                        text = "Ejemplos:\n\nYo creo que yummizi fue ...\n\nLo que puede mejorar es ...\n\nMe gustó/disgustó que ...",
                         style = YummiziTheme.typography.teacherFontVar3
                     )
                 }

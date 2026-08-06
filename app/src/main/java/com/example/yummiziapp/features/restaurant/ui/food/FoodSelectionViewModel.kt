@@ -7,10 +7,12 @@ import com.example.yummiziapp.core.data.local.entities.Dish
 import com.example.yummiziapp.core.data.local.entities.MenuPage
 import com.example.yummiziapp.core.utils.toCurrencyFormat
 import com.example.yummiziapp.features.payment.domain.repository.PaymentRepository
+import com.example.yummiziapp.features.request.domain.repository.RequestRepository
 import com.example.yummiziapp.features.restaurant.domain.repository.RestaurantRepository
 import com.example.yummiziapp.features.restaurant.ui.model.CoordinatesInPage
 import com.example.yummiziapp.features.restaurant.ui.model.FoodSelectionUiModel
 import com.example.yummiziapp.features.restaurant.ui.model.MenuUiModel
+import com.example.yummiziapp.features.restaurant.ui.model.RestaurantIdentityUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -31,10 +33,10 @@ import kotlin.uuid.Uuid
 @HiltViewModel
 class FoodSelectionViewModel @Inject constructor(   //TODO: Change the way of how the dishes change to don't receive all of them in a
     private val restaurantRepository: RestaurantRepository,
+    private val requestRepository: RequestRepository,
     private val paymentRepository: PaymentRepository,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
-
 
     private val _effect = Channel<FoodSelectionUiEvents>(Channel.BUFFERED)
     val navEffect = _effect.receiveAsFlow()
@@ -44,7 +46,6 @@ class FoodSelectionViewModel @Inject constructor(   //TODO: Change the way of ho
     private val restaurantId = Uuid.parse(restaurantIdString)
 
     private val _orderMap = MutableStateFlow<Map<Uuid, Int>>(emptyMap())
-
 
     init {
         viewModelScope.launch {
@@ -74,6 +75,17 @@ class FoodSelectionViewModel @Inject constructor(   //TODO: Change the way of ho
             // TODO: If the payment fails, Navigate, but show a snackbar asking for trying again.
             _effect.send(FoodSelectionUiEvents.NavigateToPayment(restaurantId) )    /// Should I send this contained in the entity or here?
         }
+    }
+
+    fun cancelRequest(){    /// Also handle the Order cancelation if in later updates this screen create Order items in its inizialitation
+        viewModelScope.launch {
+            //Remove current request
+            requestRepository.clearAll()    // TODO: Change this function that exclusively delete the current Ready request local and remotely
+
+            //Navigate to home
+            _effect.send(FoodSelectionUiEvents.NavigateToHome)
+
+        }   // TODO: Clean the stack too
     }
 
 
@@ -127,11 +139,31 @@ class FoodSelectionViewModel @Inject constructor(   //TODO: Change the way of ho
                     accumulatedCost = totalCents.toCurrencyFormat()
                 )
             }.filter { it.amount > 0 }
-        }
+        }   /// Should I include a catch here?
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = emptyList()
+        )
+
+    val restaurantIdentityUiState: StateFlow<RestaurantIdentityUiModel> = restaurantRepository    /// Modify this state if more attributes of the restaurant is needed
+        .observeRestaurantById(restaurantId)
+        .map { restaurant ->
+            if(restaurant == null) {
+                RestaurantIdentityUiModel()
+            }
+            else{
+                RestaurantIdentityUiModel(
+                    restaurantId = restaurant.id,
+                    imageUrl = restaurant.logoUrl,
+                    name = restaurant.name
+                )
+            }
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = RestaurantIdentityUiModel()
         )
 
     // The Derived State (Total) - No new DB query needed!
