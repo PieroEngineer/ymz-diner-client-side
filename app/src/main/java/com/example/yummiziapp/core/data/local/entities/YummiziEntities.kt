@@ -46,7 +46,7 @@ data class Restaurant(  // TODO: This is the entity. And the domain should be an
 //    val longitude: Double?, //
     val phoneNumberToPay: Int? = null,
     val phoneNumberToContact: Int? = null,
-    val paymentQrUrl: String? = null
+    val paymentQrUrl: String? = null,
     // val maxWaitingTimeInMinutes: Int, // TODO: For now the default time is 15 minutes, but we must implement this attribute
     //val description: String,
 )

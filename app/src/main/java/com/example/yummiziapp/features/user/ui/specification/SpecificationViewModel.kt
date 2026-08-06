@@ -23,6 +23,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
@@ -109,13 +110,14 @@ class SpecificationViewModel @Inject constructor(
                 Log.d("MyActivity", "🔎👉 Switching state mode to FOCUSED: $restaurantId")
 
                 restaurantRepository.observePendingRestaurantWithStatusById(restaurantId)   /// Is it necessary to have an "observePendingRestaurantWithStatusById" if instead of a generic "observeRestaurantWithStatusById"
-                    .map { currentRestaurant ->
+                    .combine(requestRepository.observeRequestByRestaurantId(restaurantId)) { currentRestaurant, associatedRequest ->
                         if (currentRestaurant == null) {
                             RestaurantSpecificationUiState.Error("Restaurant data allocation corrupted or missing.")
                         } else {
                             RestaurantSpecificationUiState.FocusingRestaurant(
                                 currentRestaurant.restaurant.toFocusedRestaurantUiModel(
-                                    currentRestaurant.requestStatus.toUiStatus()
+                                    currentRestaurant.requestStatus.toUiStatus(),
+                                    associatedRequest?.arrivalTimeInMinutes ?: 15
                                 )
                             )
                         }
@@ -168,13 +170,14 @@ class SpecificationViewModel @Inject constructor(
             initialValue = UserSpecificationUiState.Loading
         )
 
-    private fun Restaurant.toFocusedRestaurantUiModel(status: PendingRequestUiStatus) = FocusedRestaurantUiModel(
+    private fun Restaurant.toFocusedRestaurantUiModel(status: PendingRequestUiStatus, customerArrivalTimeInMinutes: Int) = FocusedRestaurantUiModel(
         restaurantId = id,
         restaurantLogoUrl = logoUrl,
         waitingState = status,
-        distanceKm = 10,
+        distanceKm = 10,    // TODO: Remove mockup
         name = name,
-        maxWaitingTimeInMinutes = 15
+        customerArrivalTimeInMinutes = customerArrivalTimeInMinutes,
+        MaxWaitingTimeInMinutesByRestaurant = 15 // TODO: It will be unmocked when the restaurant is able to select its own waiting time
     )
 
     // Extension function for clean mapping

@@ -46,7 +46,7 @@ fun FocusedRestaurantFrame(
 ){
     val spacing = YummiziTheme.spacing
 
-    val maxTimeByRestaurant = selectedRestaurant.maxWaitingTimeInMinutes
+    val maxTimeByRestaurant = selectedRestaurant.customerArrivalTimeInMinutes
     var arrivalTimeInMinutes by rememberSaveable { mutableIntStateOf(maxTimeByRestaurant) }
 
     Column(
@@ -101,7 +101,7 @@ fun FocusedRestaurantFrame(
                 Spacer(Modifier.width(spacing.regularSeparation))
 
                 Text(
-                    text = "A ${selectedRestaurant.distanceKm}km\n\n${selectedRestaurant.name} espera\nhasta ${selectedRestaurant.maxWaitingTimeInMinutes} min.",
+                    text = "A ${selectedRestaurant.distanceKm}km\n\n${selectedRestaurant.name} espera\nhasta ${selectedRestaurant.MaxWaitingTimeInMinutesByRestaurant} min.",
                     textAlign = TextAlign.Start,
                     color = YummiziTheme.colors.yummiziDarkBlue,
                     style = YummiziTheme.typography.teacherFontVar3

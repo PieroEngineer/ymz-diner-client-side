@@ -1,7 +1,6 @@
 package com.example.yummiziapp.features.user.ui.specification
 
 import android.util.Log
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -228,7 +227,7 @@ fun SpecificationScreen(
                 // Instruct the ViewModel brain to fire off the background business tasks
                 viewModel.onAcceptanceConfirmed()
             },
-            maxWaitingTimeInMinutes = if (focusedRestaurantState is RestaurantSpecificationUiState.FocusingRestaurant) focusedRestaurantState.restaurant.maxWaitingTimeInMinutes else 0   // TODO: Change the zero by null and implement it internally
+            maxWaitingTimeInMinutes = if (focusedRestaurantState is RestaurantSpecificationUiState.FocusingRestaurant) focusedRestaurantState.restaurant.customerArrivalTimeInMinutes else 0   // TODO: Change the zero by null and implement it internally
 
         )
 

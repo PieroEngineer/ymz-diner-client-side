@@ -1,5 +1,7 @@
 package com.example.yummiziapp.features.request.domain.repository
 
+import com.example.yummiziapp.core.data.local.entities.Request
+import kotlinx.coroutines.flow.Flow
 import kotlin.uuid.Uuid
 
 interface RequestRepository {
@@ -25,6 +27,8 @@ interface RequestRepository {
 //    )
 
     suspend fun leaveQueue(restaurantId: Uuid)
+
+    fun observeRequestByRestaurantId(restaurantId: Uuid): Flow<Request?>
 
     suspend fun clearAll()
     suspend fun confirmAcceptance(restaurantId: Uuid)

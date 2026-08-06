@@ -16,6 +16,7 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import kotlin.uuid.Uuid
 import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.flow.Flow
 
 class RequestRepositoryImpl @Inject constructor(
     private val yummiziApi: RequestApi,
@@ -23,6 +24,8 @@ class RequestRepositoryImpl @Inject constructor(
     private val requestDao: RequestDao,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
 ): RequestRepository {
+
+    override fun observeRequestByRestaurantId(restaurantId: Uuid) = requestDao.observeRequestByRestaurantId(restaurantId)
 
     override suspend fun createQueueRequest(restaurantId: Uuid, arrivalTimeInMinutes: Int) = withContext(ioDispatcher) {   //TODO: later use this "...: Result<Unit> = withContext(ioDispatcher)" in others repo's methods and ask to gemini how to use it. It's better
 //        val userId = loggedUserDao.getCurrentUserId() ?: Uuid.parse("00000000-0000-4000-a000-000000000000")

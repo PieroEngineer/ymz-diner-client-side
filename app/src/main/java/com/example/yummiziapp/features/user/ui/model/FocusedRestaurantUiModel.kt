@@ -8,5 +8,6 @@ data class FocusedRestaurantUiModel(
     val waitingState: PendingRequestUiStatus,
     val distanceKm: Int,
     val name: String,
-    val maxWaitingTimeInMinutes: Int
+    val customerArrivalTimeInMinutes: Int,
+    val MaxWaitingTimeInMinutesByRestaurant: Int
 )
