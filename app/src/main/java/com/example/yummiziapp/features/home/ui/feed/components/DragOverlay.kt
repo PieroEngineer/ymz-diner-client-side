@@ -25,7 +25,7 @@ import com.example.yummiziapp.core.designsystem.theme.AsyncYummiziImage
 @Composable
 // This composable represents the visual feedback for the restaurant being dragged
 fun DragOverlay(
-    restaurant: Restaurant,
+    restaurant: Restaurant,     // TODO: (#919)
     position: Offset,
 
     itemWidth: Dp,

@@ -207,7 +207,7 @@ fun HomeScreen(
                                             { restaurant, startPos ->
                                                 //If there is a restaurant ready, don't allow drag
                                                 if(activeRestaurantsUiState is ActiveRestaurantsUiState.ReadyStatus) return@RestaurantBlock    /// Should I move all this dragging logic to the ViewModel?
-                                                //TODO: add a snackbar or some kind of message to notify the user that the restaurant is already selected, so he can't drag another restaurant
+                                                //TODO: add a snackbar or some kind of message to notify the user that the restaurant is already selected, so he can't drag another restaurant ("Por favor, presione en el bloque naranja")
 
                                                 draggingRestaurant = restaurant
 
@@ -223,12 +223,18 @@ fun HomeScreen(
                                             { delta ->
                                                 dragPosition += delta
                                             },
-                                            {
+                                            onDragEnd = {
                                                 val bounds = dropZoneBounds
-                                                if (bounds != null && bounds.contains(dragPosition)) {
-                                                    draggingRestaurant?.let {
+                                                if (bounds != null) {
+                                                    // Calculate the center of the dragged overlay for accurate detection
+                                                    val itemWidthPx = with(density) { spacing.bigImageSize.toPx() }
+                                                    val itemHeightPx = with(density) { spacing.smallImageSize.toPx() }
+                                                    val centerPosition = dragPosition + Offset(itemWidthPx / 2f, itemHeightPx / 2f)
 
-                                                        viewModel.onRestaurantDropped(it)
+                                                    if (bounds.contains(centerPosition)) {
+                                                        draggingRestaurant?.let {
+                                                            viewModel.onRestaurantDropped(it)
+                                                        }
                                                     }
                                                 }
                                                 draggingRestaurant = null
@@ -252,13 +258,14 @@ fun HomeScreen(
                     )
                 }
             }
-
-
-
         }
 
         draggingRestaurant?.let { restaurant ->
-            DragOverlay(restaurant, dragPosition, spacing.bigImageSize, spacing.smallImageSize)
+            DragOverlay(
+                restaurant, // TODO: (#919) Change it by a UI model
+                dragPosition,
+                spacing.bigImageSize,
+                spacing.smallImageSize)
         }
 
         // Options part
