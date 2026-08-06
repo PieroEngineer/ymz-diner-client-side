@@ -48,7 +48,6 @@ fun SelectionSection(
     onDeclinedRestaurantClicked : (Uuid) -> Unit
 ){
     val spacing = YummiziTheme.spacing
-    val listState = rememberLazyListState()
 
 //X    Log.d("MyActivity", "🔎  'SelectionSection' was called ")
 
@@ -72,127 +71,150 @@ fun SelectionSection(
 
         Spacer(Modifier.height(spacing.mediumSeparation))
 
-        LazyColumn(    // Current selected restaurants
-            state = listState,
-            verticalArrangement = Arrangement.spacedBy(spacing.mediumSeparation),
-        ) {
-            items(
-                items = listedRestaurants,
-                key = { selection -> selection.restaurantId }
-            ) { restaurantInList ->
 
-                Row(    // TODO: Convert it in a component
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable {
-                            when (restaurantInList.waitingState) {  // These are the only states that can be in the list of restaurants in specifications
-                                is PendingRequestUiStatus.Queued -> onQueuedRestaurantClicked(
-                                    restaurantInList.restaurantId
-                                )
+        if (listedRestaurants.isNotEmpty()) {
+            val listState = rememberLazyListState()
 
-                                is PendingRequestUiStatus.Accepted -> onAcceptedRestaurantClicked(
-                                    restaurantInList.restaurantId
-                                )
+            LazyColumn(    // Current selected restaurants
+                state = listState,
+                verticalArrangement = Arrangement.spacedBy(spacing.mediumSeparation),
+            ) {
+                items(
+                    items = listedRestaurants,
+                    key = { selection -> selection.restaurantId }
+                ) { restaurantInList ->
 
-                                is PendingRequestUiStatus.Declined -> onDeclinedRestaurantClicked(
-                                    restaurantInList.restaurantId
-                                )
+                    Row(    // TODO: Convert it in a component
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable {
+                                when (restaurantInList.waitingState) {  // These are the only states that can be in the list of restaurants in specifications
+                                    is PendingRequestUiStatus.Queued -> onQueuedRestaurantClicked(
+                                        restaurantInList.restaurantId
+                                    )
 
-                                //Xis PendingRequestUiStatus.Paid -> {} // TODO // This shouldn't be here theoretically, but I place it here just in case so it works even if the screen is bugged
+                                    is PendingRequestUiStatus.Accepted -> onAcceptedRestaurantClicked(
+                                        restaurantInList.restaurantId
+                                    )
 
-                                else -> {
-                                    Log.d("MyActivity", "🔎🚩  The unexpected waiting status was ${restaurantInList.waitingState}")
+                                    is PendingRequestUiStatus.Declined -> onDeclinedRestaurantClicked(
+                                        restaurantInList.restaurantId
+                                    )
+
+                                    //Xis PendingRequestUiStatus.Paid -> {} // TODO // This shouldn't be here theoretically, but I place it here just in case so it works even if the screen is bugged
+
+                                    else -> {
+                                        Log.d("MyActivity", "🔎🚩  The unexpected waiting status was ${restaurantInList.waitingState}")
+                                    }
                                 }
-                            }
-                        },
+                            },
 
 //X                            onRestaurantSelected(restaurantInList.restaurantId, restaurantInList.waitingState) },  /// Should I avoid to pass the waiting state because it's a UI state?
-                    verticalAlignment = Alignment.CenterVertically
-                ){
-                    Text(
-                        text = "A\n${restaurantInList.distanceKm}km",
-                        textAlign = TextAlign.Center,
-                        color = YummiziTheme.colors.yummiziWhite,
-                        style = YummiziTheme.typography.teacherFontVar3
-                    )
-
-                    Spacer(Modifier.width(spacing.mediumSeparation))
-
-                    Row(
-                        modifier = Modifier
-                            .weight(1f)
-                            .then(  // Use .then() to conditionally chain modifiers
-                                if (restaurantInList.waitingState is PendingRequestUiStatus.Accepted) {
-                                    // If the condition is true, apply the border modifier.
-                                    Modifier.border(
-                                        BorderStroke(
-                                            spacing.bigLineThickness,
-                                            YummiziTheme.colors.yummiziWhite
-                                        ),
-                                        shape = RoundedCornerShape(spacing.mediumCornerRadius)
-                                    )
-                                } else {
-                                    // If the condition is false, apply no modifier at all.
-                                    Modifier // Return an empty, unmodified Modifier
-                                }
-                            )
-                            .clip(RoundedCornerShape(spacing.mediumCornerRadius)),
                         verticalAlignment = Alignment.CenterVertically
                     ){
-
-                        AsyncYummiziImage(
-                            model = restaurantInList.restaurantLogoUrl,
-                            contentDescription = null,
-                            modifier = Modifier
-                                .size(spacing.smallImageSize)
-                                .padding(vertical = spacing.mediumPadding)
-                                .padding(start = spacing.mediumPadding)
-                                .clip(RoundedCornerShape(30))
-                        )
-
-                        Spacer(Modifier.weight(1f))
-
-                        Text(   /// Perhaps it looks better if the text is aligned to the right side
-                            text = restaurantInList.waitingState.phrase,
-                            textAlign = TextAlign.Start,
+                        Text(
+                            text = "A\n${restaurantInList.distanceKm}km",
+                            textAlign = TextAlign.Center,
                             color = YummiziTheme.colors.yummiziWhite,
-                            style = YummiziTheme.typography.teacherFontVar1,
-                            modifier = Modifier
-                                .padding(vertical = spacing.mediumPadding)
+                            style = YummiziTheme.typography.teacherFontVar3
                         )
 
-                        Spacer(Modifier.weight(1f))
+                        Spacer(Modifier.width(spacing.mediumSeparation))
+
+                        Row(
+                            modifier = Modifier
+                                .weight(1f)
+                                .then(  // Use .then() to conditionally chain modifiers
+                                    if (restaurantInList.waitingState is PendingRequestUiStatus.Accepted) {
+                                        // If the condition is true, apply the border modifier.
+                                        Modifier.border(
+                                            BorderStroke(
+                                                spacing.bigLineThickness,
+                                                YummiziTheme.colors.yummiziWhite
+                                            ),
+                                            shape = RoundedCornerShape(spacing.mediumCornerRadius)
+                                        )
+                                    } else {
+                                        // If the condition is false, apply no modifier at all.
+                                        Modifier // Return an empty, unmodified Modifier
+                                    }
+                                )
+                                .clip(RoundedCornerShape(spacing.mediumCornerRadius)),
+                            verticalAlignment = Alignment.CenterVertically
+                        ){
+
+                            AsyncYummiziImage(
+                                model = restaurantInList.restaurantLogoUrl,
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .size(spacing.smallImageSize)
+                                    .padding(vertical = spacing.mediumPadding)
+                                    .padding(start = spacing.mediumPadding)
+                                    .clip(RoundedCornerShape(30))
+                            )
+
+                            Spacer(Modifier.weight(1f))
+
+                            Text(   /// Perhaps it looks better if the text is aligned to the right side
+                                text = restaurantInList.waitingState.phrase,
+                                textAlign = TextAlign.Start,
+                                color = YummiziTheme.colors.yummiziWhite,
+                                style = YummiziTheme.typography.teacherFontVar1,
+                                modifier = Modifier
+                                    .padding(vertical = spacing.mediumPadding)
+                            )
+
+                            Spacer(Modifier.weight(1f))
+
+                            Image(
+                                painter = painterResource(restaurantInList.waitingState.iconRes),
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .size(spacing.enormousIconSize)
+                                    .padding(vertical = spacing.mediumPadding)
+                                    .padding(end = spacing.mediumPadding)
+                            )
+
+                        }
+
+                        Spacer(Modifier.width(spacing.smallPadding))
 
                         Image(
-                            painter = painterResource(restaurantInList.waitingState.iconRes),
+                            painter = painterResource(R.drawable.delete_button),
                             contentDescription = null,
                             modifier = Modifier
-                                .size(spacing.enormousIconSize)
-                                .padding(vertical = spacing.mediumPadding)
-                                .padding(end = spacing.mediumPadding)
+                                .size(spacing.smallIconSize)
+                                .clickable{ onRemoveRestaurant(restaurantInList.restaurantId) }
                         )
-
                     }
-
-                    Spacer(Modifier.width(spacing.smallPadding))
-
-                    Image(
-                        painter = painterResource(R.drawable.delete_button),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .size(spacing.smallIconSize)
-                            .clickable{ onRemoveRestaurant(restaurantInList.restaurantId) }
-                    )
                 }
+            }
+        } else {
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .align(Alignment.CenterHorizontally),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ){
+                Image(
+                    painter = painterResource(R.drawable.minitutorial_icon),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .weight(1f)
+                )
+
+                Spacer(Modifier.width(spacing.mediumPadding))
+
+                Text(   /// Perhaps it looks better if the text is aligned to the right side
+                    text = "Mantén presionado y arrástra\nun restaurante hacia el bloque superior\npara unirte a la cola",
+                    textAlign = TextAlign.Center,
+                    color = YummiziTheme.colors.yummiziWhite,
+                    style = YummiziTheme.typography.teacherFontVar1
+                )
+
             }
         }
 
-        if (listedRestaurants.isNotEmpty()) {
-            // SelectedRestaurant(...)
-        } else {
-            // Optional: Show a message like "No hay restaurantes seleccionados"
-            Text("No hay selecciones", color = Color.Gray)
-        }
 
     }
 }

@@ -125,8 +125,6 @@ fun SpecificationScreen(
                     }
                     is RestaurantSpecificationUiState.ListingRestaurants -> {
 
-//X                        Log.d("MyActivity", "🔎🥗  Restaurants to be shown: ${state.restaurants}")
-
                         SelectionSection(
                             Modifier
                                 .padding(horizontal = spacing.mediumPadding)
@@ -139,7 +137,6 @@ fun SpecificationScreen(
                             onRemoveRestaurant = { id ->
                                 viewModel.onTryToRemoveRequest(id)
                                 isTryingToCancelRequest = true
-//X                                viewModel.leaveQueue(id)
                             },
 
                             onQueuedRestaurantClicked = { id ->
