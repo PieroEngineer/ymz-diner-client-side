@@ -165,14 +165,14 @@ fun SpecificationScreen(
                             },
 
                             onTryToConfirmAcceptanceClicked = {
-                                Log.e("MyActivity", "🔎🍽️  Trying to confirm acceptance")
+                                Log.i("MyActivity", "🔎🍽️  Trying to confirm acceptance")
 
                                 isConfirmationPopupVisible = true
                             }
                         )
                     }
                     is RestaurantSpecificationUiState.Error -> {
-                        Log.d("MyActivity", "🚩👉  Error when trying to see the specifications: ${state.errorMessage}")
+                        Log.e("MyActivity", "🚩👉  Error when trying to see the specifications: ${state.errorMessage}")
                     }
 
                 }

@@ -42,6 +42,16 @@ class SpecificationViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
+    init{
+        viewModelScope.launch {
+            getUpdatedRequestStatus()
+        }
+    }
+
+    private suspend fun getUpdatedRequestStatus(){
+        requestRepository.getUpdatedRequestStatus()
+    }
+
     private val restaurantIdString: String? = savedStateHandle["restaurantId"]
     private val restaurantIdReceivedFromNavigation = restaurantIdString?.let { Uuid.parseOrNull(it) }
 

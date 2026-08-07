@@ -42,6 +42,9 @@ interface RequestDao {
 
     // --- ONE-SHOT QUERIES (LOGIC CHECKS) ---
 
+    @Query("SELECT * FROM requests")
+    suspend fun getAllRequests(): List<Request>
+
     @Query("SELECT * FROM requests WHERE requestId = :requestId")
     suspend fun getRequestById(requestId: Uuid): Request?
 

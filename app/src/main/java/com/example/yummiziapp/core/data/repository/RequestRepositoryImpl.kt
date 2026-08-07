@@ -9,6 +9,7 @@ import com.example.yummiziapp.core.data.local.model.RequestStatusToken
 import com.example.yummiziapp.core.data.network.api.RequestApi
 import com.example.yummiziapp.core.data.network.model.LeaveQueueDto
 import com.example.yummiziapp.core.data.network.model.UpdateStatusDto
+import com.example.yummiziapp.core.data.network.model.mappers.mapToGetUpdatedRequestStatusesDto
 import com.example.yummiziapp.core.data.network.model.mappers.mapToJoinQueueDto
 import com.example.yummiziapp.features.request.domain.repository.RequestRepository
 import kotlinx.coroutines.CoroutineDispatcher
@@ -155,6 +156,36 @@ class RequestRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun getUpdatedRequestStatus() = withContext(ioDispatcher) {
+        // 1. Get all the current requests from DAO
+        val requests = requestDao.getAllRequests()
+        if (requests.isEmpty()) return@withContext
 
+        // 2. Map to DTO
+        val dto = mapToGetUpdatedRequestStatusesDto(requests)
 
+        try {
+            // 3. Send the result to the API
+            val response = yummiziApi.getActiveRequest(dto)
+
+            if (response.isSuccessful) {
+                // 4. Update the state of the requests in DAO
+                response.body()?.statuses?.forEach { statusDto ->
+                    val newStatus = RequestStatusToken.fromString(statusDto.state)
+                    if (newStatus != null) {
+                        requestDao.updateRequestStatus(
+                            requestId = Uuid.parse(statusDto.requestId),
+                            status = newStatus
+                        )
+                    } else {
+                        Log.w("RequestRepository", "🚩 Unknown status from cloud: ${statusDto.state}")
+                    }
+                }
+            } else {
+                Log.e("RequestRepository", "🚩 Cloud failed to return updated statuses")
+            }
+        } catch (e: Exception) {
+            Log.e("RequestRepository", "🚩 Error fetching updated statuses from cloud", e)
+        }
+    }
 }

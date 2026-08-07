@@ -32,4 +32,6 @@ interface RequestRepository {
 
     suspend fun clearAll()
     suspend fun confirmAcceptance(restaurantId: Uuid)
+
+    suspend fun getUpdatedRequestStatus()
 }
