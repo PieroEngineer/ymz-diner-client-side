@@ -18,8 +18,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.ColorFilter
 import com.example.yummiziapp.core.designsystem.theme.YummiziTheme
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import com.example.yummiziapp.R
 import com.example.yummiziapp.features.user.ui.model.UserDetailsUiModel
 
@@ -65,7 +68,7 @@ fun CompanySection(
 
             Spacer(Modifier.height(spacing.mediumSeparation))
 
-            Row(    // Current company joined
+            Row(    // Current company joined   // TODO: It's going to change when friends are implemented in the app
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = spacing.mediumPadding),
@@ -77,7 +80,7 @@ fun CompanySection(
 
                 Spacer(Modifier.width(spacing.regularSeparation))
 
-                if (details.companySize == 0){
+                if (details.companySize==0 && !details.companySizeIsFixed){
                     Image(
                         painter = painterResource(R.drawable.plus_icon),
                         contentDescription = null,
@@ -95,21 +98,37 @@ fun CompanySection(
 
                     Spacer(Modifier.width(spacing.regularSeparation))
 
-                    Column(){
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ){
                         NumberSelector(
                             borderColor = YummiziTheme.colors.yummiziWhite,
                             rowColor = YummiziTheme.colors.yummiziWhite,
+
+                            isFixed = details.companySizeIsFixed,
+
                             indicatorNumber = details.companySize,
                             onNumberChanged = { isIncreasing -> onCompanySizeUpdated(isIncreasing) },
                         )
 
                         Text(
                             text = "Acompañantes",
+                            textAlign = TextAlign.Center,
                             color = YummiziTheme.colors.yummiziWhite,
                             style = YummiziTheme.typography.teacherFontVar1
                         )
                     }
                 }
+
+//                Spacer(Modifier.width(spacing.regularSeparation))
+//
+//                Image(
+//                    painter = painterResource(R.drawable.info_icon),
+//                    contentDescription = null,
+//                    modifier = Modifier
+//                        .size(spacing.mediumIconSize)
+//                        .clickable {}
+//                )
 
                 Spacer(Modifier.weight(1f))
             }

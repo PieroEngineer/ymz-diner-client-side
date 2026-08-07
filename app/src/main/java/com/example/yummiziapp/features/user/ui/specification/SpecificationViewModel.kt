@@ -159,18 +159,15 @@ class SpecificationViewModel @Inject constructor(
 
     val uiUserState: StateFlow<UserSpecificationUiState> = userRepository   // TODO:  Divide it in company and specifics
         .observeCurrentUserInfo()
-        .map{ details ->
+        .combine(
+            requestRepository.observeIfThereAreRequests()
+        ){ details, thereIsSomeRequestActive ->
             if (details == null) {
                 Log.w("MyActivity", "⚠️  Details are null")
-                UserSpecificationUiState.Success(
-                    UserDetailsUiModel(
-                        specifics = emptyList(),
-                        companySize = 0
-                    )
-                )
+                UserSpecificationUiState.Success( UserDetailsUiModel() )
             }
             else{
-                UserSpecificationUiState.Success(details.toUserDetailsUiModel())
+                UserSpecificationUiState.Success(details.toUserDetailsUiModel(thereIsSomeRequestActive))
             } as UserSpecificationUiState
         }
         .catch { e -> emit(UserSpecificationUiState.Error(e.message ?: "Unknown Error when trying to find user's details")) }
@@ -208,9 +205,10 @@ class SpecificationViewModel @Inject constructor(
         else -> PendingRequestUiStatus.Other    // TODO: Handle a better solution for this
     }
 
-    private fun LoggedUser.toUserDetailsUiModel() = UserDetailsUiModel(
+    private fun LoggedUser.toUserDetailsUiModel( thereIsSomeRequestActive: Boolean) = UserDetailsUiModel(
         specifics = specifics,
-        companySize = companySize
+        companySize = companySize,
+        companySizeIsFixed = thereIsSomeRequestActive
     )
 
 

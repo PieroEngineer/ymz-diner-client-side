@@ -25,7 +25,6 @@ class UserRepositoryImpl @Inject constructor(
 
     override fun observePreferences() = preferenceDao.observePreferences(Uuid.parse("00000000-0000-4000-a000-000000000000"))
 
-
     override suspend fun seedMockUser() = withContext(ioDispatcher) {
         val mockUuid = Uuid.parse("00000000-0000-4000-a000-000000000000")
 

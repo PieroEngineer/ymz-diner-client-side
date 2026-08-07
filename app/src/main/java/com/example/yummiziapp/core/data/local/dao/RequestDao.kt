@@ -40,6 +40,9 @@ interface RequestDao {
     @Query("SELECT * FROM requests WHERE restaurantId = :restaurantId LIMIT 1")
     fun observeRequestByRestaurantId(restaurantId: Uuid): Flow<Request?>
 
+    @Query("SELECT EXISTS(SELECT 1 FROM requests)")
+    fun observeIfThereAreRequests(): Flow<Boolean>
+
     // --- ONE-SHOT QUERIES (LOGIC CHECKS) ---
 
     @Query("SELECT * FROM requests")
