@@ -21,6 +21,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.yummiziapp.core.designsystem.theme.YummiziTheme
 import com.example.yummiziapp.core.ui.components.CautionConfirmationModal
+import com.example.yummiziapp.core.ui.components.DirectAnswerModal
 import com.example.yummiziapp.core.ui.components.NavigationBar
 import com.example.yummiziapp.core.ui.components.SearchingArea
 import com.example.yummiziapp.features.user.ui.specification.components.CompanySection
@@ -59,6 +60,7 @@ fun SpecificationScreen(
     val restaurantIdentityUiState by viewModel.restaurantIdentityUiState.collectAsStateWithLifecycle()
 
     var isTryingToCancelRequest by rememberSaveable { mutableStateOf(false) }
+    var userIsAskingForModificationInCompanySize by rememberSaveable { mutableStateOf(false) }
 
     Box(
         modifier = Modifier.fillMaxSize()
@@ -98,7 +100,7 @@ fun SpecificationScreen(
                     )
                 )
 
-                when (val state = uiUserState) {
+                when (val state = uiUserState) {    // FIXME: There is a bug that allows user change their compony size while the app is trying to cancel the unique active request. But if there is no internet the request comes back and the company size remains changed. We can fix it by connecting this UI state to the internet connection or state of the request UI.
                     is UserSpecificationUiState.Loading -> {
                         // Loading UI
                     }
@@ -109,7 +111,8 @@ fun SpecificationScreen(
                                 .fillMaxWidth()
                                 .zIndex(2f),
                             state.details,
-                            onCompanySizeUpdated = { isIncreasing -> viewModel.onCompanySizeUpdated(isIncreasing) }
+                            onCompanySizeUpdated = { isIncreasing -> viewModel.onCompanySizeUpdated(isIncreasing) },
+                            onUserIsAskingForModificationInCompanySize = { userIsAskingForModificationInCompanySize = true }
                         )
                     }
                     is UserSpecificationUiState.Error -> {
@@ -195,8 +198,7 @@ fun SpecificationScreen(
 
         }
 
-        CautionConfirmationModal(
-            // TODO:  (#741)
+        CautionConfirmationModal(// TODO:  (#741)
             modifier = Modifier,
 
             isOpen = isTryingToCancelRequest,
@@ -228,7 +230,18 @@ fun SpecificationScreen(
                 viewModel.onAcceptanceConfirmed()
             },
             maxWaitingTimeInMinutes = if (focusedRestaurantState is RestaurantSpecificationUiState.FocusingRestaurant) focusedRestaurantState.restaurant.customerArrivalTimeInMinutes else 0   // TODO: Change the zero by null and implement it internally
+        )
 
+        DirectAnswerModal(
+            modifier = Modifier,
+
+            isOpen = userIsAskingForModificationInCompanySize,
+            onDismissRequest = { userIsAskingForModificationInCompanySize = false},
+
+            mainMessage = "Mientras haya solicitudes activas,\nno se podrá modificar tu grupo",
+            okButtonText = "Entendido",
+            complementaryMessage = "Puedes remover las solicitudes",
+            onOk = {userIsAskingForModificationInCompanySize = false },
         )
 
     }

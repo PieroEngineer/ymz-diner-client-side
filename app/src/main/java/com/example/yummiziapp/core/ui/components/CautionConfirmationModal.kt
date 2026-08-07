@@ -91,7 +91,7 @@ fun CautionConfirmationModal(
                             bottomEnd = spacing.mediumCornerRadius
                         )
                     )
-                    .border(
+                    .border(    // TODO: Correct the border of the corners
                         BorderStroke(spacing.mediumLineThickness, YummiziTheme.colors.yummiziDarkOrange)
                     )
                     .background(YummiziTheme.colors.yummiziWhite)

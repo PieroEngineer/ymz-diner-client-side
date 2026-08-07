@@ -96,7 +96,7 @@ object NetworkModule {
 
         return Retrofit.Builder()
 //            .baseUrl(BuildConfig.BASE_URL) // Pulls safely from the environment configuration we set up earlier!
-            .baseUrl("http://localhost:4566/_aws/execute-api/5smbu0qbfb/prod/")
+            .baseUrl("http://localhost:4566/_aws/execute-api/np1oa1z7tp/prod/")
             .client(okHttpClient)
             .addConverterFactory(json.asConverterFactory(contentType))
             .build()

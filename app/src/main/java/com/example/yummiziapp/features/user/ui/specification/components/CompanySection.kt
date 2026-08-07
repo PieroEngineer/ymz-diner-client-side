@@ -31,7 +31,8 @@ import com.example.yummiziapp.features.user.ui.model.UserDetailsUiModel
 fun CompanySection(
     modifier: Modifier = Modifier,
     details: UserDetailsUiModel,
-    onCompanySizeUpdated: (Boolean) -> Unit
+    onCompanySizeUpdated: (Boolean) -> Unit,
+    onUserIsAskingForModificationInCompanySize: () -> Unit
 ) {
     val spacing = YummiziTheme.spacing
 
@@ -120,15 +121,17 @@ fun CompanySection(
                     }
                 }
 
-//                Spacer(Modifier.width(spacing.regularSeparation))
-//
-//                Image(
-//                    painter = painterResource(R.drawable.info_icon),
-//                    contentDescription = null,
-//                    modifier = Modifier
-//                        .size(spacing.mediumIconSize)
-//                        .clickable {}
-//                )
+                Spacer(Modifier.width(spacing.regularSeparation))
+
+                if (details.companySizeIsFixed){
+                    Image(
+                        painter = painterResource(R.drawable.info_icon),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(spacing.mediumIconSize)
+                            .clickable { onUserIsAskingForModificationInCompanySize() }
+                    )
+                }
 
                 Spacer(Modifier.weight(1f))
             }
