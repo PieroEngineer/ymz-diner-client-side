@@ -30,6 +30,8 @@ fun NumberSelector(
     borderColor: Color = YummiziTheme.colors.yummiziDarkOrange,
     rowColor: Color = YummiziTheme.colors.yummiziDarkOrange,
 
+    isFixed: Boolean = false,
+
     indicatorNumber: Int,
     onNumberChanged: (Boolean) -> Unit,
     maxValue: Int = 100,    ///  What would be the maximum? I can conditionally use a conditional, but AI says that it isn't readbly
@@ -38,7 +40,7 @@ fun NumberSelector(
 
     Row(
         modifier = modifier
-            .border(
+            .border(    // TODO: Consider removing this border when the number is fixed
                 BorderStroke(
                     spacing.mediumLineThickness,
                     borderColor
@@ -51,17 +53,19 @@ fun NumberSelector(
         verticalAlignment = Alignment.CenterVertically
     ){
 
-        Image(
-            painter = painterResource(R.drawable.row_btn),
-            contentDescription = null,
-            colorFilter = ColorFilter.tint(color = rowColor),
-            modifier = Modifier
-                .padding(start = spacing.mediumPadding)
-                .padding(vertical = spacing.smallPadding)
-                .size(spacing.regularIconSize)
-                .rotate(180f)
-                .clickable {if (indicatorNumber > 0) onNumberChanged(false)} //TODO: Include bouncing effect
-        )
+        if (!isFixed) {
+            Image(
+                painter = painterResource(R.drawable.row_btn),
+                contentDescription = null,
+                colorFilter = ColorFilter.tint(color = rowColor),
+                modifier = Modifier
+                    .padding(start = spacing.mediumPadding)
+                    .padding(vertical = spacing.smallPadding)
+                    .size(spacing.regularIconSize)
+                    .rotate(180f)
+                    .clickable {if (indicatorNumber > 0) onNumberChanged(false)} //TODO: Include bouncing effect
+            )
+        }
 
         Spacer(Modifier.width(spacing.mediumSeparation))
 
@@ -76,15 +80,18 @@ fun NumberSelector(
 
         Spacer(Modifier.width(spacing.mediumSeparation))
 
-        Image(
-            painter = painterResource(R.drawable.row_btn),
-            contentDescription = null,
-            colorFilter = ColorFilter.tint(color = rowColor),
-            modifier = Modifier
-                .padding(end = spacing.mediumPadding)
-                .padding(vertical = spacing.smallPadding)
-                .size(spacing.regularIconSize)
-                .clickable {if (indicatorNumber < maxValue) onNumberChanged(true)}
-        )
+        if (!isFixed) {
+            Image(
+                painter = painterResource(R.drawable.row_btn),
+                contentDescription = null,
+                colorFilter = ColorFilter.tint(color = rowColor),
+                modifier = Modifier
+                    .padding(end = spacing.mediumPadding)
+                    .padding(vertical = spacing.smallPadding)
+                    .size(spacing.regularIconSize)
+                    .clickable {if (indicatorNumber < maxValue) onNumberChanged(true)}
+            )
+        }
+
     }
 }

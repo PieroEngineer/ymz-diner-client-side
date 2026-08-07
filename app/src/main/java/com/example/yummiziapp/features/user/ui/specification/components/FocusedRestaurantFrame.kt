@@ -121,7 +121,8 @@ fun FocusedRestaurantFrame(
 
             Column( // Space to set timing
                 modifier = Modifier
-                    .padding(horizontal = spacing.bigPadding)
+                    .padding(horizontal = spacing.bigPadding),
+                horizontalAlignment = Alignment.CenterHorizontally
             ){
                 Text(
                     text = "Tu tiempo máximo de\nllegada",
@@ -140,6 +141,8 @@ fun FocusedRestaurantFrame(
                         modifier = Modifier,
 
                         borderColor = YummiziTheme.colors.yummiziDarkOrange,
+
+                        isFixed = selectedRestaurant.waitingState !is PendingRequestUiStatus.Idle,  // TODO: It's going to change after MVP
 
                         indicatorNumber= arrivalTimeInMinutes,
                         onNumberChanged = { increase ->

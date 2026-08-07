@@ -77,7 +77,7 @@ fun SpecificationScreen(
                     .padding(spacing.mediumPadding)
             )
 
-            Spacer(Modifier.height(spacing.regularSeparation))
+//X            Spacer(Modifier.height(spacing.regularSeparation))
 
             Column( // Complete option frame
                 modifier = modifier

@@ -11,7 +11,7 @@ sealed interface PendingRequestUiStatus {
     val iconRes: Int // Guarantees compile safety for asset references
 
     data object Idle : PendingRequestUiStatus {
-        override val phrase = "Restaurant no seleccionado"
+        override val phrase = "Restaurante no seleccionado"
         override val iconRes = 0      //TODO: Change the icons like this later
     }
 
