@@ -64,11 +64,8 @@ class ArrivalViewModel @Inject constructor(
         }
     }
 
-    fun goToFeedbackState(event: ArrivalUiEvent){
-        when (event) {
-            is ArrivalUiEvent.OnToggleByTimeExpired -> { _isTimeExpired.update{ !it } }
-            else -> {}
-        }
+    fun goToFeedbackState(){
+        _isTimeExpired.update{ !it }
     }
 
     fun onFeedbackReady() {

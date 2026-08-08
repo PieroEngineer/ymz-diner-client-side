@@ -17,6 +17,7 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import kotlin.uuid.Uuid
 import kotlinx.coroutines.NonCancellable
+import kotlin.time.Clock
 
 class RequestRepositoryImpl @Inject constructor(
     private val yummiziApi: RequestApi,
@@ -27,7 +28,7 @@ class RequestRepositoryImpl @Inject constructor(
 
     override suspend fun getRequestStatusByRestaurantId(restaurantId: Uuid): RequestStatusToken {
 
-        val request = requestDao.getRequestByRestaurantId(restaurantId) // TODO: See if it's valid to create a DAO function that returns the required "RequestStatusToken" directly
+        val request = requestDao.getRequestByRestaurantId(restaurantId) // TODO: See if it's valid to create a DAO function that returns the required "RequestStatusToken" directly (In DAO "@Query("SELECT COALESCE((SELECT status FROM requests WHERE restaurantId = :restaurantId LIMIT 1), 'IDLE')")")
 
         return request?.status ?: RequestStatusToken.IDLE
     }
@@ -62,7 +63,7 @@ class RequestRepositoryImpl @Inject constructor(
             restaurantId = restaurantId,
             userId = loggedUser.id,
             status = RequestStatusToken.QUEUED,
-            localCreationTimestamp = System.currentTimeMillis(),
+            localCreationTimestamp = System.currentTimeMillis(),    // TODO: Change by "Instant" type
             arrivalTimeInMinutes = arrivalTimeInMinutes,
         )
 
@@ -136,7 +137,7 @@ class RequestRepositoryImpl @Inject constructor(
 
         try {
             // OPTIMISTIC UPDATE: Update status to READY and remove other requests
-            requestDao.confirmAcceptance(currentRequest.requestId)  /// In future update, maybe the completly delete won't the best option to get the history of histories. (Maybe just include a DAO function that notify to everyone that there is a READY request)
+            requestDao.confirmAcceptance(currentRequest.requestId, Clock.System.now())  /// In future update, maybe the completly delete won't the best option to get the history of histories. (Maybe just include a DAO function that notify to everyone that there is a READY request)
 
             // NETWORK CALL
             val response = yummiziApi.confirmAcceptance(

@@ -25,7 +25,7 @@ fun RemainingTimeText(
     targetInstant: Instant,
     expiredText: String = "Tiempo finalizado",
 
-    onTimeExpired: (ArrivalUiEvent) -> Unit,
+    onTimeExpired: () -> Unit = {},
 
     style: TextStyle,
     color: Color,
@@ -44,7 +44,7 @@ fun RemainingTimeText(
             value = formatRemainingTime(now, targetInstant, expiredText)
 
             if (now > targetInstant || now == targetInstant) {
-                currentOnTimeExpired(ArrivalUiEvent.OnToggleByTimeExpired)
+                currentOnTimeExpired()
                 break // Stop coroutine execution once expired to save CPU
             }
             delay(1000L.milliseconds)

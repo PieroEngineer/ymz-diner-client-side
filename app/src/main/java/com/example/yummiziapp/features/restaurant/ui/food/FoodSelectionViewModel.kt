@@ -28,6 +28,9 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.collections.filter
 import kotlin.collections.sumOf
+import kotlin.time.Clock
+import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
 @HiltViewModel
@@ -67,6 +70,22 @@ class FoodSelectionViewModel @Inject constructor(   //TODO: Change the way of ho
             }
         }
     }
+
+    // Create an observer that give the "localCreationTimestamp" of "Request" entity and return it to the UI for the clock
+     val selectionFinishedTimestamp: StateFlow<Instant> = requestRepository.observeRequestByRestaurantId(restaurantId)
+      .map { request ->
+          if(request != null && request.localConfirmationTimestamp != null) {
+            request.localConfirmationTimestamp.plus(5.minutes)
+          }
+          else {
+            Clock.System.now()
+          }
+      }
+      .stateIn(
+                 scope = viewModelScope,
+                 started = SharingStarted.WhileSubscribed(5000),
+                 initialValue = Clock.System.now()
+             )
 
     fun confirmOrder(){
         viewModelScope.launch {

@@ -9,6 +9,7 @@ import com.example.yummiziapp.core.data.local.entities.Request
 import com.example.yummiziapp.core.data.local.model.RequestStatusToken
 //X import com.example.yummiziapp.features.request.data.model.QueueStatus
 import kotlinx.coroutines.flow.Flow
+import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
 @Dao
@@ -80,8 +81,9 @@ interface RequestDao {
     @Query("SELECT * FROM requests WHERE status = 'PAID' ORDER BY localCreationTimestamp DESC LIMIT 1")
     suspend fun getLatestPaidRequest(): Request?   // TODO: Include an expiration cheking like an attribute or creating a new status in "RequestStatusToken"
 
-    @Query("UPDATE requests SET status = :status WHERE requestId = :requestId")
-    suspend fun updateRequestStatus(requestId: Uuid, status: RequestStatusToken)
+//X    @Query("UPDATE requests SET status = :status WHERE requestId = :requestId")
+    @Query("UPDATE requests SET status = :status, localConfirmationTimestamp = :confirmationTimestamp WHERE requestId = :requestId")
+    suspend fun updateRequestStatus(requestId: Uuid, status: RequestStatusToken, confirmationTimestamp: Instant? = null)
 
     @Query("DELETE FROM requests WHERE requestId != :requestId")
     suspend fun deleteOtherRequests(requestId: Uuid)
@@ -93,8 +95,8 @@ interface RequestDao {
     suspend fun clearAll()
 
     @Transaction
-    suspend fun confirmAcceptance(requestId: Uuid) {
-        updateRequestStatus(requestId, RequestStatusToken.READY)
+    suspend fun confirmAcceptance(requestId: Uuid, confirmationTimestamp: Instant) {
+        updateRequestStatus(requestId, RequestStatusToken.READY, confirmationTimestamp)
         deleteOtherRequests(requestId)  // TODO: Consider don't remove them, but just update the status (Assign as "past")
     }
 }

@@ -31,6 +31,7 @@ import com.example.yummiziapp.core.designsystem.theme.YummiziTheme
 import com.example.yummiziapp.features.restaurant.ui.food.components.MenuArea
 import com.example.yummiziapp.R
 import com.example.yummiziapp.core.ui.components.CautionConfirmationModal
+import com.example.yummiziapp.features.payment.ui.arrival.components.RemainingTimeText
 import com.example.yummiziapp.features.restaurant.ui.food.components.MenuSettingArea
 import com.example.yummiziapp.features.restaurant.ui.model.MenuSetting
 import kotlin.uuid.Uuid
@@ -52,6 +53,8 @@ fun FoodSelectionScreen(    // TODO: Correct the prop-drilling of this and other
     val totalOrderCost by viewModel.totalOrderCost.collectAsStateWithLifecycle()
     val restaurantIdentityUiState by viewModel.restaurantIdentityUiState.collectAsStateWithLifecycle()
 
+    val selectionFinishedTimestamp by viewModel.selectionFinishedTimestamp.collectAsStateWithLifecycle()
+
 
     var isTryingToCancelRequest by rememberSaveable { mutableStateOf(false) }
 
@@ -64,7 +67,7 @@ fun FoodSelectionScreen(    // TODO: Correct the prop-drilling of this and other
         }
     }
 
-    if (isTryingToCancelRequest == false){ // TODO:  (#741) See in "📱 Kotlin expert 4.0" by "BackHandler(enabled)" how to really manage pop-up frames
+    if (!isTryingToCancelRequest){ // TODO:  (#741) See in "📱 Kotlin expert 4.0" by "BackHandler(enabled)" how to really manage pop-up frames
         BackHandler{
             isTryingToCancelRequest = true
         }
@@ -84,7 +87,7 @@ fun FoodSelectionScreen(    // TODO: Correct the prop-drilling of this and other
                 is FoodSelectionUiState.Loading -> {
                     //MenuShimmerLoading() // Your placeholder animation
                     Text(
-                        text = "Loading data...",
+                        text = "Loading data...",   // TODO: Change this to a loading animation
                         textAlign = TextAlign.Start,
                         color = YummiziTheme.colors.yummiziDarkBlue,
                         style = YummiziTheme.typography.teacherFontVar3
@@ -118,12 +121,50 @@ fun FoodSelectionScreen(    // TODO: Correct the prop-drilling of this and other
                     .paint(
                         painter = painterResource(id = R.drawable.menu_bg),
                         contentScale = ContentScale.FillBounds // Scales the image to fill the bounds
-                    )
+                    ),
+                horizontalAlignment = Alignment.CenterHorizontally
             ){
-//            val currentFoodSelected = listOf(foodSelection1, foodSelection2, foodSelection3, foodSelection4, foodSelection5, foodSelection6, foodSelection7)
 
+                Box(
+                    modifier = Modifier
+                        .clip(
+                            RoundedCornerShape(
+                                bottomStart = spacing.mediumCornerRadius,
+                                bottomEnd = spacing.mediumCornerRadius
+                            )
+                        )
+                        .background(YummiziTheme.colors.yummiziWhite)
+                        .padding(horizontal = spacing.regularPadding)
+                        .padding(top = spacing.smallPadding)
+                        .fillMaxWidth(.8f),
+                    contentAlignment = Alignment.Center
+                ){
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ){
+                        RemainingTimeText(
+                            targetInstant = selectionFinishedTimestamp,
+                            style = YummiziTheme.typography.teacherFontVar6,
+                            color = YummiziTheme.colors.yummiziDarkBlue,
+                            expiredText = "Prórroga de minutos"
+                        )
 
-                // Menu setting
+                        Text(
+                            text = " extras",
+                            textAlign = TextAlign.Start,
+                            color = YummiziTheme.colors.yummiziDarkBlue,
+                            style = YummiziTheme.typography.teacherFontVar8
+                        )
+
+                        Text(
+                            text = " para escoger",
+                            textAlign = TextAlign.Start,
+                            color = YummiziTheme.colors.yummiziDarkBlue,
+                            style = YummiziTheme.typography.teacherFontVar6
+                        )
+
+                    }
+                }
 
                 val menuSettingForChosenDishes = MenuSetting.CurrentSelections(foodSelectionState)
 //            val menuSettingForSavedMenus =    //TODO

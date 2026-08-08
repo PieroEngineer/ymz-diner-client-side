@@ -8,11 +8,11 @@ import com.example.yummiziapp.core.data.local.model.AvailableSpecificsToken
 import com.example.yummiziapp.core.data.local.model.RequestStatusToken
 //X import com.example.yummiziapp.features.request.data.model.QueueStatus
 import kotlin.uuid.Uuid
-import kotlinx.serialization.Serializable
+//import kotlinx.serialization.Serializable
 import kotlin.time.Instant
 
 
-@Serializable
+//X @Serializable
 @Entity(tableName = "logged_user")
 data class LoggedUser(
     @PrimaryKey val id: Uuid, // The "userId"
@@ -23,7 +23,6 @@ data class LoggedUser(
 )
 
 // TODO: Implement when different Yummizi's users can invite each other (Consider table relationship)
-//@Serializable
 //@Entity(tableName = "friends")
 //data class friend(
 //    @PrimaryKey val friendId: Uuid,
@@ -32,7 +31,7 @@ data class LoggedUser(
 //    val companySize: Int,
 //)
 
-@Serializable
+//X @Serializable
 @Entity(tableName = "restaurants")
 data class Restaurant(  // TODO: This is the entity. And the domain should be another with the status
     @PrimaryKey val id: Uuid,
@@ -100,13 +99,14 @@ data class Order(   // TODO: Include a some kind of "OrderStatus" that defines i
         Index(value = ["restaurantId", "userId", "status"]) // 🚀 The "Speed" Button
     ]
 )
-@Serializable
+//X @Serializable
 data class Request(
     @PrimaryKey val requestId: Uuid,
     val restaurantId: Uuid,
     val status: RequestStatusToken,
     val userId: Uuid,   // TODO: Remove this parameter, so it's only lives in "LoggedUser"
-    val localCreationTimestamp: Long,
+    val localCreationTimestamp: Long,   // TODO: Convert to Instant type
+    val localConfirmationTimestamp: Instant? = null,
     val arrivalTimeInMinutes: Int,
     // val specifics: List<AvailableSpecificsToken>, // TODO
 )
@@ -117,7 +117,7 @@ data class RequestUpdate(
     val newStatus: RequestStatusToken
 )
 
-@Serializable
+//X @Serializable
 @Entity(
     tableName = "menu_pages",
     foreignKeys = [
@@ -137,7 +137,7 @@ data class MenuPage(
     val pageNumber: Int // Used for sorting in the Pager
 )
 
-@Serializable
+//X @Serializable
 @Entity(
     tableName = "dishes",
     foreignKeys = [
@@ -163,7 +163,7 @@ data class Dish(
     val description: String
 )
 
-@Serializable
+//X @Serializable
 @Entity(
     tableName = "preferences",
     indices = [Index(value = ["userId"])] // High Performance Index

@@ -166,7 +166,7 @@ fun ArrivalScreen(
                             targetInstant = state.arrivalInfo.waitEndsDatetime,
                             style = YummiziTheme.typography.leaguespartanFontVar4,
                             color = YummiziTheme.colors.yummiziLightOrange,
-                            onTimeExpired = { event -> viewModel.goToFeedbackState(event) }
+                            onTimeExpired = { viewModel.goToFeedbackState() }
                         )
 
                         Spacer(modifier = Modifier.height(spacing.mediumSeparation))

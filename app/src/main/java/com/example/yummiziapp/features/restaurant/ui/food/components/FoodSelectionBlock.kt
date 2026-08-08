@@ -1,22 +1,16 @@
 package com.example.yummiziapp.features.restaurant.ui.food.components
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -24,7 +18,6 @@ import com.example.yummiziapp.core.designsystem.theme.YummiziTheme
 import com.example.yummiziapp.R
 import com.example.yummiziapp.features.restaurant.ui.model.FoodSelectionUiModel
 import com.example.yummiziapp.features.user.ui.specification.components.NumberSelector
-import kotlin.uuid.Uuid
 
 @Composable
 fun FoodSelectionBlock(
@@ -64,63 +57,6 @@ fun FoodSelectionBlock(
             indicatorNumber = foodSelection.amount,
             onNumberChanged = onUpdatingSelectionQuantityClicked
         )
-
-        //X
-//        Row(
-//            modifier = Modifier
-//                .border(
-//                    BorderStroke(
-//                        spacing.mediumLineThickness,
-//                        YummiziTheme.colors.yummiziLightOrange
-//                    ),
-//                    shape = RoundedCornerShape(spacing.regularCornerRadius)
-//                )
-//                .clip(
-//                    RoundedCornerShape(50)
-//                )
-//                .weight(40.85f),
-//            verticalAlignment = Alignment.CenterVertically
-//        ){
-//
-//
-//            Image(
-//                painter = painterResource(R.drawable.row_btn),
-//                contentDescription = null,
-//                colorFilter = ColorFilter.tint(color = YummiziTheme.colors.yummiziLightBlue2),
-//                modifier = Modifier
-//                    .padding(start = spacing.mediumPadding)
-//                    .padding(vertical = spacing.smallPadding)
-//                    .size(spacing.smallIconSize)
-//                    .rotate(180f)
-//                    .clickable { onUpdatingSelectionQuantityClicked(foodSelection.id, -1) }
-//
-//            )
-//
-//            Spacer(Modifier.weight(1f))
-//
-//            Text(
-//                text = foodSelection.amount.toString(),
-//                textAlign = TextAlign.Center,
-//                color = YummiziTheme.colors.yummiziDarkOrange,
-//                style = YummiziTheme.typography.comfortaaFontVar1,
-//                modifier = Modifier
-//                    .padding(vertical = spacing.smallPadding)
-//            )
-//
-//            Spacer(Modifier.weight(1f))
-//
-//            Image(
-//                painter = painterResource(R.drawable.row_btn),
-//                contentDescription = null,
-//                colorFilter = ColorFilter.tint(color = YummiziTheme.colors.yummiziLightBlue2),
-//                modifier = Modifier
-//                    .padding(end = spacing.mediumPadding)
-//                    .padding(vertical = spacing.smallPadding)
-//                    .size(spacing.smallIconSize)
-//                    .clickable { onUpdatingSelectionQuantityClicked(foodSelection.id, 1) }
-//
-//            )
-//        }
 
         Spacer(Modifier.weight(7.78f))
 
