@@ -1,6 +1,7 @@
 package com.example.yummiziapp.features.payment.ui.checkin
 
 import android.net.Uri
+import androidx.compose.ui.platform.LocalClipboard
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -8,7 +9,6 @@ import com.example.yummiziapp.core.utils.toCurrencyFormat
 import com.example.yummiziapp.features.payment.domain.repository.PaymentRepository
 import com.example.yummiziapp.features.restaurant.domain.repository.RestaurantRepository
 import com.example.yummiziapp.features.payment.ui.model.PaymentPreparationUiModel
-import com.example.yummiziapp.features.user.ui.specification.SpecificationUiEvents
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -62,6 +62,15 @@ class PaymentPreparationViewModel @Inject constructor(
         }
     }
 
+    fun onCopyPhoneNumber(){
+        viewModelScope.launch {
+            val currentPaymentInfoUi = paymentInfoUiState.value
+            if (currentPaymentInfoUi is PaymentPreparationUiState.CheckIn) {
+                _effect.send(PaymentPreparationUiEvents.CopyToClipboard(currentPaymentInfoUi.restaurantInfo.phoneNumberToPay))
+            }
+        }
+    }
+
     fun onImagePicked(uri: Uri?) {
         if (uri == null) return
 
@@ -97,7 +106,7 @@ class PaymentPreparationViewModel @Inject constructor(
                     restaurantLogoUrl = restaurant.logoUrl,
                     totalPayment = totalCents.toCurrencyFormat(),
                     paymentQrCodeUrl = restaurant.paymentQrUrl ?: "",
-                    phoneNumber = restaurant.phoneNumberToPay.toString() ?: "",
+                    phoneNumberToPay = restaurant.phoneNumberToPay.toString() ?: "",
                     imageReady = imageReady
                 )
             )

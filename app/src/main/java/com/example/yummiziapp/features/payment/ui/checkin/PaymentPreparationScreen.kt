@@ -1,8 +1,8 @@
 package com.example.yummiziapp.features.payment.ui.checkin
 
-import android.util.Log
 //import androidx.compose.ui.tooling.preview.Preview
 //import com.example.yummiziapp.core.designsystem.theme.AsyncYummiziImage
+import android.content.ClipData
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -35,7 +35,11 @@ import androidx.compose.ui.draw.dropShadow
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.ClipEntry
+import androidx.compose.ui.platform.LocalClipboard
+import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -43,7 +47,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.yummiziapp.R
 import com.example.yummiziapp.core.designsystem.theme.AsyncYummiziImage
 import com.example.yummiziapp.core.designsystem.theme.YummiziTheme
-import com.example.yummiziapp.features.user.ui.specification.SpecificationUiEvents
 import kotlin.uuid.Uuid
 
 //@Preview
@@ -56,16 +59,26 @@ fun PaymentPreparationScreen(
 
     val spacing = YummiziTheme.spacing
 
+    val clipboard = LocalClipboard.current
+
     LaunchedEffect(Unit) {
         viewModel.navEffect.collect { effect ->
             when (effect) {
                 is PaymentPreparationUiEvents.NavigateToArrival -> { onPaymentDoneNav(effect.restaurantId) }
+                is PaymentPreparationUiEvents.CopyToClipboard -> {
+                    // Create Android standard ClipData
+                    val clipData = ClipData.newPlainText("phone_number", effect.text)
+
+                    // Call the modern suspend function to set the clip
+                    clipboard.setClipEntry(ClipEntry(clipData))
+                }
             }
         }
     }
 
     val pickedImageUiState by viewModel.pickedImageUiState.collectAsStateWithLifecycle()
     val paymentInfoUiState by viewModel.paymentInfoUiState.collectAsStateWithLifecycle()
+
 
     // System Photo Picker launcher
     val photoPickerLauncher = rememberLauncherForActivityResult(
@@ -178,7 +191,6 @@ fun PaymentPreparationScreen(
 
                         Row(    // Copiable phone number box
                             modifier = Modifier
-//X                        .fillMaxWidth(.5f)
                                 .weight(1f)
                                 .shadow(
                                     elevation = 4.dp,
@@ -189,12 +201,16 @@ fun PaymentPreparationScreen(
                                 .padding(
                                     vertical = spacing.tinyPadding,
                                     horizontal = spacing.mediumPadding
-                                ),
+                                )
+                                .clickable{ // TODO: Add a feedback that says that the number was copied, but not as snackbar because some systems already have the snack
+                                    // Write to system clipboard
+                                    viewModel.onCopyPhoneNumber()
+                                },
                             verticalAlignment = Alignment.CenterVertically
 
                         ) {
                             Text(
-                                text = state.restaurantInfo.phoneNumber,
+                                text = state.restaurantInfo.phoneNumberToPay,
                                 style = YummiziTheme.typography.comfortaaFontVar1,
                                 color = YummiziTheme.colors.yummiziDarkBlue,
                                 textAlign = TextAlign.Center
