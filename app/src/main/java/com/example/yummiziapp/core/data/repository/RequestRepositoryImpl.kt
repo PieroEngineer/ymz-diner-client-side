@@ -17,7 +17,6 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import kotlin.uuid.Uuid
 import kotlinx.coroutines.NonCancellable
-import kotlinx.coroutines.flow.Flow
 
 class RequestRepositoryImpl @Inject constructor(
     private val yummiziApi: RequestApi,
@@ -25,6 +24,13 @@ class RequestRepositoryImpl @Inject constructor(
     private val requestDao: RequestDao,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
 ): RequestRepository {
+
+    override suspend fun getRequestStatusByRestaurantId(restaurantId: Uuid): RequestStatusToken {
+
+        val request = requestDao.getRequestByRestaurantId(restaurantId) // TODO: See if it's valid to create a DAO function that returns the required "RequestStatusToken" directly
+
+        return request?.status ?: RequestStatusToken.IDLE
+    }
 
     override fun observeRequestByRestaurantId(restaurantId: Uuid) = requestDao.observeRequestByRestaurantId(restaurantId)
 
@@ -158,7 +164,7 @@ class RequestRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getUpdatedRequestStatus() = withContext(ioDispatcher) {
+    override suspend fun fetchUpdatedRequestStatuses() = withContext(ioDispatcher) {
         // 1. Get all the current requests from DAO
         val requests = requestDao.getAllRequests()
         if (requests.isEmpty()) return@withContext

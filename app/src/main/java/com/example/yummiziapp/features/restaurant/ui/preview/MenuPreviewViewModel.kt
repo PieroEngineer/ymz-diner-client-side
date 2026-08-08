@@ -3,13 +3,17 @@ package com.example.yummiziapp.features.restaurant.ui.preview
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.ViewModel
+import com.example.yummiziapp.core.data.local.model.RequestStatusToken
+import com.example.yummiziapp.features.request.domain.repository.RequestRepository
 import com.example.yummiziapp.features.restaurant.domain.repository.RestaurantRepository
 import com.example.yummiziapp.features.restaurant.ui.model.RestaurantInfoUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -19,8 +23,12 @@ import kotlin.uuid.Uuid
 @HiltViewModel
 class MenuPreviewViewModel @Inject constructor(
     private val restaurantRepository: RestaurantRepository,
+    private val requestRepository: RequestRepository,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
+
+    private val _effect = Channel<MenuPreviewUiEvents>(Channel.BUFFERED)
+    val navEffect = _effect.receiveAsFlow()
 
     // Get the "restaurantId" from the Navigation Route string
     private val restaurantIdString: String = checkNotNull(savedStateHandle["restaurantId"])  // For one restaurant got
@@ -32,14 +40,35 @@ class MenuPreviewViewModel @Inject constructor(
         refreshMenu()
     }
 
+    fun onAddRestaurantClicked() {
+        viewModelScope.launch {
+
+            val currentRestaurantState = requestRepository.getRequestStatusByRestaurantId(restaurantId)
+
+            when (currentRestaurantState) {
+                RequestStatusToken.READY -> {
+                    _effect.send(MenuPreviewUiEvents.NavigateToReadyRestaurantMenu(restaurantId))
+                }
+                RequestStatusToken.PAID -> {
+                    _effect.send(MenuPreviewUiEvents.NavigateToPaidRestaurant(restaurantId))
+                }
+                else -> {
+                    _effect.send(MenuPreviewUiEvents.NavigateToFocusedRestaurant(restaurantId))
+                }
+            }
+        }
+    }
+
 
     private fun refreshMenu() {
-        viewModelScope.launch {
+        viewModelScope.launch { // TODO: move the "viewModelScope.launch"s to the init
             restaurantRepository.refreshRestaurantMenu(restaurantId)
         }
     }
 
-    val menuState: StateFlow<MenuPreviewUiState> = restaurantRepository.observeMenuPagesByRestaurant(restaurantId)    //TODO: Later, it's going to receives the dishes also to follow the new version of the UI (See in Canva)
+
+
+    val menuUiState: StateFlow<MenuPreviewUiState> = restaurantRepository.observeMenuPagesByRestaurant(restaurantId)    //TODO: Later, it's going to receives the dishes also to follow the new version of the UI (See in Canva)
         .map { pages ->
             if (pages.isNotEmpty()) {
                 MenuPreviewUiState.Success(

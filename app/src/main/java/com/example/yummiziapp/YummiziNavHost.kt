@@ -30,9 +30,7 @@ fun YummiziNavHost(
             HomeScreen(
                 modifier = modifier,
                 onRestaurantSelectionNavigation = { id ->
-                    Log.d("MyActivity", "🔎🪪  Is there an ID? $id")
                     navController.navigate(YummiziRoute.Specification(restaurantId = id?.toString()))
-                    Log.d("MyActivity", "🔎📌  Checkpoint after navigation")
                 },
                 onRestaurantSelected = { id ->
                     navController.navigate(YummiziRoute.MenuPreview(restaurantId = id.toString()))
@@ -75,7 +73,19 @@ fun YummiziNavHost(
 
         // Jetpack Navigation auto-generates the internal parser bindings!
         composable<YummiziRoute.MenuPreview> {
-            MenuPreviewScreen(modifier = modifier)
+            MenuPreviewScreen(
+                modifier = modifier,
+                onFocusedRestaurantSelected = { id ->
+                    navController.navigate(YummiziRoute.Specification(restaurantId = id.toString()))
+                },
+                onReadyRestaurantSelected = { id ->
+                    navController.navigate(YummiziRoute.FoodSelection(restaurantId = id.toString()))
+                },
+                onPaidRestaurantSelected = { id ->
+                    navController.navigate(YummiziRoute.Arrival(restaurantId = id.toString()))
+                }
+
+                )
         }
 
         composable<YummiziRoute.FoodSelection> {

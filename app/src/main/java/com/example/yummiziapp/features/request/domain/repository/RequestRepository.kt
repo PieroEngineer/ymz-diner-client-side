@@ -1,6 +1,7 @@
 package com.example.yummiziapp.features.request.domain.repository
 
 import com.example.yummiziapp.core.data.local.entities.Request
+import com.example.yummiziapp.core.data.local.model.RequestStatusToken
 import kotlinx.coroutines.flow.Flow
 import kotlin.uuid.Uuid
 
@@ -28,6 +29,7 @@ interface RequestRepository {
 
     suspend fun leaveQueue(restaurantId: Uuid)
 
+    suspend fun getRequestStatusByRestaurantId(restaurantId: Uuid): RequestStatusToken
     fun observeRequestByRestaurantId(restaurantId: Uuid): Flow<Request?>
 
     fun observeIfThereAreRequests(): Flow<Boolean>
@@ -35,5 +37,5 @@ interface RequestRepository {
     suspend fun clearAll()
     suspend fun confirmAcceptance(restaurantId: Uuid)
 
-    suspend fun getUpdatedRequestStatus()
+    suspend fun fetchUpdatedRequestStatuses()
 }

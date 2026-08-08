@@ -137,7 +137,7 @@ fun PreferencesScreen(
                 Spacer(Modifier.weight(3f))
 
                 Image(      // Info button
-                    painter = painterResource(R.drawable.info_button),
+                    painter = painterResource(R.drawable.italic_info_icon),
                     contentDescription = null,
                     colorFilter = ColorFilter.tint(color = YummiziTheme.colors.yummiziWhite),
                     modifier = Modifier

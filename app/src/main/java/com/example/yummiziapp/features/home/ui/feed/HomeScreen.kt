@@ -54,7 +54,7 @@ fun HomeScreen(
     onRestaurantSelectionNavigation: (Uuid?) -> Unit,
     onRestaurantSelected: (Uuid) -> Unit,
     onReadyRestaurantSelected: (Uuid) -> Unit,
-        onPaidRestaurantSelected: (Uuid) -> Unit,
+    onPaidRestaurantSelected: (Uuid) -> Unit,
     onPreferenceNavigation: () -> Unit,
     viewModel: HomeViewModel = hiltViewModel()
 ) {

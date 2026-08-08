@@ -49,7 +49,7 @@ class SpecificationViewModel @Inject constructor(
     }
 
     private suspend fun getUpdatedRequestStatus(){
-        requestRepository.getUpdatedRequestStatus()
+        requestRepository.fetchUpdatedRequestStatuses()
     }
 
     private val restaurantIdString: String? = savedStateHandle["restaurantId"]
