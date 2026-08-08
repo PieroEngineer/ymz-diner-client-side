@@ -6,10 +6,6 @@
         <option name="selectionMode" value="DROPDOWN" />
         <DialogSelection />
       </SelectionState>
-      <SelectionState runConfigName="SliderTest (1)">
-        <option name="selectionMode" value="DROPDOWN" />
-        <DialogSelection />
-      </SelectionState>
       <SelectionState runConfigName="QueueConfirmationModal">
         <option name="selectionMode" value="DROPDOWN" />
         <DialogSelection />
@@ -23,6 +19,10 @@
         <DialogSelection />
       </SelectionState>
       <SelectionState runConfigName="PaymentPreparationScreen">
+        <option name="selectionMode" value="DROPDOWN" />
+        <DialogSelection />
+      </SelectionState>
+      <SelectionState runConfigName="TextFieldForFeedback">
         <option name="selectionMode" value="DROPDOWN" />
         <DialogSelection />
       </SelectionState>

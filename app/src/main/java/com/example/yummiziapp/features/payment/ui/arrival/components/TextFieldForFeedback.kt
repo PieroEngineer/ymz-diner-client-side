@@ -14,7 +14,9 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import com.example.yummiziapp.core.designsystem.theme.YummiziTheme
+//import androidx.compose.ui.tooling.preview.Preview
 
+//@Preview
 @Composable
 fun TextFieldForFeedback(
     modifier: Modifier = Modifier,
@@ -36,13 +38,13 @@ fun TextFieldForFeedback(
             .background(color = Color.White, shape = shape),
         textStyle = YummiziTheme.typography.teacherFontVar3,
         cursorBrush = SolidColor(YummiziTheme.colors.yummiziBlack),
-        singleLine = true,
+        minLines = 5, // Allows the field to be tall without forcing the cursor to the center
         decorationBox = { innerTextField ->
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = spacing.regularPadding, vertical = spacing.regularPadding),
-                contentAlignment = Alignment.CenterStart
+                contentAlignment = Alignment.TopStart // Places both placeholder and cursor at the top-left
             ) {
                 if (value.isEmpty()) {
                     Text(
