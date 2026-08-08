@@ -112,7 +112,7 @@ class FoodSelectionViewModel @Inject constructor(   //TODO: Change the way of ho
     fun updateQuantity(dishId: Uuid, delta: Int) {
         _orderMap.update { current ->
             val newCount = (current[dishId] ?: 0) + delta
-            if (newCount <= 0) current - dishId else current + (dishId to newCount) /// Consider change "current - dishId" by the intention of this "current[dishId] = 1"
+            if (newCount <= 0) current else current + (dishId to newCount) /// Consider change "current - dishId" by the intention of this "current[dishId] = 1"
         }
     }
 
@@ -146,19 +146,23 @@ class FoodSelectionViewModel @Inject constructor(   //TODO: Change the way of ho
     val foodSelectionState: StateFlow<List<FoodSelectionUiModel>> = restaurantRepository
         .observeDishes(restaurantId)
         .combine(_orderMap) { dishes, selection ->
-            dishes.map { dish ->
-                val quantity = selection[dish.id] ?: 0
-                val totalCents = quantity * dish.priceCents
+            // Create a lookup map for efficient detail retrieval
+            val dishLookup = dishes.associateBy { it.id }
+
+            // Iterate over 'selection' to maintain the order in which items were added
+            selection.mapNotNull { (dishId, quantity) ->
+                val dish = dishLookup[dishId] ?: return@mapNotNull null
+                if (quantity <= 0) return@mapNotNull null
 
                 FoodSelectionUiModel(
                     id = dish.id,
                     name = dish.name,
                     amount = quantity,
-                    unitPriceCents = dish.priceCents, // Carry this for the next step
-                    accumulatedCost = totalCents.toCurrencyFormat()
+                    unitPriceCents = dish.priceCents,
+                    accumulatedCost = (quantity * dish.priceCents).toCurrencyFormat()
                 )
-            }.filter { it.amount > 0 }
-        }   /// Should I include a catch here?
+            }
+        }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),

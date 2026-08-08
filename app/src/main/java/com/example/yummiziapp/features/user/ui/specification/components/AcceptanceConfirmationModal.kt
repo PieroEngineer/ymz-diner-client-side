@@ -118,7 +118,7 @@ fun AcceptanceConfirmationModal(
                         textAlign = TextAlign.Center
                     )
 
-                    Spacer(modifier = Modifier.height(spacing.mediumSeparation))
+                    Spacer(modifier = Modifier.height(spacing.smallSeparation))
 
                     HorizontalDivider(
                         thickness = spacing.mediumLineThickness,
@@ -126,10 +126,10 @@ fun AcceptanceConfirmationModal(
                         modifier = Modifier.fillMaxWidth(.5f)
                     )
 
-                    Spacer(modifier = Modifier.height(spacing.mediumSeparation))
+                    Spacer(modifier = Modifier.height(spacing.smallSeparation))
 
                     Text(
-                        text = "Tendrás +5 minutos extra para escoger y pagar",
+                        text = "Tendrás +5 minutos extra para escoger y realizar el pago",
                         color = YummiziTheme.colors.yummiziLightOrange,
                         style = YummiziTheme.typography.teacherFontVar6,
                         textAlign = TextAlign.Center

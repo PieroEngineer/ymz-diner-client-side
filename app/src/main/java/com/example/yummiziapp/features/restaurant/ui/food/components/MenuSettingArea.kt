@@ -90,7 +90,7 @@ fun <T: Identifiable> MenuSettingArea(
         ){
             LazyColumn(    // Current selected restaurants
                 state = listState,
-                verticalArrangement = Arrangement.spacedBy(spacing.regularSeparation),
+                verticalArrangement = Arrangement.spacedBy(spacing.mediumSeparation),
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
                     .padding(horizontal = spacing.mediumPadding)
@@ -107,7 +107,6 @@ fun <T: Identifiable> MenuSettingArea(
                         is MenuSetting.CurrentSelections -> {
                             FoodSelectionBlock(
                                 foodSelection = selection as FoodSelectionUiModel,
-//X                                onUpdatingSelectionQuantityClicked = onUpdatingSelectionQuantityClicked
                                 onUpdatingSelectionQuantityClicked = {
                                     increaseQuantity ->
                                     onUpdatingSelectionQuantityClicked(

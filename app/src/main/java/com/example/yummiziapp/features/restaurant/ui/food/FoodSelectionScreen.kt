@@ -170,7 +170,7 @@ fun FoodSelectionScreen(    // TODO: Correct the prop-drilling of this and other
 //            val menuSettingForSavedMenus =    //TODO
 //            val menuSettingForPreferences =   //TODO
 
-                MenuSettingArea(
+                MenuSettingArea(    // Amounts control
                     modifier = Modifier
                         .weight(7f),
                     menuStructure = menuSettingForChosenDishes,  //TODO: Later, this parameter will correspond to the list of menu settings to put it in a horizontal pager *2
