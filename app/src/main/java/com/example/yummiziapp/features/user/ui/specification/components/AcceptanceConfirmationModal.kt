@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -108,10 +109,27 @@ fun AcceptanceConfirmationModal(
                         onConfirm = onConfirmationTriggered
                     )
 
-                    Spacer(modifier = Modifier.height(spacing.bigSeparation))
+                    Spacer(Modifier.height(spacing.bigSeparation))
 
                     Text(
-                        text = "Una vez confirme este restaurante,\nlas otras solicitudes serán canceladas",
+                        text = "Las demás solicitudes de mesa se cancelarán",
+                        color = YummiziTheme.colors.yummiziLightBlue,
+                        style = YummiziTheme.typography.teacherFontVar6,
+                        textAlign = TextAlign.Center
+                    )
+
+                    Spacer(modifier = Modifier.height(spacing.mediumSeparation))
+
+                    HorizontalDivider(
+                        thickness = spacing.mediumLineThickness,
+                        color = YummiziTheme.colors.yummiziDarkOrange,
+                        modifier = Modifier.fillMaxWidth(.5f)
+                    )
+
+                    Spacer(modifier = Modifier.height(spacing.mediumSeparation))
+
+                    Text(
+                        text = "Tendrás +5 minutos extra para escoger y pagar",
                         color = YummiziTheme.colors.yummiziLightOrange,
                         style = YummiziTheme.typography.teacherFontVar6,
                         textAlign = TextAlign.Center
