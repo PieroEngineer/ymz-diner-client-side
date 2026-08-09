@@ -3,6 +3,7 @@ package com.example.yummiziapp.features.feedback.ui.contact
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -16,6 +17,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -24,17 +26,30 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import com.example.yummiziapp.R
 import com.example.yummiziapp.core.designsystem.theme.YummiziTheme
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.yummiziapp.core.ui.components.NavigationBar
 
-@Preview()
+//@Preview()
 @Composable
 fun ContactScreen(
     modifier: Modifier = Modifier,
-//    viewModel: ContactViewModel = hiltViewModel()
+
+    onHomeClickedNav: () -> Unit,
+    onYouClickedNav: () -> Unit,
+
+    viewModel: ContactViewModel = hiltViewModel()
 ){
     val spacing = YummiziTheme.spacing
+
+    LaunchedEffect(Unit) {
+        viewModel.navEffect.collect { effect ->
+            when (effect) {
+                is ContactUiEvent.NavigateToHome -> { onHomeClickedNav() }
+                is ContactUiEvent.NavigateToPreferences -> { onYouClickedNav() }
+            }
+        }
+    }
 
     Box(
         modifier = modifier
@@ -51,7 +66,6 @@ fun ContactScreen(
         modifier = Modifier
             .fillMaxSize()
             .padding(spacing.regularPadding)
-//X            .align(Alignment.TopCenter)
     ){
 
         Image(
@@ -135,7 +149,12 @@ fun ContactScreen(
                 .fillMaxWidth()
                 .height(spacing.barHeight),
 
-            shadowOn = false
+            moreHighlighted = true,
+
+            onHomeClicked = { viewModel.onHomeClicked() },
+            onYouClicked = { viewModel.onYouClicked() },
+
+            shadowOn = false,
         )
     }
 }
@@ -162,6 +181,9 @@ fun RectangleButton(
             )
             .background( YummiziTheme.colors.yummiziWhite)
             .padding(spacing.regularPadding)
+            .clickable{
+                onClick()
+            }
     ){
         Image(
             painter = painterResource(ownImageId),

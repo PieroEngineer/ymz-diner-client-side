@@ -6,6 +6,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.yummiziapp.features.feedback.ui.contact.ContactScreen
 import com.example.yummiziapp.features.navigation.YummiziRoute
 import com.example.yummiziapp.features.home.ui.feed.HomeScreen
 import com.example.yummiziapp.features.payment.ui.arrival.ArrivalScreen
@@ -112,6 +113,17 @@ fun YummiziNavHost(
             ArrivalScreen(
                 onHomeClickedNav = {
                     navController.navigate(YummiziRoute.Home)
+                }
+            )
+        }
+
+        composable<YummiziRoute.Contact>{
+            ContactScreen(
+                onHomeClickedNav = {
+                    navController.navigate(YummiziRoute.Home)
+                },
+                onYouClickedNav = {
+                    navController.navigate(YummiziRoute.Preferences)
                 }
             )
         }

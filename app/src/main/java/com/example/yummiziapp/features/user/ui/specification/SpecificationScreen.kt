@@ -180,20 +180,20 @@ fun SpecificationScreen(
 
                 }
 
-            Spacer(Modifier.height(spacing.regularSeparation))
+                Spacer(Modifier.height(spacing.regularSeparation))
 
-            // Navigation part
-            NavigationBar(
-                Modifier
-                    .fillMaxWidth()
-                    .height(spacing.barHeight),
+                // Navigation part
+                NavigationBar(
+                    Modifier
+                        .fillMaxWidth()
+                        .height(spacing.barHeight),
 
-                homeHighlighted = true,
-                onHomeClicked = { viewModel.onHomeClicked() },
-                onYouClicked = { viewModel.onYouClicked() },
+                    homeHighlighted = true,
+                    onHomeClicked = { viewModel.onHomeClicked() },
+                    onYouClicked = { viewModel.onYouClicked() },
 
-                shadowOn = false
-            )
+                    shadowOn = false
+                )
             }
 
         }

@@ -172,7 +172,7 @@ fun PreferencesScreen(
             )
         }
 
-        NavigationBar(
+        NavigationBar(  // TODO: Implement the clicks
             Modifier
                 .fillMaxWidth()
                 .height(spacing.barHeight)
