@@ -39,7 +39,6 @@ import com.example.yummiziapp.features.payment.ui.arrival.components.ConformityS
 import com.example.yummiziapp.features.payment.ui.arrival.components.RemainingTimeText
 import com.example.yummiziapp.features.payment.ui.arrival.components.TextFieldForFeedback
 import com.example.yummiziapp.features.payment.ui.arrival.components.TimeProgressBar
-import com.example.yummiziapp.features.user.ui.specification.SpecificationUiEvents
 import java.io.File
 
 //@Preview
@@ -194,7 +193,7 @@ fun ArrivalScreen(
                     }
                 }
                 is ArrivalUiState.CustomerArrived -> {
-                    val feedbackUiState by viewModel.feedbackUiState.collectAsStateWithLifecycle()  /// Is it a bad practice to have to create this state here? If yes, maybe it could go in the "combine" and use it, but the time condition would run every keystroke
+                    val feedbackUiState by viewModel.feedbackUiModel.collectAsStateWithLifecycle()  /// Is it a bad practice to have to create this state here? If yes, maybe it could go in the "combine" and use it, but the time condition would run every keystroke
 
                     Image(
                         painter = painterResource(R.drawable.yummizi_logo),

@@ -9,10 +9,9 @@ import com.example.yummiziapp.core.utils.toCurrencyFormat
 import com.example.yummiziapp.features.feedback.domain.repository.FeedbackRepository
 import com.example.yummiziapp.features.payment.domain.repository.PaymentRepository
 import com.example.yummiziapp.features.payment.ui.model.ArrivalUiModel
-import com.example.yummiziapp.features.payment.ui.model.FeedbackUiState
+import com.example.yummiziapp.features.payment.ui.model.FeedbackUiModel
 import com.example.yummiziapp.features.request.domain.repository.RequestRepository
 import com.example.yummiziapp.features.restaurant.domain.repository.RestaurantRepository
-import com.example.yummiziapp.features.user.ui.specification.SpecificationUiEvents
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -46,20 +45,20 @@ class ArrivalViewModel @Inject constructor(
 
     private val _isSubmittingFeedback = MutableStateFlow(false)
 
-    private val _feedbackUiState = MutableStateFlow(FeedbackUiState())
-    val feedbackUiState: StateFlow<FeedbackUiState> = _feedbackUiState.asStateFlow()
+    private val _feedbackUiModel = MutableStateFlow(FeedbackUiModel())
+    val feedbackUiModel: StateFlow<FeedbackUiModel> = _feedbackUiModel.asStateFlow()
 
     private val _effect = Channel<ArrivalUiEvent>(Channel.BUFFERED)
     val navEffect = _effect.receiveAsFlow()
 
     fun onDescriptionChanged(newText: String) {
-        _feedbackUiState.update { currentState ->
+        _feedbackUiModel.update { currentState ->
             currentState.copy(description = newText)
         }
     }
 
     fun onConformityDegreeChanged(newDegree: FeedbackLevelToken) {
-        _feedbackUiState.update { currentState ->
+        _feedbackUiModel.update { currentState ->
             currentState.copy(conformityDegree = newDegree)
         }
     }
@@ -70,7 +69,7 @@ class ArrivalViewModel @Inject constructor(
 
     fun onFeedbackReady() {
 
-        val currentFeedbackUiState = _feedbackUiState.value
+        val currentFeedbackUiState = _feedbackUiModel.value
 
         viewModelScope.launch {
         _isSubmittingFeedback.update { true }

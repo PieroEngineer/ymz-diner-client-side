@@ -128,7 +128,6 @@ fun PreferencesScreen(
                         color = YummiziTheme.colors.yummiziLightOrange,
                         style = YummiziTheme.typography.teacherFontVar7,
                         modifier = Modifier
-//X                            .padding(start = spacing.smallPadding)
                             .padding(spacing.regularPadding)
                             .align(Alignment.Center)
                     )
@@ -171,11 +170,7 @@ fun PreferencesScreen(
                 currentPreferences,
                 onDeletePreference = { id -> viewModel.onDeletePreference(id) }
             )
-
-
-
         }
-
 
         NavigationBar(
             Modifier

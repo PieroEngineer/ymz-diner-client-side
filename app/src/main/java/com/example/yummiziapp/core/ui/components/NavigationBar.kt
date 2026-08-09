@@ -128,7 +128,7 @@ fun NavigationBar(  //TODO: Change the visual part for the other nice style (Fro
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Image(
-                    painter = painterResource(R.drawable.more_icon),
+                    painter = painterResource(R.drawable.cloud_icon),
                     contentDescription = null,
                     modifier = Modifier
                         .size(spacing.mediumIconSize),
@@ -138,7 +138,7 @@ fun NavigationBar(  //TODO: Change the visual part for the other nice style (Fro
                 Spacer(Modifier.height(spacing.tinySeparation))
 
                 Text(
-                    text = "More",
+                    text = "Contact",
                     color = YummiziTheme.colors.yummiziWhite,
                     style = YummiziTheme.typography.teacherFontVar4
                 )

@@ -8,13 +8,15 @@ data class YummiziColors(
     val yummiziLightOrange : Color,
     val yummiziLightOrange2 : Color,
     val yummiziDarkBlue : Color,
+    val yummiziDarkBlue2 : Color,
     val yummiziLightBlue : Color,
     val yummiziLightBlue2 : Color,
     val yummiziWhite : Color,
     val yummiziBlack : Color,
     val yummiziGray : Color,
     val yummiziGray2 : Color,
-    val yummiziRed : Color
+    val yummiziRed : Color,
+
 )
 
 val YummiziPalette = YummiziColors(
@@ -22,6 +24,7 @@ val YummiziPalette = YummiziColors(
     yummiziLightOrange = Color(0xFFE45A04),
     yummiziLightOrange2 = Color(0xFFFF751F),
     yummiziDarkBlue = Color(0xFF001560),
+    yummiziDarkBlue2 = Color(0xFF172545),
     yummiziLightBlue = Color(0xFF004AAD),
     yummiziLightBlue2 = Color(0xFF005CD6),
     yummiziWhite = Color(0xFFFFFFFF),
