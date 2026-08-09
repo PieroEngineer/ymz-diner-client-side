@@ -1,4 +1,4 @@
-package com.example.yummiziapp.features.payment.ui.arrival.components
+package com.example.yummiziapp.core.ui.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable

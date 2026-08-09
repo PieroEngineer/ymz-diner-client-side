@@ -39,6 +39,7 @@ fun SpecificationScreen(
     viewModel: SpecificationViewModel = hiltViewModel(),
     onRestaurantSelectedNav: (Uuid) -> Unit,
     onHomeClickedNav: () -> Unit,
+    onContactNavigation: () -> Unit,
     onYouClickedNav: () -> Unit,
 ) {
     val spacing = YummiziTheme.spacing

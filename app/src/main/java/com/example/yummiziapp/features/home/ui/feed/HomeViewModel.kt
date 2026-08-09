@@ -149,6 +149,12 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    fun onContactClicked(){
+        viewModelScope.launch {
+            _effect.send(HomeUiEvents.NavigateToContact)
+        }
+    }
+
 
     fun onRestaurantDropped(restaurant: Restaurant) {
         // We use viewModelScope because writing to a database

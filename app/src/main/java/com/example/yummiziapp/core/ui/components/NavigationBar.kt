@@ -38,7 +38,7 @@ fun NavigationBar(  //TODO: Change the visual part for the other nice style (Fro
 
     onHomeClicked: () -> Unit = {},
     onYouClicked: () -> Unit = {},
-    onMoreClicked: () -> Unit = {},
+    onContactClicked: () -> Unit = {},
 
     shadowOn: Boolean = true
 
@@ -124,7 +124,7 @@ fun NavigationBar(  //TODO: Change the visual part for the other nice style (Fro
             Column( // More Icon
                 modifier = Modifier
                     .padding(vertical = spacing.smallPadding)
-                    .clickable { onMoreClicked() },
+                    .clickable { onContactClicked() },
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Image(

@@ -9,4 +9,5 @@ sealed interface HomeUiEvents {
     data class NavigateToPaidRestaurant(val restaurantId: Uuid) : HomeUiEvents
     data object ShowConnectionError : HomeUiEvents
     data object NavigateToPreferences : HomeUiEvents
+    data object NavigateToContact : HomeUiEvents
 }

@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.yummiziapp.core.data.local.entities.Order
 import com.example.yummiziapp.core.data.local.model.FeedbackLevelToken
 import com.example.yummiziapp.core.utils.toCurrencyFormat
-import com.example.yummiziapp.features.feedback.domain.repository.FeedbackRepository
+import com.example.yummiziapp.features.contact.domain.repository.ContactRepository
 import com.example.yummiziapp.features.payment.domain.repository.PaymentRepository
 import com.example.yummiziapp.features.payment.ui.model.ArrivalUiModel
 import com.example.yummiziapp.features.payment.ui.model.FeedbackUiModel
@@ -33,7 +33,7 @@ class ArrivalViewModel @Inject constructor(
     private val paymentRepository: PaymentRepository,
     private val restaurantRepository: RestaurantRepository,
     private val requestRepository: RequestRepository,
-    private val feedbackRepository: FeedbackRepository,
+    private val contactRepository: ContactRepository,
     savedStateHandle: SavedStateHandle
 )  : ViewModel() {
 
@@ -73,7 +73,7 @@ class ArrivalViewModel @Inject constructor(
 
         viewModelScope.launch {
         _isSubmittingFeedback.update { true }
-            feedbackRepository.sendFinalExperienceFeedback(currentFeedbackUiState.conformityDegree, currentFeedbackUiState.description)
+            contactRepository.sendFeedback(currentFeedbackUiState.conformityDegree, currentFeedbackUiState.description)
             requestRepository.clearAll()    /// If the requests are removed here, doesn't it affect the above function that uses requestID?
 
             _effect.send(ArrivalUiEvent.NavigateToHome)

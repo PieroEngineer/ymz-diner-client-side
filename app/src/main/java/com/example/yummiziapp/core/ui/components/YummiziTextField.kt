@@ -1,4 +1,4 @@
-package com.example.yummiziapp.features.payment.ui.arrival.components
+package com.example.yummiziapp.core.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -18,8 +18,10 @@ import com.example.yummiziapp.core.designsystem.theme.YummiziTheme
 
 //@Preview
 @Composable
-fun TextFieldForFeedback(
+fun YummiziTextField(
     modifier: Modifier = Modifier,
+
+    hintText: String,
 
     value: String,
     onValueChange: (String) -> Unit,
@@ -48,7 +50,7 @@ fun TextFieldForFeedback(
             ) {
                 if (value.isEmpty()) {
                     Text(
-                        text = "Ejemplos:\n\nYo creo que yummizi fue ...\n\nLo que puede mejorar es ...\n\nMe gustó/disgustó que ...",
+                        text = hintText,
                         style = YummiziTheme.typography.teacherFontVar3
                     )
                 }

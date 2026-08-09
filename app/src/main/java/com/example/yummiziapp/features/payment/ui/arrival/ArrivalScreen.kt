@@ -35,9 +35,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.yummiziapp.R
 import com.example.yummiziapp.core.designsystem.theme.AsyncYummiziImage
 import com.example.yummiziapp.core.designsystem.theme.YummiziTheme
-import com.example.yummiziapp.features.payment.ui.arrival.components.ConformitySelector
+import com.example.yummiziapp.core.ui.components.ConformitySelector
 import com.example.yummiziapp.features.payment.ui.arrival.components.RemainingTimeText
-import com.example.yummiziapp.features.payment.ui.arrival.components.TextFieldForFeedback
+import com.example.yummiziapp.core.ui.components.YummiziTextField
 import com.example.yummiziapp.features.payment.ui.arrival.components.TimeProgressBar
 import java.io.File
 
@@ -239,9 +239,10 @@ fun ArrivalScreen(
 
                         Spacer(modifier = Modifier.height(spacing.mediumSeparation))
 
-                        TextFieldForFeedback(
+                        YummiziTextField(
                             modifier = Modifier.weight(1f),
                             value = feedbackUiState.description,
+                            hintText = "Ejemplos:\n\nYo creo que yummizi fue ...\n\nLo que puede mejorar es ...\n\nMe gustó/disgustó que ...",
                             onValueChange = { viewModel.onDescriptionChanged(it) }
                         )
 

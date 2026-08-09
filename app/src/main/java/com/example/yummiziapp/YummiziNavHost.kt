@@ -1,12 +1,11 @@
 package com.example.yummiziapp
 
-import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.yummiziapp.features.feedback.ui.contact.ContactScreen
+import com.example.yummiziapp.features.contact.ui.contact.ContactScreen
 import com.example.yummiziapp.features.navigation.YummiziRoute
 import com.example.yummiziapp.features.home.ui.feed.HomeScreen
 import com.example.yummiziapp.features.payment.ui.arrival.ArrivalScreen
@@ -45,10 +44,9 @@ fun YummiziNavHost(
                 onPreferenceNavigation = {
                     navController.navigate(YummiziRoute.Preferences)
                 },
-                //X
-//                onRestaurantSelectedNav = { id ->
-//                    navController.navigate(YummiziRoute.FoodSelection(restaurantId = id.toString()))
-//                },
+                onContactNavigation = {
+                    navController.navigate(YummiziRoute.Contact)
+                }
             )
         }
 
@@ -64,6 +62,9 @@ fun YummiziNavHost(
                 },
                 onYouClickedNav = {
                     navController.navigate(YummiziRoute.Preferences)
+                },
+                onContactNavigation = {
+                    navController.navigate(YummiziRoute.Contact)
                 }
             )
         }
@@ -84,9 +85,12 @@ fun YummiziNavHost(
                 },
                 onPaidRestaurantSelected = { id ->
                     navController.navigate(YummiziRoute.Arrival(restaurantId = id.toString()))
+                },
+                onContactNavigation = {
+                    navController.navigate(YummiziRoute.Contact)
                 }
 
-                )
+            )
         }
 
         composable<YummiziRoute.FoodSelection> {
@@ -103,6 +107,7 @@ fun YummiziNavHost(
 
         composable<YummiziRoute.PaymentPreparation> {
             PaymentPreparationScreen(
+                modifier = modifier,
                 onPaymentDoneNav = { id ->
                     navController.navigate(YummiziRoute.Arrival(restaurantId = id.toString()))
                 }
@@ -111,6 +116,7 @@ fun YummiziNavHost(
 
         composable<YummiziRoute.Arrival> {
             ArrivalScreen(
+                modifier = modifier,
                 onHomeClickedNav = {
                     navController.navigate(YummiziRoute.Home)
                 }

@@ -36,6 +36,8 @@ fun MenuPreviewScreen(
     onReadyRestaurantSelected: (Uuid) ->Unit,
     onPaidRestaurantSelected: (Uuid) ->Unit,
 
+    onContactNavigation: () -> Unit,
+
     viewModel: MenuPreviewViewModel = hiltViewModel()
 ) {
     val spacing = YummiziTheme.spacing

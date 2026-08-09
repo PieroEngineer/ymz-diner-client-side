@@ -56,6 +56,7 @@ fun HomeScreen(
     onReadyRestaurantSelected: (Uuid) -> Unit,
     onPaidRestaurantSelected: (Uuid) -> Unit,
     onPreferenceNavigation: () -> Unit,
+    onContactNavigation: () -> Unit,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
 
@@ -69,6 +70,7 @@ fun HomeScreen(
                 is HomeUiEvents.NavigateToPaidRestaurant -> { onPaidRestaurantSelected(effect.restaurantId) }
                 is HomeUiEvents.ShowConnectionError -> { /* ... */ }
                 is HomeUiEvents.NavigateToPreferences -> { onPreferenceNavigation() }
+                is HomeUiEvents.NavigateToContact -> { onContactNavigation() }
             }
         }
     }
@@ -276,6 +278,7 @@ fun HomeScreen(
                 .align(Alignment.BottomCenter),
             homeHighlighted = true,
             onYouClicked = { viewModel.onYouClicked() },
+            onContactClicked = { viewModel.onContactClicked() },
             // onMoreClicked = { viewModel.onMoreClicked()}  //TODO
         )
 

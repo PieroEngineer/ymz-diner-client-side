@@ -1,6 +1,6 @@
 package com.example.yummiziapp.core.data.di
 
-import com.example.yummiziapp.core.data.repository.FeedbackRepositoryImpl
+import com.example.yummiziapp.core.data.repository.ContactRepositoryImpl
 import com.example.yummiziapp.core.data.repository.PaymentRepositoryImpl
 import dagger.Binds
 import dagger.Module
@@ -10,7 +10,7 @@ import javax.inject.Singleton
 import com.example.yummiziapp.core.data.repository.RestaurantRepositoryImpl
 import com.example.yummiziapp.core.data.repository.UserRepositoryImpl
 import com.example.yummiziapp.core.data.repository.RequestRepositoryImpl
-import com.example.yummiziapp.features.feedback.domain.repository.FeedbackRepository
+import com.example.yummiziapp.features.contact.domain.repository.ContactRepository
 import com.example.yummiziapp.features.payment.domain.repository.PaymentRepository
 import com.example.yummiziapp.features.restaurant.domain.repository.RestaurantRepository
 import com.example.yummiziapp.features.user.domain.repository.UserRepository
@@ -47,6 +47,6 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindFeedbackRepository(
-        feedbackRepositoryImpl: FeedbackRepositoryImpl
-    ): FeedbackRepository
+        contactRepositoryImpl: ContactRepositoryImpl
+    ): ContactRepository
 }

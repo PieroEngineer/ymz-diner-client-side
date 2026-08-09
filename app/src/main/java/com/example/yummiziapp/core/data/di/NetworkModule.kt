@@ -1,7 +1,7 @@
 package com.example.yummiziapp.core.data.di
 
 import com.example.yummiziapp.BuildConfig
-import com.example.yummiziapp.core.data.network.api.FeedbackApi
+import com.example.yummiziapp.core.data.network.api.ContactApi
 import com.example.yummiziapp.core.data.network.api.PaymentApi
 import com.example.yummiziapp.core.data.network.api.PreferenceApi
 import com.example.yummiziapp.core.data.network.api.RequestApi
@@ -50,8 +50,8 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideFeedbackApi(retrofit: Retrofit): FeedbackApi {
-        return retrofit.create(FeedbackApi::class.java)
+    fun provideFeedbackApi(retrofit: Retrofit): ContactApi {
+        return retrofit.create(ContactApi::class.java)
     }
 
 
