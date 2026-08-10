@@ -2,14 +2,18 @@ package com.example.yummiziapp.features.restaurant.ui.food.components
 
 import android.util.Log
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,7 +29,8 @@ fun MenuArea(
     modifier: Modifier = Modifier,
 
     currentPages: List<MenuUiModel>,
-    onUpdatingSelectionQuantityClicked: (dishId: Uuid, delta: Int) -> Unit
+    onUpdatingSelectionQuantityClicked: (dishId: Uuid, delta: Int) -> Unit,
+    onContactRestaurantClicked: () -> Unit = {}
 ){
     val spacing = YummiziTheme.spacing
 
@@ -59,15 +64,32 @@ fun MenuArea(
 
         }
 
-        Image(
-            painter = painterResource(R.drawable.expand_button),
-            contentDescription = null,
+//        Image(
+//            painter = painterResource(R.drawable.expand_button),
+//            contentDescription = null,
+//            modifier = Modifier
+//                .padding(spacing.bigPadding)
+//                .height(spacing.bigIconSize)
+//        )
+
+        Box(
             modifier = Modifier
+                .background(
+                    color = YummiziTheme.colors.yummiziWhite,
+                    shape = CircleShape
+                )
                 .padding(spacing.bigPadding)
                 .align(Alignment.TopEnd)
-                .height(spacing.bigIconSize)
-
-        )
+                .clickable{ onContactRestaurantClicked() },
+            contentAlignment = Alignment.Center
+        ){
+            Image(
+                painter = painterResource(R.drawable.headphones_icon),
+                contentDescription = null,
+                modifier = Modifier
+                    .size(spacing.regularIconSize)
+            )
+        }
 
         PageIndicator(
             modifier = Modifier.align(Alignment.BottomCenter),

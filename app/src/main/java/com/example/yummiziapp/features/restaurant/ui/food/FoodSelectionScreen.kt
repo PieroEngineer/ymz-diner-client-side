@@ -1,5 +1,7 @@
 package com.example.yummiziapp.features.restaurant.ui.food
 
+import android.content.ActivityNotFoundException
+import android.content.Intent
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -11,11 +13,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -23,8 +27,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.yummiziapp.core.designsystem.theme.YummiziTheme
@@ -58,11 +65,28 @@ fun FoodSelectionScreen(    // TODO: Correct the prop-drilling of this and other
 
     var isTryingToCancelRequest by rememberSaveable { mutableStateOf(false) }
 
+    val snackbarHostState = remember { SnackbarHostState() }
+    val uriHandler = LocalUriHandler.current
+    val context = LocalContext.current
+
     LaunchedEffect(Unit) {
         viewModel.navEffect.collect { effect ->
             when(effect) {
                 is FoodSelectionUiEvents.NavigateToPayment -> { onOrderConfirmed(effect.restaurantId) }
                 is FoodSelectionUiEvents.NavigateToHome -> { onHomeNav() }
+                is FoodSelectionUiEvents.IntentContactRestaurant -> {
+                    try {
+                        uriHandler.openUri(effect.url)
+                    } catch (e: Exception) {
+                        // Fallback for specific deep links (e.g., WhatsApp intent scheme fallback)
+                        val intent = Intent(Intent.ACTION_VIEW, effect.url.toUri())
+                        try {
+                            context.startActivity(intent)
+                        } catch (anfe: ActivityNotFoundException) {
+                            snackbarHostState.showSnackbar("No app found to open this link.")
+                        }
+                    }
+                }
             }
         }
     }
@@ -100,7 +124,8 @@ fun FoodSelectionScreen(    // TODO: Correct the prop-drilling of this and other
                         currentPages = result.pages,
                         onUpdatingSelectionQuantityClicked = { dishId, delta ->
                             viewModel.updateQuantity(dishId, delta)
-                        }
+                        },
+                        onContactRestaurantClicked = { viewModel.onContactRestaurant() }
                     )
                 }
                 is FoodSelectionUiState.Error -> {

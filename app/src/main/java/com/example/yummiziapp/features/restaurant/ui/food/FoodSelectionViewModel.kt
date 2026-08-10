@@ -87,6 +87,17 @@ class FoodSelectionViewModel @Inject constructor(   //TODO: Change the way of ho
                  initialValue = Clock.System.now()
              )
 
+    fun onContactRestaurant(){
+        viewModelScope.launch {
+            val currentRestaurant = restaurantRepository.getRestaurantById(restaurantId)
+            if (currentRestaurant != null){
+                _effect.send(FoodSelectionUiEvents.IntentContactRestaurant(
+                    "https://wa.me/51${currentRestaurant.phoneNumberToContact}?text=Hola%2C%20vengo%20desde%20la%20aplicaci%C3%B3n%20de%20Yummizi%2C%20quisiera%20comentarle%20que%20"
+                ))
+            }
+        }
+    }
+
     fun confirmOrder(){
         viewModelScope.launch {
             paymentRepository.selectOrder(_orderMap.value)
