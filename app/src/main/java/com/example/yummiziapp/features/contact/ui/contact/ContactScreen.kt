@@ -35,6 +35,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.yummiziapp.core.ui.components.NavigationBar
 import com.example.yummiziapp.features.contact.ui.contact.components.FeedbackModal
+import com.example.yummiziapp.features.contact.ui.contact.components.RestaurantContactModal
 
 //@Preview()
 @Composable
@@ -58,7 +59,10 @@ fun ContactScreen(
     }
 
     var wantToGiveFeedback by rememberSaveable { mutableStateOf(false) }
-    val feedbackUiState by viewModel.feedbackUiModel.collectAsStateWithLifecycle()  /// Is it a bad practice to have to create this state here? If yes, maybe it could go in the "combine" and use it, but the time condition would run every keystroke
+    var restaurantWantToContact by rememberSaveable { mutableStateOf(false) }
+
+    val feedbackUiModel by viewModel.feedbackUiModel.collectAsStateWithLifecycle()  /// Is it a bad practice to have to create this state here? If yes, maybe it could go in the "combine" and use it, but the time condition would run every keystroke
+    val restaurantContactUiModel by viewModel.restaurantContactUiModel.collectAsStateWithLifecycle()
 
     Box(
         modifier = modifier
@@ -130,6 +134,7 @@ fun ContactScreen(
                 RectangleButton(
                     ownImageId = R.drawable.handshake_icon,
                     ownText = "Probar en mi\nrestaurante",
+                    onClick = { restaurantWantToContact = true }
                 )
             }
 
@@ -170,12 +175,24 @@ fun ContactScreen(
         FeedbackModal(
             isOpen = wantToGiveFeedback,
             onDismissRequest = { wantToGiveFeedback = false },
-            feedbackUiState = feedbackUiState,
+            feedbackUiState = feedbackUiModel,
             onConformitySelected = {conformity -> viewModel.onConformityDegreeChanged(conformity) },
-            onDescriptionChanged = { viewModel.onDescriptionChanged(it) },
+            onDescriptionChanged = { viewModel.onFeedbackDescriptionChanged(it) },
             onSend = {
                 wantToGiveFeedback = false
                 viewModel.onFeedbackReady()
+                // TODO: Trigger a confirmation in a snackbar or in screen
+            }
+        )
+
+        RestaurantContactModal( // TODO: Use the proper way to handle pop-ups and (#741)
+            isOpen = restaurantWantToContact,
+            onDismissRequest = { restaurantWantToContact = false},
+            restaurantContactUiModel = restaurantContactUiModel,
+            onTextFieldChanged = {restaurantInfo, newText -> viewModel.onRestaurantContactTextFieldChanged(restaurantInfo, newText) },
+            onSend = {
+                restaurantWantToContact = false
+                viewModel.onRetaurantContactReady()
                 // TODO: Trigger a confirmation in a snackbar or in screen
             },
         )

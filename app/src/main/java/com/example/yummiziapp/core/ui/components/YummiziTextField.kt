@@ -22,6 +22,7 @@ fun YummiziTextField(
     modifier: Modifier = Modifier,
 
     hintText: String,
+    minLines: Int = 5,
 
     value: String,
     onValueChange: (String) -> Unit,
@@ -40,7 +41,7 @@ fun YummiziTextField(
             .background(color = Color.White, shape = shape),
         textStyle = YummiziTheme.typography.teacherFontVar3,
         cursorBrush = SolidColor(YummiziTheme.colors.yummiziBlack),
-        minLines = 5, // Allows the field to be tall without forcing the cursor to the center
+        minLines = minLines, // Allows the field to be tall without forcing the cursor to the center
         decorationBox = { innerTextField ->
             Box(
                 modifier = Modifier

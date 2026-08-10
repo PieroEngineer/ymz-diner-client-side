@@ -5,6 +5,8 @@ import com.example.yummiziapp.features.contact.domain.repository.ContactReposito
 import androidx.lifecycle.viewModelScope
 import com.example.yummiziapp.core.data.local.model.FeedbackLevelToken
 import com.example.yummiziapp.features.contact.ui.model.FeedbackUiModel
+import com.example.yummiziapp.features.contact.ui.model.RestaurantInfoTab
+import com.example.yummiziapp.features.contact.ui.model.RestaurantInfoUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,7 +28,10 @@ class ContactViewModel @Inject constructor(
     private val _feedbackUiModel = MutableStateFlow(FeedbackUiModel())
     val feedbackUiModel: StateFlow<FeedbackUiModel> = _feedbackUiModel.asStateFlow()
 
-    fun onDescriptionChanged(newText: String) {
+    private val _restaurantContactUiModel = MutableStateFlow(RestaurantInfoUiModel())
+    val restaurantContactUiModel: StateFlow<RestaurantInfoUiModel> = _restaurantContactUiModel.asStateFlow()
+
+    fun onFeedbackDescriptionChanged(newText: String) {
         _feedbackUiModel.update { currentState ->
             currentState.copy(description = newText)
         }
@@ -38,10 +43,35 @@ class ContactViewModel @Inject constructor(
         }
     }
 
+    fun onRestaurantContactTextFieldChanged(restaurantInfo: RestaurantInfoTab, newText: String){
+        _restaurantContactUiModel.update { currentState ->
+            when (restaurantInfo) {
+                RestaurantInfoTab.NAME -> currentState.copy(name = newText)
+                RestaurantInfoTab.CONTACT -> currentState.copy(contact = newText)
+                RestaurantInfoTab.COMMENT -> currentState.copy(comment = newText)
+            }
+        }
+    }
+
     fun onFeedbackReady(){  /// I didn't used a UI state in this ViewModel because the screen is local and the remote sending is fast, but conisder create it anyway
         val currentFeedbackUiState = _feedbackUiModel.value
         viewModelScope.launch {
             contactRepository.sendFeedback(currentFeedbackUiState.conformityDegree, currentFeedbackUiState.description)
+        }
+
+        _feedbackUiModel.update{ FeedbackUiModel() }    // TODO: Change this by the connection feedback
+    }
+
+    fun onRetaurantContactReady(){  // TODO: Include a logic that only allow
+        val currentRestaurantContactUiState = _restaurantContactUiModel.value
+        viewModelScope.launch {
+            contactRepository.sendRestaurantInfo(
+                currentRestaurantContactUiState.name,
+                currentRestaurantContactUiState.contact,
+                currentRestaurantContactUiState.comment
+            )
+
+            _restaurantContactUiModel.update { RestaurantInfoUiModel() }
         }
     }
 
