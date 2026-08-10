@@ -86,6 +86,12 @@ fun YummiziNavHost(
                 onPaidRestaurantSelected = { id ->
                     navController.navigate(YummiziRoute.Arrival(restaurantId = id.toString()))
                 },
+                onHomeClickedNav = {
+                    navController.navigate(YummiziRoute.Home)
+                },
+                onYouClickedNav = {
+                    navController.navigate(YummiziRoute.Preferences)
+                },
                 onContactNavigation = {
                     navController.navigate(YummiziRoute.Contact)
                 }

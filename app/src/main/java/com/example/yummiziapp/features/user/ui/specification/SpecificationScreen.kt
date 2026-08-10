@@ -51,6 +51,7 @@ fun SpecificationScreen(
                 is SpecificationUiEvents.NavigateToRestaurantMenu -> { onRestaurantSelectedNav(effect.restaurantId) }
                 is SpecificationUiEvents.NavigateToHome -> { onHomeClickedNav() }
                 is SpecificationUiEvents.NavigateToPreferences -> { onYouClickedNav() }
+                is SpecificationUiEvents.NavigateToContact -> { onContactNavigation() }
             }
         }
     }
@@ -189,9 +190,9 @@ fun SpecificationScreen(
                         .fillMaxWidth()
                         .height(spacing.barHeight),
 
-                    homeHighlighted = true,
                     onHomeClicked = { viewModel.onHomeClicked() },
                     onYouClicked = { viewModel.onYouClicked() },
+                    onContactClicked = { viewModel.onContactClicked() },
 
                     shadowOn = false
                 )

@@ -91,4 +91,22 @@ class MenuPreviewViewModel @Inject constructor(
             SharingStarted.WhileSubscribed(5000),
             MenuPreviewUiState.Loading
         )
+
+    fun onHomeClicked(){
+        viewModelScope.launch {
+            _effect.send(MenuPreviewUiEvents.NavigateToHome)
+        }
+    }
+
+    fun onYouClicked(){
+        viewModelScope.launch {
+            _effect.send(MenuPreviewUiEvents.NavigateToYou)
+        }
+    }
+
+    fun onContactClicked(){
+        viewModelScope.launch {
+            _effect.send(MenuPreviewUiEvents.NavigateToContact)
+        }
+    }
 }

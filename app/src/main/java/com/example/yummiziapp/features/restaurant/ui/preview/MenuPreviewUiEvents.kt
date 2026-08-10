@@ -6,4 +6,7 @@ sealed interface MenuPreviewUiEvents {
     data class NavigateToFocusedRestaurant(val restaurantId: Uuid) : MenuPreviewUiEvents
     data class NavigateToReadyRestaurantMenu(val restaurantId: Uuid) : MenuPreviewUiEvents
     data class NavigateToPaidRestaurant(val restaurantId: Uuid) : MenuPreviewUiEvents
+    data object NavigateToHome : MenuPreviewUiEvents
+    data object NavigateToYou : MenuPreviewUiEvents
+    data object NavigateToContact : MenuPreviewUiEvents
 }

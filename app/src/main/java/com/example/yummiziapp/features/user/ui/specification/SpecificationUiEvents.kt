@@ -6,4 +6,5 @@ sealed interface SpecificationUiEvents {
     data class NavigateToRestaurantMenu(val restaurantId: Uuid) : SpecificationUiEvents
     data object NavigateToHome : SpecificationUiEvents
     data object NavigateToPreferences : SpecificationUiEvents
+    data object NavigateToContact : SpecificationUiEvents
 }

@@ -47,7 +47,7 @@ class HomeViewModel @Inject constructor(
             Log.d("MyActivity", "🎨  Trying to initialize data for user and restaurant...\n")
             userRepository.seedMockUser() // Make this a suspend call
             //TODO: Update the existing requests in the cloud, so the orange frame will be received, but we already made a logic to avoid it asks for all request every time the user enters from the same phone
-            syncFeed()
+            syncFeed()  // TODO: Put a time comparation so the sync is not all time but every certain amount of minute
             observeFeed()
         }
     }

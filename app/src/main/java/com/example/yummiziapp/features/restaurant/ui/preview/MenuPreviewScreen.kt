@@ -35,7 +35,8 @@ fun MenuPreviewScreen(
     onFocusedRestaurantSelected: (Uuid) ->Unit,
     onReadyRestaurantSelected: (Uuid) ->Unit,
     onPaidRestaurantSelected: (Uuid) ->Unit,
-
+    onHomeClickedNav: () -> Unit,
+    onYouClickedNav: () -> Unit,
     onContactNavigation: () -> Unit,
 
     viewModel: MenuPreviewViewModel = hiltViewModel()
@@ -48,6 +49,9 @@ fun MenuPreviewScreen(
                 is MenuPreviewUiEvents.NavigateToFocusedRestaurant -> { onFocusedRestaurantSelected(effect.restaurantId) }
                 is MenuPreviewUiEvents.NavigateToReadyRestaurantMenu -> { onReadyRestaurantSelected(effect.restaurantId) }
                 is MenuPreviewUiEvents.NavigateToPaidRestaurant -> { onPaidRestaurantSelected(effect.restaurantId) }
+                is MenuPreviewUiEvents.NavigateToHome -> { onHomeClickedNav() }
+                is MenuPreviewUiEvents.NavigateToYou -> {onYouClickedNav() }
+                is MenuPreviewUiEvents.NavigateToContact -> { onContactNavigation() }
             }
         }
     }
@@ -130,8 +134,11 @@ fun MenuPreviewScreen(
             Modifier
                 .fillMaxWidth()
                 .height(spacing.barHeight),
+            onHomeClicked = { viewModel.onHomeClicked() },
+            onYouClicked = { viewModel.onYouClicked() },
+            onContactClicked = { viewModel.onContactClicked() },
 
-            false
+            shadowOn = false
         )
     }
 }

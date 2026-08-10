@@ -291,6 +291,12 @@ class SpecificationViewModel @Inject constructor(
             _effect.send(SpecificationUiEvents.NavigateToPreferences)
         }
     }
+
+    fun onContactClicked() {
+        viewModelScope.launch {
+            _effect.send(SpecificationUiEvents.NavigateToContact)
+        }
+    }
 }
 
 // TODO: Replace queuedRestaurants' logic for this one that has the state
