@@ -5,7 +5,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,7 +19,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.style.TextAlign
 import com.example.yummiziapp.core.designsystem.theme.YummiziTheme
 import com.example.yummiziapp.core.ui.components.DiffRoundedCornersRect
 import com.example.yummiziapp.R
@@ -99,7 +97,7 @@ fun ControlBar(
                         .fillMaxWidth()
                 ){
                     Image(
-                        painter = painterResource(R.drawable.save_order_button),
+                        painter = painterResource(R.drawable.fill_save_button),
                         contentDescription = null,
                         modifier = Modifier
                             .size(iconSize)

@@ -2,8 +2,6 @@ package com.example.yummiziapp.features.contact.ui.contact
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -25,17 +23,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import com.example.yummiziapp.R
 import com.example.yummiziapp.core.designsystem.theme.YummiziTheme
-import androidx.compose.ui.unit.Dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.yummiziapp.core.ui.components.NavigationBar
 import com.example.yummiziapp.core.ui.components.FeedbackModal
 import com.example.yummiziapp.features.contact.ui.contact.components.RestaurantContactModal
+import com.example.yummiziapp.core.ui.components.SquareButton
 
 //@Preview()
 @Composable
@@ -123,7 +120,7 @@ fun ContactScreen(
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
             ){
-                RectangleButton(
+                SquareButton(
                     ownImageId = R.drawable.conversation_icon,
                     ownText = "Tengo\ncomentarios",
                     onClick = { wantToGiveFeedback = true }
@@ -131,7 +128,7 @@ fun ContactScreen(
 
                 Spacer(Modifier.width(spacing.mediumSeparation))
 
-                RectangleButton(
+                SquareButton(
                     ownImageId = R.drawable.handshake_icon,
                     ownText = "Probar en mi\nrestaurante",
                     onClick = { restaurantWantToContact = true }
@@ -146,7 +143,7 @@ fun ContactScreen(
             ){
                 Spacer(Modifier.weight(1f))
 
-                RectangleButton(
+                SquareButton(
                     ownImageId = R.drawable.italic_info_icon,
                     ownText = "¿Cómo funciona\nesto?",
                     iconSize = spacing.bigIconSize,
@@ -198,49 +195,4 @@ fun ContactScreen(
             },
         )
     }
-}
-
-@Composable
-fun RectangleButton(    // TODO: Move to the core
-    modifier: Modifier = Modifier,
-
-    ownImageId: Int,
-    ownText: String,
-    iconSize: Dp = YummiziTheme.spacing.hugeIconSize,
-
-    onClick: () -> Unit = {},
-){
-    val spacing = YummiziTheme.spacing
-
-    Column(
-        modifier = modifier
-            .clip(RoundedCornerShape(spacing.mediumCornerRadius))
-            .border(
-                width = spacing.smallLineThickness,
-                color = YummiziTheme.colors.yummiziGray,
-                shape = RoundedCornerShape(spacing.mediumCornerRadius)
-            )
-            .background( YummiziTheme.colors.yummiziWhite)
-            .padding(spacing.regularPadding)
-            .clickable{
-                onClick()
-            }
-    ){
-        Image(
-            painter = painterResource(ownImageId),
-            colorFilter = ColorFilter.tint(color = YummiziTheme.colors.yummiziDarkBlue),
-            contentDescription = null,
-            modifier = Modifier
-                .size(iconSize)
-        )
-
-        Spacer(Modifier.height(spacing.hugeSeparation))
-
-        Text(
-            text = ownText,
-            color = YummiziTheme.colors.yummiziDarkBlue2,
-            style = YummiziTheme.typography.teacherFontVar1,
-        )
-    }
-
 }

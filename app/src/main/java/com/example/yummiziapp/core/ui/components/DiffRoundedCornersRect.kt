@@ -29,7 +29,7 @@ fun DiffRoundedCornersRect( //TODO: Delete this composable. The rounded corners 
     val spacing = YummiziTheme.spacing
     Box(
         modifier = modifier
-            .dropShadow( // Apply the intense drop shadow
+            .dropShadow( /// Apply the intense drop shadow
                 shape = shape,
                 shadow = Shadow(
                     color = YummiziTheme.colors.yummiziBlack.copy(alpha = if (shadowOn) 0.5f else 0f),
