@@ -67,13 +67,29 @@ class ArrivalViewModel @Inject constructor(
         _isTimeExpired.update{ !it }
     }
 
-    fun onFeedbackReady() {
+    fun onContactRestaurant(){
+        viewModelScope.launch {
+            val currentRestaurant = restaurantRepository.getRestaurantById(restaurantId)
+            if (currentRestaurant != null){
+                _effect.send(ArrivalUiEvent.IntentContactRestaurant(
+//                    "https://wa.me/51${currentRestaurant.phoneNumberToContact}?text=Hola%2C%20vengo%20desde%20la%20aplicaci%C3%B3n%20de%20Yummizi%2C%20quisiera%20comentarle%20que%20"
+                    "https://wa.me/51950214782?text=Hola%2C%20vengo%20desde%20la%20aplicaci%C3%B3n%20de%20Yummizi%2C%20quisiera%20comentarle%20que%20"
+                ))
+            }
+        }
+    }
+
+    fun onFeedbackReady() { // TODO: Include a logic that omit the last feedback form if the already user gave feedback in the arrival time
 
         val currentFeedbackUiState = _feedbackUiModel.value
 
         viewModelScope.launch {
-        _isSubmittingFeedback.update { true }
+
             contactRepository.sendFeedback(currentFeedbackUiState.conformityDegree, currentFeedbackUiState.description)
+
+            _feedbackUiModel.update{FeedbackUiModel()}
+
+            if(arrivalInfoUiState.value !is ArrivalUiState.CustomerArrived) return@launch
             requestRepository.clearAll()    /// If the requests are removed here, doesn't it affect the above function that uses requestID?
 
             _effect.send(ArrivalUiEvent.NavigateToHome)

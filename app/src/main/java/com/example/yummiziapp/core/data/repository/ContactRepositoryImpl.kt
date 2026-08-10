@@ -25,7 +25,7 @@ class ContactRepositoryImpl @Inject constructor(
     override suspend fun sendFeedback(conformDegree: FeedbackLevelToken?, description: String) {
         withContext(ioDispatcher) {
 
-            val lastRequest = requestDao.getLatestPaidRequest()
+            val lastRequest = requestDao.getLatestPaidRequest() // FIXME: Change it by a function that get a READY or a PAID request
 
             val associatedRequestId = lastRequest?.requestId?.toString()
                 ?: ""  // it determines if the feedback is related to a request or not

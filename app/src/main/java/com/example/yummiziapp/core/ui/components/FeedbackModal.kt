@@ -1,4 +1,4 @@
-package com.example.yummiziapp.features.contact.ui.contact.components
+package com.example.yummiziapp.core.ui.components
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
@@ -28,9 +28,8 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.style.TextAlign
 import com.example.yummiziapp.core.data.local.model.FeedbackLevelToken
 import com.example.yummiziapp.core.designsystem.theme.YummiziTheme
-import com.example.yummiziapp.core.ui.components.ConformitySelector
 import com.example.yummiziapp.features.contact.ui.model.FeedbackUiModel
-import com.example.yummiziapp.core.ui.components.YummiziTextField
+
 @Composable
 fun FeedbackModal(
     modifier: Modifier = Modifier,
@@ -38,7 +37,9 @@ fun FeedbackModal(
     isOpen: Boolean = false,
     onDismissRequest: () -> Unit = {},
 
-    feedbackUiState: FeedbackUiModel,
+//X    feedbackUiState: FeedbackUiModel,
+    currentDescription: String = "",
+    currentConformity: FeedbackLevelToken? = null,
 
     onConformitySelected: (FeedbackLevelToken) -> Unit,
     onDescriptionChanged: (String) -> Unit,
@@ -119,7 +120,7 @@ fun FeedbackModal(
                 Spacer(Modifier.height(spacing.mediumSeparation))
 
                 YummiziTextField(
-                    value = feedbackUiState.description,
+                    value = currentDescription,
                     hintText = "Ejemplos:\n\nYo creo que yummizi fue ...\n\nLo que puede mejorar es ...\n\nMe gustó/disgustó que ...",
                     onValueChange = { onDescriptionChanged(it) }
                 )
@@ -127,7 +128,7 @@ fun FeedbackModal(
                 Spacer(Modifier.height(spacing.mediumSeparation))
 
                 ConformitySelector(
-                    selectedConformity = feedbackUiState.conformityDegree,
+                    selectedConformity = currentConformity,
                     onConformitySelected = {conformity -> onConformitySelected(conformity) }
                 )
 

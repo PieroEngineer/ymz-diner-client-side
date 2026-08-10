@@ -163,6 +163,8 @@ class RestaurantRepositoryImpl @Inject constructor(
 
     }
 
+    override suspend fun getRestaurantById(id: Uuid) = restaurantDao.getRestaurantById(id)
+
     override fun observePendingRestaurants(): Flow<List<Restaurant>> {
         // In a real app, this ID comes from your UserSessionManager
         val currentUserId = Uuid.parse("00000000-0000-4000-a000-000000000000")

@@ -3,6 +3,9 @@ package com.example.yummiziapp.features.payment.ui.arrival
 
 
 //import androidx.compose.ui.tooling.preview.Preview
+import android.content.ActivityNotFoundException
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -14,13 +17,18 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -28,6 +36,7 @@ import androidx.compose.ui.draw.dropShadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -36,14 +45,16 @@ import com.example.yummiziapp.R
 import com.example.yummiziapp.core.designsystem.theme.AsyncYummiziImage
 import com.example.yummiziapp.core.designsystem.theme.YummiziTheme
 import com.example.yummiziapp.core.ui.components.ConformitySelector
+import com.example.yummiziapp.core.ui.components.FeedbackModal
 import com.example.yummiziapp.features.payment.ui.arrival.components.RemainingTimeText
 import com.example.yummiziapp.core.ui.components.YummiziTextField
 import com.example.yummiziapp.features.payment.ui.arrival.components.TimeProgressBar
 import java.io.File
+import androidx.core.net.toUri
 
 //@Preview
 @Composable
-fun ArrivalScreen(
+fun ArrivalScreen(  // TODO: For some reason, the keyboard is pushing the UI upwards and the complementary frame is cut sometimes (maybe for the weights)
     modifier: Modifier = Modifier,
     onHomeClickedNav: () -> Unit,
     viewModel: ArrivalViewModel = hiltViewModel()
@@ -52,12 +63,32 @@ fun ArrivalScreen(
 
     val arrivalInfoUiState by viewModel.arrivalInfoUiState.collectAsStateWithLifecycle()
 
+    var wantToGiveFeedback by rememberSaveable { mutableStateOf(false) }
+
+    val feedbackUiState by viewModel.feedbackUiModel.collectAsStateWithLifecycle()  /// Is it a bad practice to have to create this state here? If yes, maybe it could go in the "combine" and use it, but the time condition would run every keystroke
+
+    val snackbarHostState = remember { SnackbarHostState() }
+    val uriHandler = LocalUriHandler.current
+    val context = LocalContext.current
+
     // Listen for the ViewModel's commands
     LaunchedEffect(Unit) {
-        viewModel.navEffect.collect { effect ->
+        viewModel.navEffect.collect { effect -> // TODO: Research the difference between "collectLatest" and "collect"
             when (effect) {
                 is ArrivalUiEvent.NavigateToHome -> { onHomeClickedNav() }
-                else -> {}
+                is ArrivalUiEvent.IntentContactRestaurant -> {
+                    try {
+                        uriHandler.openUri(effect.url)
+                    } catch (e: Exception) {
+                        // Fallback for specific deep links (e.g., WhatsApp intent scheme fallback)
+                        val intent = Intent(Intent.ACTION_VIEW, effect.url.toUri())
+                        try {
+                            context.startActivity(intent)
+                        } catch (anfe: ActivityNotFoundException) {
+                            snackbarHostState.showSnackbar("No app found to open this link.")
+                        }
+                    }
+                }
             }
         }
     }
@@ -148,8 +179,9 @@ fun ArrivalScreen(
                         AsyncYummiziImage(
                             model = receiptFile,
                             contentDescription = null,
-                            modifier = Modifier//.size(spacing.bigImageSize)
-                                .weight(1f)
+                            modifier = Modifier
+//                                .size(spacing.smallImageSize)
+                                .weight(2f)
                         )
 
                         Spacer(modifier = Modifier.height(spacing.mediumSeparation))
@@ -193,7 +225,6 @@ fun ArrivalScreen(
                     }
                 }
                 is ArrivalUiState.CustomerArrived -> {
-                    val feedbackUiState by viewModel.feedbackUiModel.collectAsStateWithLifecycle()  /// Is it a bad practice to have to create this state here? If yes, maybe it could go in the "combine" and use it, but the time condition would run every keystroke
 
                     Image(
                         painter = painterResource(R.drawable.yummizi_logo),
@@ -240,7 +271,7 @@ fun ArrivalScreen(
                         Spacer(modifier = Modifier.height(spacing.mediumSeparation))
 
                         YummiziTextField(
-                            modifier = Modifier.weight(1f),
+//                            modifier = Modifier.weight(1f),
                             value = feedbackUiState.description,
                             hintText = "Ejemplos:\n\nYo creo que yummizi fue ...\n\nLo que puede mejorar es ...\n\nMe gustó/disgustó que ...",
                             onValueChange = { viewModel.onDescriptionChanged(it) }
@@ -276,7 +307,7 @@ fun ArrivalScreen(
                             )
                         }
 
-                        Spacer(modifier = Modifier.height(spacing.smallSeparation))
+                        Spacer(modifier = Modifier.weight(1f))
 
                         HorizontalDivider(
                             thickness = spacing.smallLineThickness,
@@ -311,7 +342,7 @@ fun ArrivalScreen(
                     .weight(2f)
                     .clip(RoundedCornerShape(spacing.mediumCornerRadius))
                     .background(YummiziTheme.colors.yummiziWhite)
-                    .padding(spacing.bigPadding),
+                    .padding(spacing.mediumPadding),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(   // Price
@@ -333,7 +364,7 @@ fun ArrivalScreen(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
                 ){
-                    Box(    // Payment confirmation button
+                    Box(
                         modifier = Modifier
                             .dropShadow(shape = RoundedCornerShape(15)) {
                                 alpha = 0.5f                                  // High opacity to make it visible
@@ -348,7 +379,7 @@ fun ArrivalScreen(
                                 horizontal = spacing.bigPadding
                             )
                             .clickable {
-                                // TODO
+                                viewModel.onContactRestaurant()
                             },
                         contentAlignment = Alignment.Center
                     ) {
@@ -362,34 +393,50 @@ fun ArrivalScreen(
 
                     Spacer(modifier = Modifier.weight(1f))
 
-                    Box(    // Payment confirmation button
-                        modifier = Modifier
-                            .dropShadow(shape = RoundedCornerShape(15)) {
-                                alpha = 0.5f                                  // High opacity to make it visible
-                                radius = 20f                                 // Soft blur radius
-                                spread = 2f                               // Expands the shadow size
-                                offset = Offset(8f, 12f) // Pushes shadow down
-                            }
-                            .clip(RoundedCornerShape(15)) // 50%
-                            .background(YummiziTheme.colors.yummiziWhite)
-                            .padding(
-                                vertical = spacing.regularPadding,
-                                horizontal = spacing.bigPadding
+                    if(arrivalInfoUiState !is ArrivalUiState.CustomerArrived){
+                        Box(
+                            modifier = Modifier
+                                .dropShadow(shape = RoundedCornerShape(15)) {
+                                    alpha = 0.5f                                  // High opacity to make it visible
+                                    radius = 20f                                 // Soft blur radius
+                                    spread = 2f                               // Expands the shadow size
+                                    offset = Offset(8f, 12f) // Pushes shadow down
+                                }
+                                .clip(RoundedCornerShape(15)) // 50%
+                                .background(YummiziTheme.colors.yummiziWhite)
+                                .padding(
+                                    vertical = spacing.regularPadding,
+                                    horizontal = spacing.bigPadding
+                                )
+                                .clickable {
+                                    wantToGiveFeedback = true
+                                },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "Contactar\nYummizi",
+                                style = YummiziTheme.typography.comfortaaFontVar3,
+                                color = YummiziTheme.colors.yummiziDarkBlue,
+                                textAlign = TextAlign.Center
                             )
-                            .clickable {
-                                // TODO
-                            },
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "Contactar\nYummizi",
-                            style = YummiziTheme.typography.comfortaaFontVar3,
-                            color = YummiziTheme.colors.yummiziDarkBlue,
-                            textAlign = TextAlign.Center
-                        )
+                        }
                     }
                 }
             }
         }
+
+        FeedbackModal(
+            isOpen = wantToGiveFeedback,
+            onDismissRequest = { wantToGiveFeedback = false },
+            currentDescription = feedbackUiState.description,
+            currentConformity = feedbackUiState.conformityDegree,
+            onConformitySelected = {conformity -> viewModel.onConformityDegreeChanged(conformity) },
+            onDescriptionChanged = { viewModel.onDescriptionChanged(it) },
+            onSend = {
+                wantToGiveFeedback = false
+                viewModel.onFeedbackReady()
+                // TODO: Trigger a confirmation in a snackbar or in screen
+            }
+        )
     }
 }

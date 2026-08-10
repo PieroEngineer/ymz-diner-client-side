@@ -34,7 +34,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.yummiziapp.core.ui.components.NavigationBar
-import com.example.yummiziapp.features.contact.ui.contact.components.FeedbackModal
+import com.example.yummiziapp.core.ui.components.FeedbackModal
 import com.example.yummiziapp.features.contact.ui.contact.components.RestaurantContactModal
 
 //@Preview()
@@ -175,7 +175,8 @@ fun ContactScreen(
         FeedbackModal(
             isOpen = wantToGiveFeedback,
             onDismissRequest = { wantToGiveFeedback = false },
-            feedbackUiState = feedbackUiModel,
+            currentDescription = feedbackUiModel.description,
+            currentConformity = feedbackUiModel.conformityDegree,
             onConformitySelected = {conformity -> viewModel.onConformityDegreeChanged(conformity) },
             onDescriptionChanged = { viewModel.onFeedbackDescriptionChanged(it) },
             onSend = {

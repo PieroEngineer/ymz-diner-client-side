@@ -34,6 +34,8 @@ interface RestaurantRepository {
 
     suspend fun syncFeedRestaurants()
 
+    suspend fun getRestaurantById(id: Uuid): Restaurant?
+
     /**
      * Synchronizes the remote menu with local storage.
      * High Performance: Uses a single transaction and IO Dispatcher.
