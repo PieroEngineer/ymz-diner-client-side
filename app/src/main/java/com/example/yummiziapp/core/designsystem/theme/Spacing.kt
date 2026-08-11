@@ -11,6 +11,7 @@ data class YummiziSpacing (
     val mediumPadding: Dp = 10.dp,
     val regularPadding: Dp = 18.dp,
     val bigPadding: Dp = 28.dp,
+    val enormousPadding: Dp = 60.dp,
 
     val tinySeparation: Dp = 2.dp,
     val smallSeparation: Dp = 5.dp,
@@ -28,6 +29,7 @@ data class YummiziSpacing (
     val smallLineThickness: Dp = 1.dp,
     val mediumLineThickness: Dp = 2.dp,
     val bigLineThickness: Dp = 3.dp,
+    val hugeLineThickness: Dp = 10.dp,
 
     val tinyIconSize: Dp = 10.dp,
     val smallIconSize: Dp = 18.dp,

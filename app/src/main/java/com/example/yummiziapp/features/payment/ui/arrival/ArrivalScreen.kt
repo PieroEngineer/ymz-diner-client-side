@@ -5,7 +5,6 @@ package com.example.yummiziapp.features.payment.ui.arrival
 //import androidx.compose.ui.tooling.preview.Preview
 import android.content.ActivityNotFoundException
 import android.content.Intent
-import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -17,7 +16,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.SnackbarHostState
@@ -98,7 +96,7 @@ fun ArrivalScreen(  // TODO: For some reason, the keyboard is pushing the UI upw
             .fillMaxSize()
     ) {
         Image(
-            painter = painterResource(id = R.drawable.payment_bg),
+            painter = painterResource(id = R.drawable.diffuse_bg),
             contentDescription = null,
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop

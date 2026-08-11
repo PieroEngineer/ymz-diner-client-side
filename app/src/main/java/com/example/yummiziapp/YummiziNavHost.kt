@@ -5,6 +5,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.yummiziapp.features.auth.ui.authselection.AuthSelectionScreen
 import com.example.yummiziapp.features.contact.ui.contact.ContactScreen
 import com.example.yummiziapp.features.navigation.YummiziRoute
 import com.example.yummiziapp.features.home.ui.feed.HomeScreen
@@ -24,8 +25,16 @@ fun YummiziNavHost(
 
     NavHost(
         navController = navController,
-        startDestination = YummiziRoute.Home // 🛡️ Completely type-safe start node
+//        startDestination = YummiziRoute.Home, // 🛡️ Completely type-safe start node
+        startDestination = YummiziRoute.AuthSelection
     ) {
+
+        composable<YummiziRoute.AuthSelection> {
+            AuthSelectionScreen(
+                modifier = modifier,
+
+            )
+        }
 
         composable<YummiziRoute.Home> {
             HomeScreen(
