@@ -113,14 +113,17 @@ fun ContactScreen(
                     .padding(spacing.smallSeparation)
             )
 
-            Spacer(Modifier.weight(3f))
+            Spacer(Modifier.weight(1f))
 
 
             Row(
                 modifier = Modifier
+                    .weight(2f)
                     .align(Alignment.CenterHorizontally)
             ){
                 SquareButton(
+                    modifier = Modifier
+                        .weight(1f),
                     ownImageId = R.drawable.conversation_icon,
                     ownText = "Tengo\ncomentarios",
                     onClick = { wantToGiveFeedback = true }
@@ -129,6 +132,8 @@ fun ContactScreen(
                 Spacer(Modifier.width(spacing.mediumSeparation))
 
                 SquareButton(
+                    modifier = Modifier
+                        .weight(1f),
                     ownImageId = R.drawable.handshake_icon,
                     ownText = "Probar en mi\nrestaurante",
                     onClick = { restaurantWantToContact = true }
@@ -139,6 +144,7 @@ fun ContactScreen(
 
             Row(
                 modifier = Modifier
+                    .weight(2f)
                     .align(Alignment.CenterHorizontally)
             ){
                 Spacer(Modifier.weight(1f))
@@ -153,7 +159,7 @@ fun ContactScreen(
             }
 
 
-            Spacer(Modifier.weight(3f))
+            Spacer(Modifier.weight(1f))
 
             NavigationBar(
                 Modifier

@@ -17,12 +17,13 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.dropShadow
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.tooling.preview.Preview
+//import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.layout.ContentScale
@@ -30,22 +31,36 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.yummiziapp.core.designsystem.theme.YummiziTheme
 import com.example.yummiziapp.R
 import com.example.yummiziapp.core.ui.components.NavigationBar
 import com.example.yummiziapp.core.ui.components.SquareButton
 
-@Preview( showBackground = true)
+//@Preview( showBackground = true)
 @Composable
 fun ProfileScreen(
     modifier: Modifier = Modifier,
+    onHomeNavigation: () -> Unit = {},
+    onContactNavigation: () -> Unit = {},
 
+    viewModel: ProfileViewModel = hiltViewModel()
 ){
     val spacing = YummiziTheme.spacing
 
+    LaunchedEffect(Unit) {
+        viewModel.navEffect.collect { effect ->
+            when(effect) {
+                is ProfileUiEvent.NavigateToHome -> { onHomeNavigation() }
+                is ProfileUiEvent.NavigateToContact -> { onContactNavigation() }
+            }
+        }
+    }
+
     Column(
         modifier = Modifier
-            .fillMaxSize(),
+            .fillMaxSize()
+            .background(YummiziTheme.colors.yummiziWhite),
         horizontalAlignment = Alignment.CenterHorizontally
     ){
 
@@ -225,8 +240,8 @@ fun ProfileScreen(
 
             youHighlighted = true,
 
-            onHomeClicked = { /*viewModel.onHomeClicked()*/ },
-            onContactClicked = { /*viewModel.onContactClicked()*/ },
+            onHomeClicked = { viewModel.onHomeClicked() },
+            onContactClicked = { viewModel.onContactClicked() },
 
             shadowOn = false,
         )

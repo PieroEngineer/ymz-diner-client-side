@@ -13,6 +13,7 @@ import com.example.yummiziapp.features.payment.ui.checkin.PaymentPreparationScre
 import com.example.yummiziapp.features.restaurant.ui.food.FoodSelectionScreen
 import com.example.yummiziapp.features.restaurant.ui.preview.MenuPreviewScreen
 import com.example.yummiziapp.features.user.ui.preferences.PreferencesScreen
+import com.example.yummiziapp.features.user.ui.profile.ProfileScreen
 import com.example.yummiziapp.features.user.ui.specification.SpecificationScreen
 
 @Composable
@@ -42,7 +43,7 @@ fun YummiziNavHost(
                     navController.navigate(YummiziRoute.Arrival(restaurantId = id.toString()))
                 },
                 onPreferenceNavigation = {
-                    navController.navigate(YummiziRoute.Preferences)
+                    navController.navigate(YummiziRoute.Profile)
                 },
                 onContactNavigation = {
                     navController.navigate(YummiziRoute.Contact)
@@ -61,7 +62,7 @@ fun YummiziNavHost(
                     navController.popBackStack()
                 },
                 onYouClickedNav = {
-                    navController.navigate(YummiziRoute.Preferences)
+                    navController.navigate(YummiziRoute.Profile)
                 },
                 onContactNavigation = {
                     navController.navigate(YummiziRoute.Contact)
@@ -69,8 +70,20 @@ fun YummiziNavHost(
             )
         }
 
-        composable<YummiziRoute.Preferences> {
-            PreferencesScreen(modifier = modifier)
+//        composable<YummiziRoute.Preferences> {
+//            PreferencesScreen(modifier = modifier)
+//        }
+
+        composable<YummiziRoute.Profile> {
+            ProfileScreen(
+                modifier = modifier,
+                onHomeNavigation = {
+                    navController.navigate(YummiziRoute.Home)
+                },
+                onContactNavigation = {
+                    navController.navigate(YummiziRoute.Contact)
+                }
+            )
         }
 
         // Jetpack Navigation auto-generates the internal parser bindings!
@@ -90,7 +103,7 @@ fun YummiziNavHost(
                     navController.navigate(YummiziRoute.Home)
                 },
                 onYouClickedNav = {
-                    navController.navigate(YummiziRoute.Preferences)
+                    navController.navigate(YummiziRoute.Profile)
                 },
                 onContactNavigation = {
                     navController.navigate(YummiziRoute.Contact)
@@ -135,7 +148,7 @@ fun YummiziNavHost(
                     navController.navigate(YummiziRoute.Home)
                 },
                 onYouClickedNav = {
-                    navController.navigate(YummiziRoute.Preferences)
+                    navController.navigate(YummiziRoute.Profile)
                 }
             )
         }
