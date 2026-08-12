@@ -22,6 +22,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -32,6 +33,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.yummiziapp.R
 import com.example.yummiziapp.core.designsystem.theme.YummiziTheme
 //import androidx.compose.ui.tooling.preview.Preview
@@ -52,9 +54,12 @@ fun AuthSelectionScreen(
         viewModel.navEffect.collect { effect ->
             when (effect) {
                 is AuthSelectionUiEvents.NavigateToEmailLogin -> { onEmailAuthClicked() }
+                else -> {}
             }
         }
     }
+
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     Box(
         modifier = modifier
@@ -122,64 +127,78 @@ fun AuthSelectionScreen(
                     contentScale = ContentScale.FillBounds
                 )
 
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize(),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ){
-                    Spacer(Modifier.weight(1f))
-
-                    OrangeButtonWithIcon(
-                        Modifier
-                            .weight(2f),
-                        inlineText = "Correo",
-                        iconId = R.drawable.mail_logo,
-                        onClick = { viewModel.onEmailLoginClicked() }
-                    )
-
-                    Spacer(Modifier.weight(1f))
-
-                    Box(
-                        Modifier.weight(5f),
-                        contentAlignment = Alignment.Center
-                    ){
+                when (val state = uiState) {
+                    is AuthSelectionUiState.Loading -> {
+                        // Loading UI
+                        Text(
+                            text = "Loading",
+                            color = YummiziTheme.colors.yummiziDarkBlue,
+                            style = YummiziTheme.typography.leaguespartanFontVar3
+                        )
+                    }
+                    is AuthSelectionUiState.UnauthenticatedSession -> {
+                        // Success UI
                         Column(
+                            modifier = Modifier
+                                .fillMaxSize(),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ){
-                            OrangeButtonWithIcon(
-                                Modifier
-                                    .weight(2f),
-                                inlineText = "Gmail",
-                                iconId = R.drawable.gmail_logo,
-//                        onClick = { viewModel.onEmailAuthClicked() }
-                            )
                             Spacer(Modifier.weight(1f))
 
                             OrangeButtonWithIcon(
                                 Modifier
                                     .weight(2f),
-                                inlineText = "Facebook",
-                                iconId = R.drawable.facebook_logo,
+                                inlineText = "Correo",
+                                iconId = R.drawable.mail_logo,
+                                onClick = { viewModel.onEmailLoginClicked() }
+                            )
+
+                            Spacer(Modifier.weight(1f))
+
+                            Box(
+                                Modifier.weight(5f),
+                                contentAlignment = Alignment.Center
+                            ){
+                                Column(
+                                    horizontalAlignment = Alignment.CenterHorizontally
+                                ){
+                                    OrangeButtonWithIcon(
+                                        Modifier
+                                            .weight(2f),
+                                        inlineText = "Gmail",
+                                        iconId = R.drawable.gmail_logo,
 //                        onClick = { viewModel.onEmailAuthClicked() }
-                            )
-                        }
+                                    )
+                                    Spacer(Modifier.weight(1f))
+
+                                    OrangeButtonWithIcon(
+                                        Modifier
+                                            .weight(2f),
+                                        inlineText = "Facebook",
+                                        iconId = R.drawable.facebook_logo,
+//                        onClick = { viewModel.onEmailAuthClicked() }
+                                    )
+                                }
 
 
-                        Box(
-                            modifier = Modifier
-                                .matchParentSize()
-                                .clip(RoundedCornerShape(spacing.mediumCornerRadius))
-                                .background(YummiziTheme.colors.yummiziBlack.copy(alpha = 0.8f)),
-                            contentAlignment = Alignment.Center
-                        ){
-                            Text(
-                                text = "Próximamente",
-                                color = YummiziTheme.colors.yummiziWhite,
-                                style = YummiziTheme.typography.leaguespartanFontVar2
-                            )
+                                Box(
+                                    modifier = Modifier
+                                        .matchParentSize()
+                                        .clip(RoundedCornerShape(spacing.mediumCornerRadius))
+                                        .background(YummiziTheme.colors.yummiziBlack.copy(alpha = 0.8f)),
+                                    contentAlignment = Alignment.Center
+                                ){
+                                    Text(
+                                        text = "Próximamente",
+                                        color = YummiziTheme.colors.yummiziWhite,
+                                        style = YummiziTheme.typography.leaguespartanFontVar2
+                                    )
+                                }
+                            }
                         }
                     }
                 }
+
             }
         }
     }

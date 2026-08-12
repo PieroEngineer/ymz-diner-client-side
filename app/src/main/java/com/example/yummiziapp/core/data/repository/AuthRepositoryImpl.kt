@@ -56,12 +56,13 @@ class AuthRepositoryImpl @Inject constructor() : AuthRepository {
     /**
      * Verifies if local tokens are valid and refreshes them silently if expired.
      */
-    override suspend fun checkSession(): Boolean {
+    override suspend fun checkSession(): AuthResult<Boolean> {
         return try {
             val session = Amplify.Auth.fetchAuthSession()
-            session.isSignedIn
+            AuthResult.Success(session.isSignedIn)
+
         } catch (e: Exception) {
-            false
+            AuthResult.Error(e, e.message ?: "Session check failed")
         }
     }
 

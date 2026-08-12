@@ -10,6 +10,6 @@ import com.example.yummiziapp.features.auth.domain.model.AuthResult
 interface AuthRepository {
     suspend fun signUp(signUpData: SignUpData): AuthResult<Boolean>
     suspend fun signIn(email: String, password: String): AuthResult<Boolean>
-    suspend fun checkSession(): Boolean
+    suspend fun checkSession(): AuthResult<Boolean>
     suspend fun signOut(): AuthResult<Unit>
 }
