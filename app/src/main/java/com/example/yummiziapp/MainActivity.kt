@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import com.example.yummiziapp.core.designsystem.theme.YummiziTheme
@@ -25,7 +26,8 @@ class MainActivity : ComponentActivity() {
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
                     // 🛡️ Automatically detects top status bar, bottom navigation pill, and camera notches!
-                    contentWindowInsets = WindowInsets.safeDrawing
+//                    contentWindowInsets = WindowInsets.safeDrawing
+                    contentWindowInsets = WindowInsets.systemBars
                 ) { innerPadding ->
                     // Hook your centralized router engine up to the structural padding coordinates
                     YummiziNavHost(

@@ -21,6 +21,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -30,6 +31,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.yummiziapp.R
 import com.example.yummiziapp.core.designsystem.theme.YummiziTheme
 //import androidx.compose.ui.tooling.preview.Preview
@@ -39,18 +41,20 @@ import com.example.yummiziapp.core.designsystem.theme.YummiziTheme
 fun AuthSelectionScreen(
     modifier: Modifier = Modifier,
 
-//    onEmailAuthClicked: () -> Unit,
+    onEmailAuthClicked: () -> Unit,
+
+    viewModel: AuthSelectionViewModel = hiltViewModel()
 ){
 
     val spacing = YummiziTheme.spacing
 
-//    LaunchedEffect(Unit) {
-//        viewModel.navEffect.collect { effect ->
-//            when (effect) {
-//                is AuthSelectionUiEvent.NavigateToHome -> { onEmailAuthClicked() }
-//            }
-//        }
-//    }
+    LaunchedEffect(Unit) {
+        viewModel.navEffect.collect { effect ->
+            when (effect) {
+                is AuthSelectionUiEvents.NavigateToEmailLogin -> { onEmailAuthClicked() }
+            }
+        }
+    }
 
     Box(
         modifier = modifier
@@ -130,7 +134,7 @@ fun AuthSelectionScreen(
                             .weight(2f),
                         inlineText = "Correo",
                         iconId = R.drawable.mail_logo,
-//                        onClick = { viewModel.onEmailAuthClicked() }
+                        onClick = { viewModel.onEmailLoginClicked() }
                     )
 
                     Spacer(Modifier.weight(1f))
@@ -178,9 +182,7 @@ fun AuthSelectionScreen(
                 }
             }
         }
-
     }
-
 }
 
 @Composable

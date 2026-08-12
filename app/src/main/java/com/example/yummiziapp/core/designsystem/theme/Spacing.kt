@@ -39,7 +39,7 @@ data class YummiziSpacing (
     val hugeIconSize: Dp = 60.dp,
     val enormousIconSize: Dp = 80.dp,
 
-    val sideLength: Dp = 200.dp,
+    val sideLength: Dp = 70.dp,
 
     val reducedImageSize: Dp = 60.dp,
     val smallImageSize: Dp = 80.dp,

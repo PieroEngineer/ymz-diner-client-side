@@ -6,6 +6,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.yummiziapp.features.auth.ui.authselection.AuthSelectionScreen
+import com.example.yummiziapp.features.auth.ui.emailmethod.ui.EmailMethodScreen
 import com.example.yummiziapp.features.contact.ui.contact.ContactScreen
 import com.example.yummiziapp.features.navigation.YummiziRoute
 import com.example.yummiziapp.features.home.ui.feed.HomeScreen
@@ -32,7 +33,15 @@ fun YummiziNavHost(
         composable<YummiziRoute.AuthSelection> {
             AuthSelectionScreen(
                 modifier = modifier,
+                onEmailAuthClicked = {
+                    navController.navigate(YummiziRoute.EmailMethodLogin)
+                }
+            )
+        }
 
+        composable<YummiziRoute.EmailMethodLogin> {
+            EmailMethodScreen(
+                modifier = modifier
             )
         }
 

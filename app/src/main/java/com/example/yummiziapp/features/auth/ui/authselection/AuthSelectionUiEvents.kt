@@ -1,0 +1,5 @@
+package com.example.yummiziapp.features.auth.ui.authselection
+
+sealed interface AuthSelectionUiEvents {
+    data object NavigateToEmailLogin : AuthSelectionUiEvents
+}

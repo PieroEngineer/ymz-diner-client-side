@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.text.TextStyle
 import com.example.yummiziapp.core.designsystem.theme.YummiziTheme
 //import androidx.compose.ui.tooling.preview.Preview
 
@@ -23,6 +24,8 @@ fun YummiziTextField(
 
     hintText: String,
     minLines: Int = 5,
+    backgroundColor: Color = YummiziTheme.colors.yummiziWhite,
+    textStyle: TextStyle = YummiziTheme.typography.teacherFontVar3,
 
     value: String,
     onValueChange: (String) -> Unit,
@@ -38,8 +41,8 @@ fun YummiziTextField(
         modifier = modifier
             .fillMaxWidth()
             .shadow(elevation = spacing.mediumSeparation, shape = shape, clip = false)
-            .background(color = Color.White, shape = shape),
-        textStyle = YummiziTheme.typography.teacherFontVar3,
+            .background(color = backgroundColor, shape = shape),
+        textStyle = textStyle,
         cursorBrush = SolidColor(YummiziTheme.colors.yummiziBlack),
         minLines = minLines, // Allows the field to be tall without forcing the cursor to the center
         decorationBox = { innerTextField ->
@@ -52,7 +55,7 @@ fun YummiziTextField(
                 if (value.isEmpty()) {
                     Text(
                         text = hintText,
-                        style = YummiziTheme.typography.teacherFontVar3
+                        style = textStyle
                     )
                 }
                 innerTextField()

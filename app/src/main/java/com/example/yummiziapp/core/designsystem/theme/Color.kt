@@ -15,6 +15,7 @@ data class YummiziColors(
     val yummiziBlack : Color,
     val yummiziGray : Color,
     val yummiziGray2 : Color,
+    val yummiziGray3 : Color,
     val yummiziRed : Color,
     val yummiziYellow : Color
 
@@ -32,6 +33,7 @@ val YummiziPalette = YummiziColors(
     yummiziBlack = Color(0xFF000000),
     yummiziGray = Color(0XFFA6A6A6),
     yummiziGray2 = Color(0xFF404040),
+    yummiziGray3 = Color(0xFFEDECEC),
     yummiziRed = Color(0xFFFF3131),
     yummiziYellow = Color(0xFFFFE27D)
 )
