@@ -106,7 +106,7 @@ fun EmailMethodScreen(
                     .padding(spacing.regularPadding)
             ){
 
-                if(!isSigningIn){
+                if(!isSigningIn){   // TODO: Include the phone number
                     Text(
                         text = "Nombre de usuario:",
                         color = YummiziTheme.colors.yummiziBlack,

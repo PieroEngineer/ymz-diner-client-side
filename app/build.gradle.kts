@@ -134,6 +134,13 @@ dependencies {
 
     // WebSockets (Ably)
     implementation(libs.ably.android)
+
+    // AWS
+    implementation(libs.amplify.core)
+    implementation(libs.amplify.auth.cognito)
+
+    // Splash Screen //TODO: For the initial screen (In "📱 Kotlin expert 5.0")
+//    implementation("androidx.core:core-splashscreen:1.0.1")
 }
 
 configurations.all {

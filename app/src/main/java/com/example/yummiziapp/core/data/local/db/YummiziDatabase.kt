@@ -31,8 +31,8 @@ import com.example.yummiziapp.core.data.local.entities.Restaurant
         OrderSelection::class,
         Order::class
     ],
-    version = 2,
-    exportSchema = false // TODO: Activate it when the app is ready to be released
+    version = 3,
+    exportSchema = false // FIXME: Activate it when the app is ready to be released
 )
 @TypeConverters(YummiziConverters::class)
 abstract class YummiziDatabase : RoomDatabase() {

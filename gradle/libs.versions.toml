@@ -34,6 +34,9 @@ kotlinx-serialization = "1.6.3"
 # Coil Image Loader
 coil = "3.0.4"
 
+# AWS
+amplify = "2.21.0"
+
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -79,6 +82,10 @@ ably-android = { group = "io.ably", name = "ably-android", version = "1.2.40" }
 # Coil
 coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coil" }
 coil-network-okhttp = { group = "io.coil-kt.coil3", name = "coil-network-okhttp", version.ref = "coil" }
+
+# AWS Amplify Kotlin Core & Auth Plugin
+amplify-core = { group = "com.amplifyframework", name = "core-kotlin", version.ref = "amplify" }
+amplify-auth-cognito = { group = "com.amplifyframework", name = "aws-auth-cognito", version.ref = "amplify" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
