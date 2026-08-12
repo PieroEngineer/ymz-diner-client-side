@@ -6,7 +6,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.yummiziapp.features.auth.ui.authselection.AuthSelectionScreen
-import com.example.yummiziapp.features.auth.ui.emailmethod.ui.EmailMethodScreen
+import com.example.yummiziapp.features.auth.ui.emailmethod.EmailMethodScreen
 import com.example.yummiziapp.features.contact.ui.contact.ContactScreen
 import com.example.yummiziapp.features.navigation.YummiziRoute
 import com.example.yummiziapp.features.home.ui.feed.HomeScreen
@@ -14,7 +14,6 @@ import com.example.yummiziapp.features.payment.ui.arrival.ArrivalScreen
 import com.example.yummiziapp.features.payment.ui.checkin.PaymentPreparationScreen
 import com.example.yummiziapp.features.restaurant.ui.food.FoodSelectionScreen
 import com.example.yummiziapp.features.restaurant.ui.preview.MenuPreviewScreen
-import com.example.yummiziapp.features.user.ui.preferences.PreferencesScreen
 import com.example.yummiziapp.features.user.ui.profile.ProfileScreen
 import com.example.yummiziapp.features.user.ui.specification.SpecificationScreen
 
