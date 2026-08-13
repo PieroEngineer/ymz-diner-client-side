@@ -24,5 +24,12 @@ data class OrderSelectionDto(
 @Serializable
 data class SendOrderReadyToBePaidResponseDto(
     val message: String,
-    val totalPriceInCents: Int
+    val totalPriceInCents: Int,
+    val paymentImageReferences: PaymentImageReferencesDto
+)
+
+@Serializable
+data class PaymentImageReferencesDto(
+    val uploadUrl: String,
+    val publicUrl: String
 )

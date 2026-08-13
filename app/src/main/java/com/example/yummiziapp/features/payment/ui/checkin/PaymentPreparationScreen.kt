@@ -244,7 +244,7 @@ fun PaymentPreparationScreen(
                                     horizontal = spacing.bigPadding
                                 )
                                 .clickable{
-                                    viewModel.onPaymentSendClicked()
+                                    viewModel.onSendPaymentClicked()
                                 },
                             contentAlignment = Alignment.Center
                         ) {

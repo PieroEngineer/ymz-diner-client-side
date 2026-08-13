@@ -25,8 +25,8 @@ fun YummiziNavHost(
 
     NavHost(
         navController = navController,
-//        startDestination = YummiziRoute.Home, // 🛡️ Completely type-safe start node
-        startDestination = YummiziRoute.AuthSelection
+        startDestination = YummiziRoute.Home, // 🛡️ Completely type-safe start node
+//        startDestination = YummiziRoute.AuthSelection
     ) {
 
         composable<YummiziRoute.AuthSelection> {

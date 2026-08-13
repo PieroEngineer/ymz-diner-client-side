@@ -1,7 +1,6 @@
 package com.example.yummiziapp.features.payment.ui.checkin
 
 import android.net.Uri
-import androidx.compose.ui.platform.LocalClipboard
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -37,6 +36,7 @@ class PaymentPreparationViewModel @Inject constructor(
     private val restaurantIdString: String = checkNotNull(savedStateHandle["restaurantId"])
     private val restaurantId = Uuid.parse(restaurantIdString)   /// Maybe it's not necessary here because there is only one reatuarant READY at the time
 
+
     private val _effect = Channel<PaymentPreparationUiEvents>(Channel.BUFFERED)
     val navEffect = _effect.receiveAsFlow()
 
@@ -49,11 +49,11 @@ class PaymentPreparationViewModel @Inject constructor(
         restaurantRepository.fetchPaymentInfo(restaurantId)
     }
 
-    fun onPaymentSendClicked() {
+    fun onSendPaymentClicked() {
         viewModelScope.launch {
             val currentPickedImageUiState = _pickedImageUiState.value
             if (currentPickedImageUiState is PickedPaymentImageUiState.ImageAlreadySelected) {
-                paymentRepository.confirmSelectedOrder(currentPickedImageUiState.selectedFile.name)
+                paymentRepository.confirmSelectedOrder(currentPickedImageUiState.selectedFile.name, Uri.fromFile(currentPickedImageUiState.selectedFile))   // TODO (#945)
                 _effect.send(PaymentPreparationUiEvents.NavigateToArrival(restaurantId))
             }
             else {

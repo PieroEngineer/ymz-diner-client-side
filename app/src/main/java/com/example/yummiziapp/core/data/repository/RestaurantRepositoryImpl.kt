@@ -201,7 +201,6 @@ class RestaurantRepositoryImpl @Inject constructor(
                         val requestUpdate = dto.toEntity()
                         // TODO: Verify here if the transition between request status is valid (e.g. Accepted only is allowed if the previous state was QUEUED)
 
-//X                        requestDao.updateRequestStatus(requestUpdate.restaurantId, Uuid.parse(userId), requestUpdate.newStatus)
                         requestDao.updateRequestStatus(requestUpdate.requestId, requestUpdate.newStatus)
                     } catch (e: Exception) {
                         Log.e("MyActivity", "🚩  Database write failure", e)
@@ -212,3 +211,23 @@ class RestaurantRepositoryImpl @Inject constructor(
             }
     }
 }
+
+
+// For global Websockets
+
+// 1. Keep one sync job active
+//private var syncJob: Job? = null
+//
+//// 2. Start it once when needed (or in init)
+//private fun startGlobalSync() {
+//    if (syncJob?.isActive == true) return
+//    syncJob = CoroutineScope(ioDispatcher).launch {
+//        syncWebSocketToRoom()
+//    }
+//}
+//
+//// 3. The observer is now "Clean" (Only reads DB)
+//override fun observePendingRestaurantsWithStatus(): Flow<List<RestaurantWithStatus>> {
+//    startGlobalSync() // Ensure sync is running
+//    return restaurantDao.observePendingRestaurantsWithStatus(currentUserId)
+//}

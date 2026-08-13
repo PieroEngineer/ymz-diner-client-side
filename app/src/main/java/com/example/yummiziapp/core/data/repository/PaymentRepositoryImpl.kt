@@ -22,6 +22,10 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.RequestBody
+import okio.BufferedSink
+import okio.source
 import java.io.File
 import java.io.FileNotFoundException
 import kotlin.time.Clock
@@ -84,7 +88,7 @@ class PaymentRepositoryImpl @Inject constructor(    // TODO: Change the name of 
 //        }
     }
 
-    override suspend fun confirmSelectedOrder(paymentImageRelativePath: String) {
+    override suspend fun confirmSelectedOrder(paymentImageRelativePath: String, imageUri: Uri?) = withContext(ioDispatcher) {
         // Get the current "READY" request and extract its ID and the Restaurant ID
         val readyRequest = requestDao.getLatestReadyRequest()
             ?: throw IllegalStateException("No READY request found")
@@ -116,6 +120,8 @@ class PaymentRepositoryImpl @Inject constructor(    // TODO: Change the name of 
         val response = yummiziApi.selectOrder(payload)
 
         if (response.isSuccessful) {    // TODO: Also return the time when the customer should arrive, the client-side doesn't decide that  /// perhaps also the time when the waiting started
+
+
             requestDao.updateRequestStatus(readyRequest.requestId, RequestStatusToken.PAID)
 
             // Receive the response with the total price and return it
@@ -140,8 +146,51 @@ class PaymentRepositoryImpl @Inject constructor(    // TODO: Change the name of 
                 Log.d("MyActivity", "✅💲  The local price matches with the remote price")
             }
 
+            val presignedUrl = response.body()?.paymentImageReferences?.uploadUrl//.replace('172.18.0.2', 'localhost') // FIXME: If we use the "repalce" function, remove it in production
+            val fileKey = response.body()?.paymentImageReferences?.publicUrl    // TODO: Pass to the Room and use it in the next screen
+
+            Log.d("MyActivity", "🔎⏫  Presigned URL: $presignedUrl")
+
+            try{
+                if (imageUri != null && presignedUrl != null){
+                    uploadImage(imageUri, presignedUrl)
+                    Log.d("MyActivity", "✅⏫  Image uploaded successfully")
+
+                    Unit
+                }
+                else{
+                    throw Exception("🚩  Image URI or Presigned URL is null")
+                }
+            }
+            catch (e: Exception){
+                // TODO: Let know to the restaurant that the image payment wasn't successfully sent (But depend in what part of the Lambda the error occured)
+                throw Exception("🚩  Image Uploading to S3 failed: ${e.message}")
+            }
+
         } else {
             throw Exception("API call failed: ${response.code()} ${response.message()}")
+        }
+    }
+    private suspend fun uploadImage(uri: Uri, presignedUrl: String) {
+        runCatching {
+            val mimeType = context.contentResolver.getType(uri) ?: "image/jpeg"
+
+            // 2. Efficiently stream image from Uri without loading whole file in RAM
+            val requestBody = object : RequestBody() {
+                override fun contentType() = mimeType.toMediaTypeOrNull()
+
+                override fun writeTo(sink: BufferedSink) {
+                    context.contentResolver.openInputStream(uri)?.use { inputStream ->
+                        sink.writeAll(inputStream.source())
+                    } ?: throw IllegalStateException("🚩  Could not open InputStream for Uri")
+                }
+            }
+
+            // 3. Upload directly to S3
+            val uploadResponse = yummiziApi.uploadToPresignedUrl(presignedUrl, mimeType, requestBody)
+            if (!uploadResponse.isSuccessful) {
+                throw IllegalStateException("S3 Upload failed with code: ${uploadResponse.code()}")
+            }
         }
     }
 

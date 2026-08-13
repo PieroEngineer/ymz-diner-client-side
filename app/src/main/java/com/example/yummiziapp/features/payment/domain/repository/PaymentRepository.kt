@@ -18,5 +18,5 @@ interface PaymentRepository {
 
     fun observeCurrentOrderSelections(): Flow<List<OrderSelection>>
 
-    suspend fun confirmSelectedOrder(paymentImageRelativePath: String)
+    suspend fun confirmSelectedOrder(paymentImageRelativePath: String, imageUri: Uri?)
 }
