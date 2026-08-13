@@ -37,12 +37,12 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.yummiziapp.R
 import com.example.yummiziapp.core.designsystem.theme.YummiziTheme
 import com.example.yummiziapp.core.ui.components.YummiziTextField
-import androidx.compose.ui.tooling.preview.Preview
+//import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.yummiziapp.features.auth.ui.emailmethod.components.TermsModal
 import com.example.yummiziapp.features.auth.ui.model.UserInfoTab
 
-@Preview()
+//@Preview()
 @Composable
 fun EmailMethodScreen(
     modifier: Modifier = Modifier,

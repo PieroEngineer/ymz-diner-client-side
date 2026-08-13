@@ -49,6 +49,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.yummiziapp.R
 import com.example.yummiziapp.core.designsystem.theme.AsyncYummiziImage
 import com.example.yummiziapp.core.designsystem.theme.YummiziTheme
+import com.example.yummiziapp.core.ui.components.YummiziSnackbar
 import kotlin.uuid.Uuid
 
 //@Preview
@@ -424,37 +425,12 @@ fun PaymentPreparationScreen(
             }
         }
 
-        androidx.compose.material3.SnackbarHost(
-            hostState = snackbarHostState,
+        YummiziSnackbar(
+            snackbarHostState = snackbarHostState,
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                // Adds space from the screen edge
                 .padding(bottom = 24.dp, start = 32.dp, end = 32.dp)
-        ) { snackbarData ->
-            androidx.compose.material3.Snackbar(
-                shape = androidx.compose.foundation.shape.RoundedCornerShape(24.dp), // Pill shape
-                containerColor = androidx.compose.ui.graphics.Color(0xFF1E1E1E),     // Soft, deep dark grey (not pure black)
-                contentColor = androidx.compose.ui.graphics.Color.White,            // Crisp white text
-                modifier = Modifier
-                    .wrapContentWidth(Alignment.CenterHorizontally)
-                    // Adds a very subtle minimalist border
-                    .border(
-                        width = 1.dp,
-                        color = androidx.compose.ui.graphics.Color.White.copy(alpha = 0.1f),
-                        shape = androidx.compose.foundation.shape.RoundedCornerShape(24.dp)
-                    )
-            ) {
-                androidx.compose.material3.Text(
-                    text = snackbarData.visuals.message,
-                    textAlign = androidx.compose.ui.text.style.TextAlign.Center,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        // Tight padding for a sleek, compact height
-                        .padding(horizontal = 8.dp, vertical = 4.dp),
-                    style = androidx.compose.material3.MaterialTheme.typography.bodyMedium
-                )
-            }
-        }
+        )
 
     }
 }

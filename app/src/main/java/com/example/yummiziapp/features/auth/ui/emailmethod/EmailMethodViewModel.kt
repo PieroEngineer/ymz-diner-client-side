@@ -51,9 +51,9 @@ class EmailMethodViewModel @Inject constructor(
             _formUiState.update { it.copy(formIssueText = null) }
             Log.d("MyActivity", "Create Account: Form is valid")
             ///Start loading state
-            ///Upload info to backend
-            ///Save user in the Room
-            ///If it's the first time of the user (account didn't exist previously), navigate to the Intro screen
+
+            ///Sign in
+            // TODO:  If successful, Go to intro
 
         }
     }
@@ -70,16 +70,12 @@ class EmailMethodViewModel @Inject constructor(
             return
         }
 
-//X The app shouldn't reveal the correct pattern of a password
-//        if(!state.password.isPasswordValid()){
-//            _formUiState.update { it.copy(formIssueText = "La contraseña debe tener al menos 6 caracteres.") }
-//            return
-//        }
-
         _formUiState.update { it.copy(formIssueText = null) }
         Log.d("MyActivity", "Access to the account is valid")
-        ///Verify sign in the backend
-        ///Navigate to home screen
+        ///Start loading state
+
+        ///Sign in
+        // TODO:  If successful, Go to intro
 
     }
 
