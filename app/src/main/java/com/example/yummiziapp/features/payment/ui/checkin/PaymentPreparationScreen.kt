@@ -8,6 +8,7 @@ import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,13 +21,16 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -55,6 +59,8 @@ fun PaymentPreparationScreen(
     viewModel: PaymentPreparationViewModel = hiltViewModel()
 ) {
 
+    val snackbarHostState = remember { SnackbarHostState() }
+
     val spacing = YummiziTheme.spacing
 
     val clipboard = LocalClipboard.current
@@ -65,10 +71,12 @@ fun PaymentPreparationScreen(
                 is PaymentPreparationUiEvents.NavigateToArrival -> { onPaymentDoneNav(effect.restaurantId) }
                 is PaymentPreparationUiEvents.CopyToClipboard -> {
                     // Create Android standard ClipData
-                    val clipData = ClipData.newPlainText("phone_number", effect.text)
+                    val clipData = ClipData.newPlainText("phone_number", effect.copiedText)
 
                     // Call the modern suspend function to set the clip
                     clipboard.setClipEntry(ClipEntry(clipData))
+
+                    snackbarHostState.showSnackbar(message = effect.accompanyingText)
                 }
             }
         }
@@ -282,7 +290,6 @@ fun PaymentPreparationScreen(
                 }
             }
 
-
             Spacer(modifier = Modifier.height(spacing.mediumSeparation))
 
             Row(    // Complementary frame
@@ -416,5 +423,38 @@ fun PaymentPreparationScreen(
 
             }
         }
+
+        androidx.compose.material3.SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                // Adds space from the screen edge
+                .padding(bottom = 24.dp, start = 32.dp, end = 32.dp)
+        ) { snackbarData ->
+            androidx.compose.material3.Snackbar(
+                shape = androidx.compose.foundation.shape.RoundedCornerShape(24.dp), // Pill shape
+                containerColor = androidx.compose.ui.graphics.Color(0xFF1E1E1E),     // Soft, deep dark grey (not pure black)
+                contentColor = androidx.compose.ui.graphics.Color.White,            // Crisp white text
+                modifier = Modifier
+                    .wrapContentWidth(Alignment.CenterHorizontally)
+                    // Adds a very subtle minimalist border
+                    .border(
+                        width = 1.dp,
+                        color = androidx.compose.ui.graphics.Color.White.copy(alpha = 0.1f),
+                        shape = androidx.compose.foundation.shape.RoundedCornerShape(24.dp)
+                    )
+            ) {
+                androidx.compose.material3.Text(
+                    text = snackbarData.visuals.message,
+                    textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        // Tight padding for a sleek, compact height
+                        .padding(horizontal = 8.dp, vertical = 4.dp),
+                    style = androidx.compose.material3.MaterialTheme.typography.bodyMedium
+                )
+            }
+        }
+
     }
 }

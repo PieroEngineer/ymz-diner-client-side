@@ -66,7 +66,10 @@ class PaymentPreparationViewModel @Inject constructor(
         viewModelScope.launch {
             val currentPaymentInfoUi = paymentInfoUiState.value
             if (currentPaymentInfoUi is PaymentPreparationUiState.CheckIn) {
-                _effect.send(PaymentPreparationUiEvents.CopyToClipboard(currentPaymentInfoUi.restaurantInfo.phoneNumberToPay))
+                _effect.send(PaymentPreparationUiEvents.CopyToClipboard(
+                    copiedText = currentPaymentInfoUi.restaurantInfo.phoneNumberToPay,
+                    accompanyingText ="✅  El número del restaurante\nfue copiado"
+                ))
             }
         }
     }
