@@ -27,6 +27,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.yummiziapp.R
@@ -110,6 +111,7 @@ fun IntroScreen(
                         contentDescription = null,
                         contentScale = ContentScale.FillHeight,
                         modifier = Modifier
+                            .zIndex(1f)
                             .weight(1f)
                             .layout { measurable, constraints ->
                                 // 1. Measure the image normally based on its Column constraints
