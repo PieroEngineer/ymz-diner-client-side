@@ -27,26 +27,24 @@ class IntroViewModel @Inject constructor(
                 CarouselItemUiModel(
                     phrase = "Encuentra restaurantes cercanos",
                     imageId = R.drawable.restaurant_from_phone_image,
-                    isLast = false,
-                    attachedVideoUrl = null,
                 ),
                 CarouselItemUiModel(
                     phrase = "Selecciona tu orden",
                     imageId = R.drawable.discovering_dishes_image,
-                    isLast = false,
-                    attachedVideoUrl = null,
                 ),
                 CarouselItemUiModel(
                     phrase = "Preparación oportuna",
                     imageId = R.drawable.double_thinking_in_cooking__image,
-                    isLast = false,
-                    attachedVideoUrl = null,
+                ),
+                CarouselItemUiModel(
+                    phrase = "¡Yummizi les da la bienvenida!",
+                    imageId = R.drawable.yummizi_logo,
+                    isLast = true
                 )
             )
         )
     )
     val uiState: StateFlow<CarouselUiState> = _uiState.asStateFlow()
-
 
     fun onPageChanged(newIndex: Int) {
         _uiState.update { it.copy(activePageIndex = newIndex) }

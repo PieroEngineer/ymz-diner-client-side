@@ -78,7 +78,7 @@ fun IntroScreen(
                     .padding(top = spacing.regularPadding),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                if (!carouselItem.isLast && carouselItem.attachedVideoUrl == null){
+                if (!carouselItem.isLast){
                     Image(
                         painter = painterResource(R.drawable.yummizi_logo),
                         contentDescription = null,
@@ -88,9 +88,14 @@ fun IntroScreen(
                     )
                 }
 
-                Spacer(Modifier.height(spacing.regularPadding))
+                if(!carouselItem.isLast){
+                    Spacer(Modifier.height(spacing.regularPadding))
+                }
+                else{
+                    Spacer(Modifier.weight(1f))
+                }
 
-                if(carouselItem.attachedVideoUrl == null && carouselItem.imageId != null){
+                if(!carouselItem.isLast){
                     Image(
                         painter = painterResource(carouselItem.imageId),
                         contentDescription = null,
@@ -118,14 +123,17 @@ fun IntroScreen(
                     )
                 }
                 else{
-                    if (carouselItem.imageId != null){
-                        Log.e("MyActivity", "🚩The image shouldn't be null here")
-                    }
-
-                    ///✏️Show video
+                    Image(
+                        painter = painterResource(carouselItem.imageId),
+                        contentDescription = null,
+                        contentScale = ContentScale.FillHeight,
+                        modifier = Modifier
+                            .size(spacing.bigImageSize)
+                            .clip(RoundedCornerShape(spacing.mediumCornerRadius))
+                    )
                 }
 
-                if(carouselItem.isLast || carouselItem.attachedVideoUrl != null) Spacer(Modifier.height(spacing.regularPadding))
+                if(carouselItem.isLast) Spacer(Modifier.weight(1f))
 
                 Column(
                     modifier = Modifier
@@ -153,13 +161,13 @@ fun IntroScreen(
                                 .clip(
                                     RoundedCornerShape(spacing.smallCornerRadius)
                                 )
-                                .background(YummiziTheme.colors.yummiziBlue)
+                                .background(YummiziTheme.colors.yummiziLightOrange)
                                 .clickable {
                                     // TODO
                                 }
                         ){
                             Text(
-                                text = "Continuar",
+                                text = "Empezar",
                                 textAlign = TextAlign.Center,
                                 color = YummiziTheme.colors.yummiziWhite,
                                 style = YummiziTheme.typography.teacherFontVar1,

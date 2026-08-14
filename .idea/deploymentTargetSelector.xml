@@ -6,10 +6,6 @@
         <option name="selectionMode" value="DROPDOWN" />
         <DialogSelection />
       </SelectionState>
-      <SelectionState runConfigName="QueueConfirmationModal">
-        <option name="selectionMode" value="DROPDOWN" />
-        <DialogSelection />
-      </SelectionState>
       <SelectionState runConfigName="AcceptanceConfirmationModal">
         <option name="selectionMode" value="DROPDOWN" />
         <DialogSelection />
