@@ -24,7 +24,7 @@ interface LoggedUserDao {
     fun observeLoggedUser(id: Uuid): Flow<LoggedUser?>
 
     @Query("SELECT id FROM logged_user LIMIT 1")
-    suspend fun getCurrentUserId(): Uuid?
+    suspend fun getCurrentUserId(): Uuid?   // TODO: This is replaced by the function of cognito
 
     @Query("SELECT * FROM logged_user WHERE id = :id")
     suspend fun getUser(id: Uuid?): LoggedUser?

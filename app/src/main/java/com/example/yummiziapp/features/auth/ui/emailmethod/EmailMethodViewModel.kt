@@ -11,11 +11,13 @@ import com.example.yummiziapp.features.auth.domain.model.AuthResult
 import com.example.yummiziapp.features.auth.domain.repository.AuthRepository
 import com.example.yummiziapp.features.auth.ui.model.UserInfoTab
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -25,6 +27,9 @@ import javax.inject.Inject
 class EmailMethodViewModel @Inject constructor(
     private val authRepository: AuthRepository
 ) : ViewModel() {
+
+    private val _effect = Channel<EmailMethodUiEvent>(Channel.BUFFERED)
+    val navEffect = _effect.receiveAsFlow()
 
     private val _isSigningIn = MutableStateFlow(true)
     private val _formUiState = MutableStateFlow(FormUiModel())
@@ -50,27 +55,32 @@ class EmailMethodViewModel @Inject constructor(
 
     fun onCreateAccountClicked() {
         viewModelScope.launch {
-            _isLoading.update { true }
 
             if(_isSigningIn.value){
                 _isSigningIn.update { false }
             }
             else{
+                _isLoading.update { true }
+
                 val state = _formUiState.value
                 if(!state.username.isUsernameValid()){  /// Maybe pass these errors to the Erro state of "EmailMethodUiState"
                     _formUiState.update { it.copy(formIssueText = "El nombre de usuario debe tener al menos 4 caracteres.") }
+                    _isLoading.update { false }
                     return@launch
                 }
                 if(!state.email.isEmailValid()){
                     _formUiState.update { it.copy(formIssueText = "Por favor, ingrese un correo electrónico válido.") }
+                    _isLoading.update { false }
                     return@launch
                 }
                 if(!state.password.isPasswordValid()){
                     _formUiState.update { it.copy(formIssueText = "La contraseña debe tener al menos 6 caracteres.") }
+                    _isLoading.update { false }
                     return@launch
                 }
                 if(!state.acceptTerms){
                     _formUiState.update { it.copy(formIssueText = "Por favor, es necesario aceptar los términos y condiciones para continuar.") }
+                    _isLoading.update { false }
                     return@launch
                 }
 
@@ -81,22 +91,21 @@ class EmailMethodViewModel @Inject constructor(
                 if(signUpResult is AuthResult.Success){
                     val signInResult = authRepository.signIn(state.email, state.password)
                     if(signInResult is AuthResult.Success){
-                        ///✏️Navigate to Intro
+                        _effect.send(EmailMethodUiEvent.NavigateToIntro)
                     }
                     else{
                         signInResult as AuthResult.Error
-                        _formUiState.update { it.copy(formIssueText = "La autenticación falló (${signInResult.message})") }
+                        _formUiState.update { it.copy(formIssueText = "Se creó la cuenta con éxito,\npero la autenticación falló (${signInResult.message})") }
+                        _isLoading.update { false }
                     }
                 }
                 else{
                     signUpResult as AuthResult.Error
                     _formUiState.update { it.copy(formIssueText = "La creación de cuenta falló (${signUpResult.message})") }
+                    _isLoading.update { false }
                 }
-
             }
-
         }
-
     }
 
     fun onTermsCheckBoxClicked(){
@@ -111,24 +120,22 @@ class EmailMethodViewModel @Inject constructor(
             val state = _formUiState.value
             if(!state.email.isEmailValid()){
                 _formUiState.update { it.copy(formIssueText = "Por favor, ingrese un correo electrónico válido.") }
+                _isLoading.update { false }
                 return@launch
             }
 
             _formUiState.update { it.copy(formIssueText = null) }
-            Log.d("MyActivity", "Access to the account is valid")
-
 
             val result = authRepository.signIn(state.email, state.password)
             if(result is AuthResult.Success){
-                ///✏️Navigate to home
+                _effect.send(EmailMethodUiEvent.NavigateToHome)
             }
             else{
                 result as AuthResult.Error
                 _formUiState.update { it.copy(formIssueText = "La autenticación falló (${result.message})") }
+                _isLoading.update { false }
             }
         }
-
-
     }
 
     fun onFormTextModified(newText: String, userInfoTab: UserInfoTab) {

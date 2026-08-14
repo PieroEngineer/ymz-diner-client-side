@@ -43,6 +43,7 @@ fun ProfileScreen(
     modifier: Modifier = Modifier,
     onHomeNavigation: () -> Unit = {},
     onContactNavigation: () -> Unit = {},
+    onLoginNavigation: () -> Unit = {},
 
     viewModel: ProfileViewModel = hiltViewModel()
 ){
@@ -53,6 +54,7 @@ fun ProfileScreen(
             when(effect) {
                 is ProfileUiEvent.NavigateToHome -> { onHomeNavigation() }
                 is ProfileUiEvent.NavigateToContact -> { onContactNavigation() }
+                is ProfileUiEvent.NavigateToLogin -> { onLoginNavigation() }
             }
         }
     }
@@ -237,7 +239,7 @@ fun ProfileScreen(
                 )
                 .background(YummiziTheme.colors.yummiziGray)
                 .clickable {
-                    viewModel.onLogoutClicked()
+//                    viewModel.onLogoutClicked()
                 }
         ){
             Text(
