@@ -231,6 +231,7 @@ fun ProfileScreen(
 
         }
 
+        // TODO (#502): Include an if statement to toggle between loading and not loading
         Box(
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
@@ -239,7 +240,7 @@ fun ProfileScreen(
                 )
                 .background(YummiziTheme.colors.yummiziGray)
                 .clickable {
-//                    viewModel.onLogoutClicked()
+                    viewModel.onLogoutClicked()
                 }
         ){
             Text(

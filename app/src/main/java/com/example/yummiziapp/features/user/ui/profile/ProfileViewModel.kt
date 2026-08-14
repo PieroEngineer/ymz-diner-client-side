@@ -30,7 +30,7 @@ class ProfileViewModel @Inject constructor(
 
     fun onLogoutClicked(){
         viewModelScope.launch {
-            // TODO: Update the state to loading immediately
+            // TODO (#502): Update the state to loading immediately
 
             authRepository.signOut()
 
