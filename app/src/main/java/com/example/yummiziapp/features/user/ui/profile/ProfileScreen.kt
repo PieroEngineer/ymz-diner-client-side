@@ -229,6 +229,29 @@ fun ProfileScreen(
 
         }
 
+        Box(
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .clip(
+                    RoundedCornerShape(spacing.smallCornerRadius)
+                )
+                .background(YummiziTheme.colors.yummiziGray)
+                .clickable {
+                    viewModel.onLogoutClicked()
+                }
+        ){
+            Text(
+                text = "Salir de cuenta",
+                textAlign = TextAlign.Center,
+                color = YummiziTheme.colors.yummiziWhite,
+                style = YummiziTheme.typography.teacherFontVar1,
+                modifier = Modifier
+                    .padding(horizontal = spacing.regularPadding)
+                    .padding(vertical = spacing.mediumPadding)
+                    .align(Alignment.Center)
+            )
+        }
+
         Spacer(Modifier.weight(1f))
 
         NavigationBar(

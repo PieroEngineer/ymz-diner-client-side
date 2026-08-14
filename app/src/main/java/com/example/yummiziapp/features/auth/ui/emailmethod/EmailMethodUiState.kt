@@ -5,7 +5,6 @@ import com.example.yummiziapp.features.auth.ui.model.SignUpUiModel
 
 sealed interface EmailMethodUiState {
     data object Loading : EmailMethodUiState
-    data class SignIn(val userInfo: SignInUiModel) : EmailMethodUiState
-    data class SignUp(val userInfo: SignUpUiModel) : EmailMethodUiState
+    data class InForm( val formState: FormUiModel, val isSigningIn: Boolean): EmailMethodUiState
     data class Error(val exception: Throwable) : EmailMethodUiState
 }

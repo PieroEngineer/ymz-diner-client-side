@@ -18,11 +18,17 @@ class AuthRepositoryImpl @Inject constructor() : AuthRepository {
      * AWS Cognito uses attribute keys for Standard Attributes (Email, Phone).
      * The `username` parameter acts as the primary record identifier in the pool.
      */
-    override suspend fun signUp(signUpData: SignUpData): AuthResult<Boolean> {
+    override suspend fun signUp( username: String, email: String/*, phoneNumber*/, password: String): AuthResult<Boolean> {
+        val signUpData = SignUpData(
+            username = username,
+            email = email,
+            password = password
+        )
+
         return try {
             val options = AuthSignUpOptions.builder()
                 .userAttribute(AuthUserAttributeKey.email(), signUpData.email)
-                .userAttribute(AuthUserAttributeKey.phoneNumber(), signUpData.phoneNumber)
+//                .userAttribute(AuthUserAttributeKey.phoneNumber(), signUpData.phoneNumber)
                 .build()
 
             val result = Amplify.Auth.signUp(

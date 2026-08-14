@@ -51,8 +51,7 @@ fun EmailMethodScreen(
 ){
     val spacing = YummiziTheme.spacing
 
-    val isSigningIn by viewModel.isSigningIn.collectAsStateWithLifecycle()
-    val formUiState by viewModel.formUiState.collectAsStateWithLifecycle()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     var isReadingTerms by rememberSaveable { mutableStateOf(false) }
 
@@ -87,12 +86,23 @@ fun EmailMethodScreen(
 
             Spacer(Modifier.height(spacing.regularSeparation))
 
-            Text(
-                text = if(isSigningIn) "¡Iniciando sesión!" else "¡Creando cuenta!",
-                color = YummiziTheme.colors.yummiziWhite,
-                textAlign = TextAlign.Center,
-                style = YummiziTheme.typography.leaguespartanFontVar6
-            )
+            when(val state = uiState){
+                is EmailMethodUiState.Loading -> {
+                    // TODO
+                }
+                is EmailMethodUiState.InForm -> {
+                    Text(
+                        text = if(state.isSigningIn) "¡Iniciando sesión!" else "¡Creando cuenta!",
+                        color = YummiziTheme.colors.yummiziWhite,
+                        textAlign = TextAlign.Center,
+                        style = YummiziTheme.typography.leaguespartanFontVar6
+                    )
+                }
+                is EmailMethodUiState.Error -> {
+                    // TODO
+                }
+            }
+
 
             Spacer(Modifier.height(spacing.hugeSeparation))
 
@@ -106,191 +116,211 @@ fun EmailMethodScreen(
                     .padding(spacing.regularPadding)
             ){
 
-                if(!isSigningIn){   // TODO: Include the phone number
-                    Text(
-                        text = "Nombre de usuario:",
-                        color = YummiziTheme.colors.yummiziBlack,
-                        style = YummiziTheme.typography.teacherFontVar2
-                    )
-
-                    Spacer(Modifier.height(spacing.smallSeparation))
-
-                    YummiziTextField(
-                        modifier = Modifier
-                            .fillMaxWidth(),
-
-                        hintText = "e.g Pablo Perez",
-                        minLines = 1,
-                        backgroundColor = YummiziTheme.colors.yummiziGray3,
-                        textStyle = YummiziTheme.typography.comfortaaFontVar4,
-
-                        value = formUiState.username,
-                        onValueChange = { viewModel.onFormTextModified(it, UserInfoTab.USERNAME) }
-                    )
-
-                    Spacer(Modifier.height(spacing.regularSeparation))
-                }
-
-
-                Text(
-                    text = "Correo:",
-                    color = YummiziTheme.colors.yummiziBlack,
-                    style = YummiziTheme.typography.teacherFontVar2
-                )
-
-                Spacer(Modifier.height(spacing.smallSeparation))
-
-                YummiziTextField(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-
-                    hintText = "e.g pabloperez@algúnCorreo.com",
-                    minLines = 1,
-                    backgroundColor = YummiziTheme.colors.yummiziGray3,
-                    textStyle = YummiziTheme.typography.comfortaaFontVar4,
-
-                    value = formUiState.email,
-                    onValueChange = {
-                        viewModel.onFormTextModified(it, UserInfoTab.EMAIL)
-                    }
-                )
-
-                Spacer(Modifier.height(spacing.regularSeparation))
-
-                Text(
-                    text = "Contraseña:",
-                    color = YummiziTheme.colors.yummiziBlack,
-                    style = YummiziTheme.typography.teacherFontVar2
-                )
-
-                Spacer(Modifier.height(spacing.smallSeparation))
-
-                YummiziTextField(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-
-                    hintText = "e.g MakisLover321",
-                    minLines = 1,
-                    backgroundColor = YummiziTheme.colors.yummiziGray3,
-                    textStyle = YummiziTheme.typography.comfortaaFontVar4,
-
-                    value = formUiState.password,
-                    onValueChange = {
-                        viewModel.onFormTextModified(it, UserInfoTab.PASSWORD)
-                    }
-                )
-
-                Spacer(Modifier.height(spacing.regularSeparation))
-
-                if(!isSigningIn){
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ){
-                        Box(
-                            modifier = Modifier
-                                .size(spacing.smallIconSize)
-                                .aspectRatio(1f)
-                                .clip(RoundedCornerShape(spacing.tinyCornerRadius))
-                                .background(if (formUiState.acceptTerms) YummiziTheme.colors.yummiziLightOrange else YummiziTheme.colors.yummiziGray)
-                                .clickable{ viewModel.onTermsCheckBoxClicked() },
-
-                            )
-
-                        Spacer(Modifier.width(spacing.mediumSeparation))
-
+                when(val state = uiState){
+                    is EmailMethodUiState.Loading -> {
                         Text(
-                            text = "Acepto los ",
+                            text = "Cargando...",
                             color = YummiziTheme.colors.yummiziBlack,
-                            style = YummiziTheme.typography.teacherFontVar3
-                        )
-
-                        ///Linked text (orange and with underline)
-                        Text(
-                            text = "Términos y Condiciones",
-                            color = YummiziTheme.colors.yummiziLightOrange,
-                            style = YummiziTheme.typography.teacherFontVar3,
-                            textDecoration = TextDecoration.Underline,
-                            modifier = Modifier
-                                .clickable { isReadingTerms = true }
-                        )
-                    }
-                }
-
-                if(formUiState.formIssueText != null){
-                    Spacer(Modifier.height(spacing.smallSeparation))
-
-                    Text(
-                        text = formUiState.formIssueText?: "",
-                        color = YummiziTheme.colors.yummiziRed,
-                        style = YummiziTheme.typography.teacherFontVar3
-                    )
-                }
-
-                Spacer(Modifier.height(spacing.bigSeparation))
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(spacing.sideLength),
-                    verticalAlignment = Alignment.CenterVertically
-                ){
-                    Spacer(Modifier.weight(1f))
-
-                    Box(
-                        modifier = Modifier
-                            .fillMaxHeight()
-                            .clip(
-                                RoundedCornerShape(50)
-                            )
-                            .background(YummiziTheme.colors.yummiziLightOrange)
-                            .clickable {
-                                viewModel.onCreateAccountClicked()
-                            }
-
-                    ){
-                        Text(
-                            text = "Crear\ncuenta",
-                            textAlign = TextAlign.Center,
-                            color = YummiziTheme.colors.yummiziWhite,
-                            style = YummiziTheme.typography.teacherFontVar2,
-                            modifier = Modifier
-                                .padding(horizontal = spacing.bigPadding)
-                                .padding(vertical = spacing.mediumPadding)
-                                .align(Alignment.Center)
+                            style = YummiziTheme.typography.teacherFontVar2
                         )
                     }
 
-                    Spacer(Modifier.weight(1f))
-
-                    if(isSigningIn){
-                        Box(
-                            modifier = Modifier
-                                .fillMaxHeight()
-                                .clip(
-                                    RoundedCornerShape(50)
-                                )
-                                .background(YummiziTheme.colors.yummiziLightOrange)
-                                .clickable {
-                                    viewModel.onAccessAccountClicked()
-                                }
-
-                        ){
+                    is EmailMethodUiState.InForm -> {
+                        if(!state.isSigningIn){   // TODO: Include the phone number
                             Text(
-                                text = "Acceder",
-                                textAlign = TextAlign.Center,
-                                color = YummiziTheme.colors.yummiziWhite,
-                                style = YummiziTheme.typography.teacherFontVar2,
+                                text = "Nombre de usuario:",
+                                color = YummiziTheme.colors.yummiziBlack,
+                                style = YummiziTheme.typography.teacherFontVar2
+                            )
+
+                            Spacer(Modifier.height(spacing.smallSeparation))
+
+                            YummiziTextField(
                                 modifier = Modifier
-                                    .padding(horizontal = spacing.bigPadding)
-                                    .padding(vertical = spacing.mediumPadding)
-                                    .align(Alignment.Center)
+                                    .fillMaxWidth(),
+
+                                hintText = "e.g Pablo Perez",
+                                minLines = 1,
+                                backgroundColor = YummiziTheme.colors.yummiziGray3,
+                                textStyle = YummiziTheme.typography.comfortaaFontVar4,
+
+                                value = state.formState.username,
+                                onValueChange = { viewModel.onFormTextModified(it, UserInfoTab.USERNAME) }
+                            )
+
+                            Spacer(Modifier.height(spacing.regularSeparation))
+                        }
+
+
+                        Text(
+                            text = "Correo:",
+                            color = YummiziTheme.colors.yummiziBlack,
+                            style = YummiziTheme.typography.teacherFontVar2
+                        )
+
+                        Spacer(Modifier.height(spacing.smallSeparation))
+
+                        YummiziTextField(
+                            modifier = Modifier
+                                .fillMaxWidth(),
+
+                            hintText = "e.g pabloperez@algúnCorreo.com",
+                            minLines = 1,
+                            backgroundColor = YummiziTheme.colors.yummiziGray3,
+                            textStyle = YummiziTheme.typography.comfortaaFontVar4,
+
+                            value = state.formState.email,
+                            onValueChange = {
+                                viewModel.onFormTextModified(it, UserInfoTab.EMAIL)
+                            }
+                        )
+
+                        Spacer(Modifier.height(spacing.regularSeparation))
+
+                        Text(
+                            text = "Contraseña:",
+                            color = YummiziTheme.colors.yummiziBlack,
+                            style = YummiziTheme.typography.teacherFontVar2
+                        )
+
+                        Spacer(Modifier.height(spacing.smallSeparation))
+
+                        YummiziTextField(
+                            modifier = Modifier
+                                .fillMaxWidth(),
+
+                            hintText = "e.g MakisLover321",
+                            minLines = 1,
+                            backgroundColor = YummiziTheme.colors.yummiziGray3,
+                            textStyle = YummiziTheme.typography.comfortaaFontVar4,
+
+                            value = state.formState.password,
+                            onValueChange = {
+                                viewModel.onFormTextModified(it, UserInfoTab.PASSWORD)
+                            }
+                        )
+
+                        Spacer(Modifier.height(spacing.regularSeparation))
+
+                        if(!state.isSigningIn){
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
+                            ){
+                                Box(
+                                    modifier = Modifier
+                                        .size(spacing.smallIconSize)
+                                        .aspectRatio(1f)
+                                        .clip(RoundedCornerShape(spacing.tinyCornerRadius))
+                                        .background(if (state.formState.acceptTerms) YummiziTheme.colors.yummiziLightOrange else YummiziTheme.colors.yummiziGray)
+                                        .clickable{ viewModel.onTermsCheckBoxClicked() },
+
+                                    )
+
+                                Spacer(Modifier.width(spacing.mediumSeparation))
+
+                                Text(
+                                    text = "Acepto los ",
+                                    color = YummiziTheme.colors.yummiziBlack,
+                                    style = YummiziTheme.typography.teacherFontVar3
+                                )
+
+                                ///Linked text (orange and with underline)
+                                Text(
+                                    text = "Términos y Condiciones",
+                                    color = YummiziTheme.colors.yummiziLightOrange,
+                                    style = YummiziTheme.typography.teacherFontVar3,
+                                    textDecoration = TextDecoration.Underline,
+                                    modifier = Modifier
+                                        .clickable { isReadingTerms = true }
+                                )
+                            }
+                        }
+
+                        if(state.formState.formIssueText != null){
+                            Spacer(Modifier.height(spacing.smallSeparation))
+
+                            Text(
+                                text = state.formState.formIssueText?: "",
+                                color = YummiziTheme.colors.yummiziRed,
+                                style = YummiziTheme.typography.teacherFontVar3
                             )
                         }
 
-                        Spacer(Modifier.weight(1f))
+                        Spacer(Modifier.height(spacing.bigSeparation))
+
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(spacing.sideLength),
+                            verticalAlignment = Alignment.CenterVertically
+                        ){
+                            Spacer(Modifier.weight(1f))
+
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxHeight()
+                                    .clip(
+                                        RoundedCornerShape(50)
+                                    )
+                                    .background(YummiziTheme.colors.yummiziLightOrange)
+                                    .clickable {
+                                        viewModel.onCreateAccountClicked()
+                                    }
+
+                            ){
+                                Text(
+                                    text = "Crear\ncuenta",
+                                    textAlign = TextAlign.Center,
+                                    color = YummiziTheme.colors.yummiziWhite,
+                                    style = YummiziTheme.typography.teacherFontVar2,
+                                    modifier = Modifier
+                                        .padding(horizontal = spacing.bigPadding)
+                                        .padding(vertical = spacing.mediumPadding)
+                                        .align(Alignment.Center)
+                                )
+                            }
+
+                            Spacer(Modifier.weight(1f))
+
+                            if(state.isSigningIn){
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxHeight()
+                                        .clip(
+                                            RoundedCornerShape(50)
+                                        )
+                                        .background(YummiziTheme.colors.yummiziLightOrange)
+                                        .clickable {
+                                            viewModel.onAccessAccountClicked()
+                                        }
+
+                                ){
+                                    Text(
+                                        text = "Acceder",
+                                        textAlign = TextAlign.Center,
+                                        color = YummiziTheme.colors.yummiziWhite,
+                                        style = YummiziTheme.typography.teacherFontVar2,
+                                        modifier = Modifier
+                                            .padding(horizontal = spacing.bigPadding)
+                                            .padding(vertical = spacing.mediumPadding)
+                                            .align(Alignment.Center)
+                                    )
+                                }
+
+                                Spacer(Modifier.weight(1f))
+                            }
+
+                        }
+
+                    }
+
+                    is EmailMethodUiState.Error -> {
+                        // TODO
                     }
 
                 }
+
+
             }
         }
 

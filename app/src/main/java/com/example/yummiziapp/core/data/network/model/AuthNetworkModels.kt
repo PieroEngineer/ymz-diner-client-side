@@ -7,6 +7,6 @@ package com.example.yummiziapp.core.data.network.model
 data class SignUpData(
     val username: String,
     val email: String,
-    val phoneNumber: String, /// Must follow E.164 format (e.g., +11234567890) for Cognito
+//TODO:    val phoneNumber: String, /// Must follow E.164 format (e.g., +11234567890) for Cognito
     val password: String
 )
