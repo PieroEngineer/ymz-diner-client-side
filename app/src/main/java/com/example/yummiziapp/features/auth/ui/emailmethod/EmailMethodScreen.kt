@@ -21,6 +21,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -47,8 +48,21 @@ import com.example.yummiziapp.features.auth.ui.model.UserInfoTab
 fun EmailMethodScreen(
     modifier: Modifier = Modifier,
 
+    onHomeNavigation: () -> Unit,
+    onIntroNavigation: () -> Unit,
+
     viewModel: EmailMethodViewModel = hiltViewModel()
 ){
+
+    LaunchedEffect(Unit) {
+        viewModel.navEffect.collect { effect ->
+            when (effect) {
+                is EmailMethodUiEvent.NavigateToHome -> { onHomeNavigation() }
+                is EmailMethodUiEvent.NavigateToIntro -> { onIntroNavigation() }
+            }
+        }
+    }
+
     val spacing = YummiziTheme.spacing
 
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()

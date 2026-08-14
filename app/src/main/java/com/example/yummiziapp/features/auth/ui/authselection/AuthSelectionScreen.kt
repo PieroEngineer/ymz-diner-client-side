@@ -45,6 +45,8 @@ fun AuthSelectionScreen(
 
     onEmailAuthClicked: () -> Unit,
 
+    onHomeNavigation: () -> Unit,
+
     viewModel: AuthSelectionViewModel = hiltViewModel()
 ){
 
@@ -54,7 +56,7 @@ fun AuthSelectionScreen(
         viewModel.navEffect.collect { effect ->
             when (effect) {
                 is AuthSelectionUiEvents.NavigateToEmailLogin -> { onEmailAuthClicked() }
-                else -> {}
+                is AuthSelectionUiEvents.NavigateToHome -> { onHomeNavigation() }
             }
         }
     }

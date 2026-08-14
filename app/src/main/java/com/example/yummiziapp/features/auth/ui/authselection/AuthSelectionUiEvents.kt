@@ -1,7 +1,7 @@
 package com.example.yummiziapp.features.auth.ui.authselection
 
-sealed interface AuthSelectionUiEvents {
+sealed interface AuthSelectionUiEvents {    /// Perhaps also include the intro for users that come back after a long time
     data object NavigateToEmailLogin : AuthSelectionUiEvents
     data object NavigateToHome : AuthSelectionUiEvents
-    data class ShowToast(val message: String) : AuthSelectionUiEvents
+//    data class ShowToast(val message: String) : AuthSelectionUiEvents
 }

@@ -34,13 +34,24 @@ fun YummiziNavHost(
                 modifier = modifier,
                 onEmailAuthClicked = {
                     navController.navigate(YummiziRoute.EmailMethodLogin)
+                },
+                onHomeNavigation = {
+                    navController.navigate(YummiziRoute.Home)
                 }
             )
         }
 
         composable<YummiziRoute.EmailMethodLogin> {
             EmailMethodScreen(
-                modifier = modifier
+                modifier = modifier,
+                onHomeNavigation = {
+                    navController.navigate(YummiziRoute.Home)
+                },
+                onIntroNavigation = {
+//                    navController.navigate(YummiziRoute.Intro)
+
+                }
+
                 // TODO: Add the function to go back stack
             )
         }
