@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -24,7 +23,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.dropShadow
 import androidx.compose.ui.graphics.Brush
 //import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -190,7 +188,7 @@ fun ProfileScreen(
                         ownImageId = R.drawable.save_button,
                         ownText = "A tu estilo",
                         textColor = YummiziTheme.colors.yummiziLightOrange,
-                        iconColor = YummiziTheme.colors.yummiziLightBlue2,
+                        iconColor = YummiziTheme.colors.yummiziBlue2,
                         textStyle = YummiziTheme.typography.teacherFontVar5
 
                     )
@@ -209,7 +207,7 @@ fun ProfileScreen(
                         ownImageId = R.drawable.timing_icon,
                         ownText = "Historia",
                         textColor = YummiziTheme.colors.yummiziLightOrange,
-                        iconColor = YummiziTheme.colors.yummiziLightBlue2,
+                        iconColor = YummiziTheme.colors.yummiziBlue2,
                         textStyle = YummiziTheme.typography.teacherFontVar5
                     )
                 }

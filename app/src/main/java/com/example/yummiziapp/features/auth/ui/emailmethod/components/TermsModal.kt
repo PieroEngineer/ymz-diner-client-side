@@ -28,10 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.style.TextAlign
-import com.example.yummiziapp.core.data.local.model.FeedbackLevelToken
 import com.example.yummiziapp.core.designsystem.theme.YummiziTheme
-import com.example.yummiziapp.core.ui.components.ConformitySelector
-import com.example.yummiziapp.core.ui.components.YummiziTextField
 
 @Composable
 fun TermsModal(
@@ -238,7 +235,7 @@ fun TermsModal(
                         .clip(
                             RoundedCornerShape(spacing.smallCornerRadius)
                         )
-                        .background(YummiziTheme.colors.yummiziLightBlue)
+                        .background(YummiziTheme.colors.yummiziBlue)
                         .clickable {
                             onDismissRequest()
                         }

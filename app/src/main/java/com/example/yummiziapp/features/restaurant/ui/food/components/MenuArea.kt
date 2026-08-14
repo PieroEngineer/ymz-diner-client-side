@@ -7,7 +7,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -22,7 +21,7 @@ import com.example.yummiziapp.core.designsystem.theme.YummiziTheme
 import com.example.yummiziapp.features.restaurant.ui.model.MenuUiModel
 import kotlin.uuid.Uuid
 import com.example.yummiziapp.R
-import com.example.yummiziapp.features.restaurant.ui.components.PageIndicator
+import com.example.yummiziapp.core.ui.components.PageIndicator
 
 @Composable
 fun MenuArea(

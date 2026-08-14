@@ -120,7 +120,7 @@ fun DirectAnswerModal(
                         .clip(
                             RoundedCornerShape(spacing.smallCornerRadius)
                         )
-                        .background(YummiziTheme.colors.yummiziLightBlue)
+                        .background(YummiziTheme.colors.yummiziBlue)
                         .clickable {
                             onOk()
                         }

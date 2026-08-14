@@ -28,7 +28,6 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.style.TextAlign
 import com.example.yummiziapp.core.data.local.model.FeedbackLevelToken
 import com.example.yummiziapp.core.designsystem.theme.YummiziTheme
-import com.example.yummiziapp.features.contact.ui.model.FeedbackUiModel
 
 @Composable
 fun FeedbackModal(
@@ -139,7 +138,7 @@ fun FeedbackModal(
                         .clip(
                             RoundedCornerShape(spacing.smallCornerRadius)
                         )
-                        .background(YummiziTheme.colors.yummiziLightBlue)
+                        .background(YummiziTheme.colors.yummiziBlue)
                         .clickable {
                             onSend()
                         }

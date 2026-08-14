@@ -20,10 +20,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.yummiziapp.core.designsystem.theme.YummiziTheme
 import com.example.yummiziapp.core.ui.components.NavigationBar
 import com.example.yummiziapp.core.ui.components.SearchingArea
-import com.example.yummiziapp.features.home.ui.feed.HomeUiEvents
 import com.example.yummiziapp.features.restaurant.ui.preview.components.ControlBar
 import com.example.yummiziapp.features.restaurant.ui.preview.components.MenuViewer
-import com.example.yummiziapp.features.restaurant.ui.components.PageIndicator
+import com.example.yummiziapp.core.ui.components.PageIndicator
 import kotlin.uuid.Uuid
 
 

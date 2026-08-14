@@ -23,7 +23,7 @@ fun ConfirmationButton(
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(YummiziTheme.spacing.smallCornerRadius))
-            .background(YummiziTheme.colors.yummiziLightBlue)
+            .background(YummiziTheme.colors.yummiziBlue)
             .clickable { onClick() }
             .padding(horizontal = YummiziTheme.spacing.regularPadding, vertical = YummiziTheme.spacing.mediumPadding),
         contentAlignment = Alignment.Center

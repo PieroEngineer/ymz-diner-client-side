@@ -247,7 +247,7 @@ fun FoodSelectionScreen(    // TODO: Correct the prop-drilling of this and other
                             .clip(
                                 RoundedCornerShape(spacing.mediumCornerRadius)
                             )
-                            .background(YummiziTheme.colors.yummiziLightBlue)
+                            .background(YummiziTheme.colors.yummiziBlue)
                             .clickable {
                                 viewModel.confirmOrder()
                             }

@@ -52,7 +52,7 @@ fun FoodSelectionBlock(
         Spacer(Modifier.weight(5.9f))
 
         NumberSelector(
-            rowColor = YummiziTheme.colors.yummiziLightBlue2,
+            rowColor = YummiziTheme.colors.yummiziBlue2,
 
             indicatorNumber = foodSelection.amount,
             onNumberChanged = onUpdatingSelectionQuantityClicked

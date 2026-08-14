@@ -113,7 +113,7 @@ fun AcceptanceConfirmationModal(
 
                     Text(
                         text = "Las demás solicitudes de mesa se cancelarán",
-                        color = YummiziTheme.colors.yummiziLightBlue,
+                        color = YummiziTheme.colors.yummiziBlue,
                         style = YummiziTheme.typography.teacherFontVar6,
                         textAlign = TextAlign.Center
                     )

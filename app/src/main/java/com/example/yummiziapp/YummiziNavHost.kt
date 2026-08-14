@@ -10,6 +10,7 @@ import com.example.yummiziapp.features.auth.ui.emailmethod.EmailMethodScreen
 import com.example.yummiziapp.features.contact.ui.contact.ContactScreen
 import com.example.yummiziapp.features.navigation.YummiziRoute
 import com.example.yummiziapp.features.home.ui.feed.HomeScreen
+import com.example.yummiziapp.features.intro.ui.intro.IntroScreen
 import com.example.yummiziapp.features.payment.ui.arrival.ArrivalScreen
 import com.example.yummiziapp.features.payment.ui.checkin.PaymentPreparationScreen
 import com.example.yummiziapp.features.restaurant.ui.food.FoodSelectionScreen
@@ -25,8 +26,9 @@ fun YummiziNavHost(
 
     NavHost(
         navController = navController,
-        startDestination = YummiziRoute.Home, // 🛡️ Completely type-safe start node
+//        startDestination = YummiziRoute.Home, // 🛡️ Completely type-safe start node
 //        startDestination = YummiziRoute.AuthSelection
+        startDestination = YummiziRoute.Intro
     ) {
 
         composable<YummiziRoute.AuthSelection> {
@@ -50,6 +52,17 @@ fun YummiziNavHost(
                 onIntroNavigation = {
 //                    navController.navigate(YummiziRoute.Intro)
 
+                }
+
+                // TODO: Add the function to go back stack
+            )
+        }
+
+        composable<YummiziRoute.Intro> {
+            IntroScreen(
+                modifier = modifier,
+                onHomeNavigation = {
+                    navController.navigate(YummiziRoute.Home)
                 }
 
                 // TODO: Add the function to go back stack

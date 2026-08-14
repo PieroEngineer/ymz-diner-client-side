@@ -5,6 +5,7 @@ import kotlinx.serialization.Serializable
 sealed interface YummiziRoute {
     @Serializable data object EmailMethodLogin : YummiziRoute
     @Serializable data object AuthSelection : YummiziRoute
+    @Serializable data object Intro : YummiziRoute
     @Serializable data object Home : YummiziRoute
     @Serializable data class Specification(val restaurantId: String?) : YummiziRoute
     @Serializable data object Preferences : YummiziRoute

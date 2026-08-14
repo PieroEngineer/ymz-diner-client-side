@@ -1,4 +1,4 @@
-package com.example.yummiziapp.features.restaurant.ui.components
+package com.example.yummiziapp.core.ui.components
 
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDpAsState
@@ -19,13 +19,17 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import com.example.yummiziapp.core.designsystem.theme.YummiziTheme
 
 @Composable
 fun PageIndicator(
     modifier: Modifier = Modifier,
     pageCount: Int,
-    pagerState: PagerState
+    pagerState: PagerState,
+
+    activePointColor: Color = YummiziTheme.colors.yummiziDarkBlue,
+    inactivePointColor: Color = YummiziTheme.colors.yummiziGray
 ) {
     val spacing = YummiziTheme.spacing
     Row(
@@ -48,9 +52,9 @@ fun PageIndicator(
 
             // 4. Color Logic: Modify your colors here
             val color = if (isSelected) {
-                YummiziTheme.colors.yummiziDarkBlue
+                activePointColor
             } else {
-                YummiziTheme.colors.yummiziGray
+                inactivePointColor
             }
 
             Box(

@@ -244,7 +244,7 @@ class FoodSelectionViewModel @Inject constructor(   //TODO: Change the way of ho
                         it.coordinateYInMenu.toFloat()
                     )
                 },
-                dishIds = dishes.map { it.id }
+                dishIds = dishes.map { it.id }  /// Consider don't use lists, but UI models as parameters
             )
         }.sortedBy { it.page.pageNumber }
     }

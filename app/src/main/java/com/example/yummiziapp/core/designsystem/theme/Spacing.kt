@@ -49,7 +49,8 @@ data class YummiziSpacing (
     // Create for radius and offsets
 
     val barHeight: Dp = 60.dp,
-    val frameHeight: Dp = 200.dp
+    val frameHeight: Dp = 200.dp,
+    val bigBarHeight: Dp = 260.dp,
 
 )
 
