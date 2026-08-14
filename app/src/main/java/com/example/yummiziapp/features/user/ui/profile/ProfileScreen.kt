@@ -229,8 +229,6 @@ fun ProfileScreen(
 
         }
 
-
-
         Spacer(Modifier.weight(1f))
 
         NavigationBar(

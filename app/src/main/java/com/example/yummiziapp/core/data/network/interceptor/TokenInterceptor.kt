@@ -10,13 +10,24 @@ class TokenInterceptor @Inject constructor() : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val originalRequest = chain.request()
 
-        // Placeholder: Fetch your user session token here later
-        val token: String? = null
+        // Interceptor's intercept() runs synchronously on OkHttp's background thread pool.
+        // We use runBlocking here to safely suspend and wait for Amplify to return
+        // the cached JWT ID Token from local storage.
+        val token: String? = runBlocking {
+            try {
+                val session = Amplify.Auth.fetchAuthSession() as? AWSCognitoAuthSession
+                // idToken contains user claims (sub, email, custom attributes) used by backends
+                session?.userPoolTokensResult?.value?.idToken
+            } catch (e: Exception) {
+                null
+            }
+        }
 
         val requestBuilder = originalRequest.newBuilder()
             .header("Content-Type", "application/json")
             .header("Accept", "application/json")
 
+        // Injects token only if user is logged in
         if (!token.isNullOrBlank()) {
             requestBuilder.header("Authorization", "Bearer $token")
         }

@@ -66,7 +66,7 @@ class AuthRepositoryImpl @Inject constructor() : AuthRepository {
         }
     }
 
-    override suspend fun signOut(): AuthResult<Unit> {
+    override suspend fun signOut(): AuthResult<Unit> {  // TODO: Empty all tables
         return try {
             Amplify.Auth.signOut()
             AuthResult.Success(Unit)

@@ -420,8 +420,6 @@ fun PaymentPreparationScreen(
                         }
                     }
                 }
-
-
             }
         }
 

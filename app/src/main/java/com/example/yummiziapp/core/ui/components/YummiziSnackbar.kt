@@ -18,7 +18,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun YummiziSnackbar(
+fun YummiziSnackbar(    // TODO: Replace the hardcoded theme with the Yummizi's theme
     snackbarHostState: SnackbarHostState,
     modifier: Modifier = Modifier
 ) {
