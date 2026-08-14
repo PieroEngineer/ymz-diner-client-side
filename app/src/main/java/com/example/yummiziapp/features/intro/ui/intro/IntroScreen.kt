@@ -43,6 +43,15 @@ fun IntroScreen(
     onHomeNavigation: () -> Unit = {}
 ){
 
+    LaunchedEffect(Unit) {
+        viewModel.navEffect.collect { effect ->
+            when (effect) {
+                is IntroUiEvent.NavigateToHome -> onHomeNavigation()
+            }
+        }
+    }
+
+
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     val pagerState = rememberPagerState(
@@ -163,7 +172,7 @@ fun IntroScreen(
                                 )
                                 .background(YummiziTheme.colors.yummiziLightOrange)
                                 .clickable {
-                                    // TODO
+                                    viewModel.onIntroFinished()
                                 }
                         ){
                             Text(

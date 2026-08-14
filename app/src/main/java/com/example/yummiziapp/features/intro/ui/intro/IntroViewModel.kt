@@ -1,6 +1,7 @@
 package com.example.yummiziapp.features.intro.ui.intro
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.yummiziapp.features.intro.ui.model.CarouselItemUiModel
 import com.example.yummiziapp.features.intro.ui.model.CarouselUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -12,9 +13,10 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 import com.example.yummiziapp.R
+import kotlinx.coroutines.launch
 
 @HiltViewModel
-class IntroViewModel @Inject constructor(
+class IntroViewModel @Inject constructor(   // TODO: Consider to load the data home while the user is in this screen
 
 ) : ViewModel() {
 
@@ -49,5 +51,11 @@ class IntroViewModel @Inject constructor(
     fun onPageChanged(newIndex: Int) {
         _uiState.update { it.copy(activePageIndex = newIndex) }
         // Execute side-effects like pre-fetching next items or tracking analytics here
+    }
+
+    fun onIntroFinished(){
+        viewModelScope.launch {
+            _effect.send(IntroUiEvent.NavigateToHome)
+        }
     }
 }
