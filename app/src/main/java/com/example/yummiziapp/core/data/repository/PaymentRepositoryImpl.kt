@@ -115,6 +115,14 @@ class PaymentRepositoryImpl @Inject constructor(    // TODO: Change the name of 
 
         Log.d("MyActivity", "⏫  Payload of the request: $payload")
 
+
+        try{
+
+        }
+        catch (e: Exception){
+
+        }
+
         // POST the sendOrderReadyToBePaidDto with the api function "selectOrder"
         val response = yummiziApi.selectOrder(payload)
 
