@@ -38,9 +38,8 @@ class RequestRepositoryImpl @Inject constructor(
     override fun observeIfThereAreRequests() = requestDao.observeIfThereAreRequests()
     
     override suspend fun createQueueRequest(restaurantId: Uuid, arrivalTimeInMinutes: Int) = withContext(ioDispatcher) {   //TODO: later use this "...: Result<Unit> = withContext(ioDispatcher)" in others repo's methods and ask to gemini how to use it. It's better
-//        val userId = loggedUserDao.getCurrentUserId() ?: Uuid.parse("00000000-0000-4000-a000-000000000000")
 
-        val loggedUser = loggedUserDao.getUserSync(Uuid.parse("00000000-0000-4000-a000-000000000000"))
+        val loggedUser = loggedUserDao.getUser()
 
         if(loggedUser == null){
             Log.w("MyActivity", "🚩  User entity wasn't reached")
@@ -49,7 +48,7 @@ class RequestRepositoryImpl @Inject constructor(
 
         // 1. VALIDATION CHECK
         // We check the local DB first. It's the "Source of Truth" for the current UI state.
-        val isBlocked = requestDao.containsPendingRestaurant(loggedUser.id, restaurantId) //TODO: Avoid introducing user ID here because there is only one logged user per phone
+        val isBlocked = requestDao.containsPendingRestaurant(restaurantId) //TODO: Avoid introducing user ID here because there is only one logged user per phone
         if (isBlocked) {    //TODO: Show in some way that the restaurant already has a pending request for the restaurant
             Log.w("MyActivity", "🚫 Request blocked: User already has a QUEUED or PAID status at this restaurant.")
             ///return@withContext Result.failure(Exception("You already have an active session here."))
@@ -94,11 +93,10 @@ class RequestRepositoryImpl @Inject constructor(
     override suspend fun clearAll() = requestDao.clearAll() // TODO: This function should have a logic to use different API functions: A function when there is only one request, and another when there are more.
 
     override suspend fun leaveQueue(restaurantId: Uuid) = withContext(ioDispatcher) {
-        val userId = loggedUserDao.getCurrentUserId() ?: Uuid.parse("00000000-0000-4000-a000-000000000000")
 
         // 1. Fetch the existing request to know WHAT to delete and HOW to rollback
         // We need the requestId to tell the Cloud which specific record to kill.
-        val currentRequest = requestDao.getRequestByRestaurantAndUser(restaurantId, userId) ?: return@withContext
+        val currentRequest = requestDao.getRequestByRestaurantAndUser(restaurantId) ?: return@withContext
 
         try {
             // 2. OPTIMISTIC UPDATE: Remove from Local DB immediately
@@ -127,12 +125,12 @@ class RequestRepositoryImpl @Inject constructor(
     }
 
     override suspend fun confirmAcceptance(restaurantId: Uuid) = withContext(ioDispatcher) {
-        val userId = loggedUserDao.getCurrentUserId() ?: Uuid.parse("00000000-0000-4000-a000-000000000000")
+        val userId = loggedUserDao.getCurrentUserId() ?: throw IllegalStateException("No logged-in user found")
 
         //TODO: Check if the transition is valid (e.g. QUEUED -> ACCEPTED)
 
         // Fetch current and other requests for backup
-        val currentRequest = requestDao.getRequestByRestaurantAndUser(restaurantId, userId) ?: return@withContext   // TODO: Remove the user parameter from here because the user is always the same in the app
+        val currentRequest = requestDao.getRequestByRestaurantAndUser(restaurantId) ?: return@withContext
         val otherRequests = requestDao.getOtherRequests(currentRequest.requestId)
 
         try {

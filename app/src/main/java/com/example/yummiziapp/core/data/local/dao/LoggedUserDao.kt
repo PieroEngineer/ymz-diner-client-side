@@ -19,19 +19,22 @@ interface LoggedUserDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun saveUser(user: LoggedUser)
 
+    //X
+//    @Query("SELECT * FROM logged_user WHERE id = :id")
+//    fun observeLoggedUser(id: Uuid): Flow<LoggedUser?>
+
     // For the UI: Observe changes in real-time
-    @Query("SELECT * FROM logged_user WHERE id = :id")
-    fun observeLoggedUser(id: Uuid): Flow<LoggedUser?>
+    @Query("SELECT * FROM logged_user LIMIT 1")
+    fun observeLoggedUser(): Flow<LoggedUser?>
 
     @Query("SELECT id FROM logged_user LIMIT 1")
     suspend fun getCurrentUserId(): Uuid?   // TODO: This is replaced by the function of cognito
 
-    @Query("SELECT * FROM logged_user WHERE id = :id")
-    suspend fun getUser(id: Uuid?): LoggedUser?
+    @Query("SELECT * FROM logged_user LIMIT 1")
+    suspend fun getUser(): LoggedUser? // TODO: This is replaced by the function of cognito
 
-    // For Logic: Get a snapshot right now
-    @Query("SELECT * FROM logged_user WHERE id = :id")
-    suspend fun getUserSync(id: Uuid?): LoggedUser?
+    @Query("DELETE FROM logged_user")
+    suspend fun emptyUserTable()
 
     @Update
     suspend fun updateUser(user: LoggedUser)

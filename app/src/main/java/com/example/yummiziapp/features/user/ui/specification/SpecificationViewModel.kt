@@ -161,13 +161,13 @@ class SpecificationViewModel @Inject constructor(
         .observeCurrentUserInfo()
         .combine(
             requestRepository.observeIfThereAreRequests()
-        ){ details, thereIsSomeRequestActive ->
-            if (details == null) {
-                Log.w("MyActivity", "⚠️  Details are null")
+        ){ userInfo, thereIsSomeRequestActive ->
+            if (userInfo == null) {
+                Log.w("MyActivity", "⚠️  User details are null")
                 UserSpecificationUiState.Success( UserDetailsUiModel() )
             }
             else{
-                UserSpecificationUiState.Success(details.toUserDetailsUiModel(thereIsSomeRequestActive))
+                UserSpecificationUiState.Success(userInfo.toUserDetailsUiModel(thereIsSomeRequestActive))
             } as UserSpecificationUiState
         }
         .catch { e -> emit(UserSpecificationUiState.Error(e.message ?: "Unknown Error when trying to find user's details")) }

@@ -93,8 +93,7 @@ class PaymentRepositoryImpl @Inject constructor(    // TODO: Change the name of 
         val readyRequest = requestDao.getLatestReadyRequest()
             ?: throw IllegalStateException("No READY request found")
 
-        val loggedUser = loggedUserDao.getUser(Uuid.parse("00000000-0000-4000-a000-000000000000"))
-            ?: throw IllegalStateException("No logged user found")
+        val loggedUser = loggedUserDao.getUser() ?: throw IllegalStateException("No logged user found")
 
         val orderSelection = paymentDao.getOrderSelections()
         // Convert the list of "OrderSelection" into a list of "OrderSelectionDto"

@@ -17,7 +17,7 @@ interface UserRepository {
      * Mock method for development to seed the local database with a test user.
      * HINT: Replace this later with a real login flow.
      */
-    suspend fun seedMockUser(): Int
+    suspend fun seedUser()
 
     suspend fun savePreference(preference: Preference): Result<Unit>
 

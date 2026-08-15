@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlin.uuid.Uuid
 
 @Dao
-interface RestaurantDao {
+interface RestaurantDao {   // TODO: Remove the Uuid of their arguments because there is only one user
 
     @Query("DELETE FROM restaurants")
     suspend fun clearRestaurantsFromFeed()
@@ -26,57 +26,88 @@ interface RestaurantDao {
     @Query("SELECT * FROM restaurants WHERE id IN (:restaurantIds)")
     fun observeRestaurantsByIds(restaurantIds: List<Uuid>): Flow<List<Restaurant>>
 
+    //X
+//    @Query("""
+//        SELECT restaurants.*, requests.status as requestStatus
+//        FROM restaurants
+//        JOIN requests ON restaurants.id = requests.restaurantId
+//        WHERE requests.userId = :userId
+//        AND requests.status IN (:pendingStatuses)
+//        ORDER BY requests.localCreationTimestamp ASC
+//    """)
+//    fun observePendingRestaurantsWithStatus(
+//        userId: Uuid,
+//        pendingStatuses: List<RequestStatusToken> = listOf(RequestStatusToken.QUEUED, RequestStatusToken.ACCEPTED)
+//    ): Flow<List<RestaurantWithStatus>>
     @Query("""
         SELECT restaurants.*, requests.status as requestStatus 
         FROM restaurants 
         JOIN requests ON restaurants.id = requests.restaurantId 
-        WHERE requests.userId = :userId 
+        WHERE requests.userId = (SELECT id FROM logged_user LIMIT 1) 
         AND requests.status IN (:pendingStatuses)
         ORDER BY requests.localCreationTimestamp ASC
     """)
     fun observePendingRestaurantsWithStatus(
-        userId: Uuid,
         pendingStatuses: List<RequestStatusToken> = listOf(RequestStatusToken.QUEUED, RequestStatusToken.ACCEPTED)
     ): Flow<List<RestaurantWithStatus>>
 
-    @Query("""
-        SELECT 
-            restaurants.*, 
-            COALESCE(requests.status, 'IDLE') as requestStatus 
-        FROM restaurants 
-        LEFT JOIN requests ON restaurants.id = requests.restaurantId 
-            AND requests.userId = :userId
-        WHERE restaurants.id = :restaurantId
-        AND (requests.status IS NULL OR requests.status IN (:pendingStatuses))
-    """)
-    fun observePendingRestaurantWithStatusById(
-        userId: Uuid,
-        restaurantId: Uuid,
-        pendingStatuses: List<RequestStatusToken> = listOf(RequestStatusToken.QUEUED, RequestStatusToken.ACCEPTED)
-        ): Flow<RestaurantWithStatus?>    /// Should I include safety checks?
-
-//X
+    //X
 //    @Query("""
 //        SELECT
 //            restaurants.*,
 //            COALESCE(requests.status, 'IDLE') as requestStatus
 //        FROM restaurants
 //        LEFT JOIN requests ON restaurants.id = requests.restaurantId
-//        AND (requests.status IS NULL OR requests.status IN (:noPendingStatuses))
-//        LIMIT 1
+//            AND requests.userId = :userId
+//        WHERE restaurants.id = :restaurantId
+//        AND (requests.status IS NULL OR requests.status IN (:pendingStatuses))
 //    """)
+//    fun observePendingRestaurantWithStatusById(
+//        userId: Uuid,
+//        restaurantId: Uuid,
+//        pendingStatuses: List<RequestStatusToken> = listOf(RequestStatusToken.QUEUED, RequestStatusToken.ACCEPTED)
+//        ): Flow<RestaurantWithStatus?>    /// Should I include safety checks?
     @Query("""
-    SELECT 
-        restaurants.*, 
-        requests.status as requestStatus 
-    FROM restaurants 
-    JOIN requests ON restaurants.id = requests.restaurantId
-    WHERE requests.userId = :userId
-    AND requests.status IN (:noPendingStatuses)
-    LIMIT 1
-""")
-    fun observeNoPendingRestaurantWithStatus(   // TODO: Change the name of No pending
-        userId: Uuid,
+        SELECT 
+            restaurants.*, 
+            COALESCE(requests.status, 'IDLE') as requestStatus 
+        FROM restaurants 
+        LEFT JOIN requests ON restaurants.id = requests.restaurantId 
+            AND requests.userId = (SELECT id FROM logged_user LIMIT 1)
+        WHERE restaurants.id = :restaurantId
+        AND (requests.status IS NULL OR requests.status IN (:pendingStatuses))
+    """)
+    fun observePendingRestaurantWithStatusById(
+        restaurantId: Uuid,
+        pendingStatuses: List<RequestStatusToken> = listOf(RequestStatusToken.QUEUED, RequestStatusToken.ACCEPTED)
+    ): Flow<RestaurantWithStatus?>
+
+//X
+//    @Query("""
+//    SELECT
+//        restaurants.*,
+//        requests.status as requestStatus
+//    FROM restaurants
+//    JOIN requests ON restaurants.id = requests.restaurantId
+//    WHERE requests.userId = :userId
+//    AND requests.status IN (:noPendingStatuses)
+//    LIMIT 1
+//""")
+//    fun observeNoPendingRestaurantWithStatus(   // TODO: Change the name of No pending
+//        userId: Uuid,
+//        noPendingStatuses: List<RequestStatusToken> = listOf(RequestStatusToken.PAID, RequestStatusToken.READY)
+//    ): Flow<RestaurantWithStatus?>
+    @Query("""
+        SELECT 
+            restaurants.*, 
+            requests.status as requestStatus 
+        FROM restaurants 
+        JOIN requests ON restaurants.id = requests.restaurantId
+        WHERE requests.userId = (SELECT id FROM logged_user LIMIT 1)
+        AND requests.status IN (:noPendingStatuses)
+        LIMIT 1
+    """)
+    fun observeNoPendingRestaurantWithStatus(
         noPendingStatuses: List<RequestStatusToken> = listOf(RequestStatusToken.PAID, RequestStatusToken.READY)
     ): Flow<RestaurantWithStatus?>
 
@@ -84,24 +115,42 @@ interface RestaurantDao {
      * Even though we JOIN with the requests table to filter the results,
      * we only SELECT restaurants.*, so Room maps it directly to a List<Restaurant>.
      */
+//    @Query("""
+//        SELECT restaurants.* FROM restaurants
+//        JOIN requests ON restaurants.id = requests.restaurantId
+//        WHERE requests.userId = :userId
+//        AND requests.status IN ('QUEUED', 'ACCEPTED')
+//        ORDER BY requests.localCreationTimestamp ASC
+//    """)
+//    fun observePendingRestaurants(userId: Uuid): Flow<List<Restaurant>>
     @Query("""
         SELECT restaurants.* FROM restaurants 
         JOIN requests ON restaurants.id = requests.restaurantId 
-        WHERE requests.userId = :userId 
+        WHERE requests.userId = (SELECT id FROM logged_user LIMIT 1) 
         AND requests.status IN ('QUEUED', 'ACCEPTED')
         ORDER BY requests.localCreationTimestamp ASC
     """)
-    fun observePendingRestaurants(userId: Uuid): Flow<List<Restaurant>>
+    fun observePendingRestaurants(): Flow<List<Restaurant>>
 
+    //X
+//    @Query("""
+//        SELECT restaurants.* FROM restaurants
+//        JOIN requests ON restaurants.id = requests.restaurantId
+//        WHERE requests.userId = :userId
+//        AND requests.status = 'READY'
+//        ORDER BY requests.localCreationTimestamp DESC
+//        LIMIT 1
+//    """)
+//    fun observeReadyRestaurant(userId: Uuid): Flow<Restaurant?>
     @Query("""
         SELECT restaurants.* FROM restaurants 
         JOIN requests ON restaurants.id = requests.restaurantId 
-        WHERE requests.userId = :userId 
+        WHERE requests.userId = (SELECT id FROM logged_user LIMIT 1) 
         AND requests.status = 'READY'
         ORDER BY requests.localCreationTimestamp DESC
         LIMIT 1
     """)
-    fun observeReadyRestaurant(userId: Uuid): Flow<Restaurant?>
+    fun observeReadyRestaurant(): Flow<Restaurant?>
 
     @Query("SELECT * FROM restaurants WHERE id = :restaurantId")    //TODO: Avoid "Select *": Use Projections to fetch only the specific columns needed for a particular screen. This reduces memory overhead and improves IO speed.
     suspend fun getRestaurantById(restaurantId: Uuid?): Restaurant?

@@ -29,14 +29,14 @@ interface RequestDao {
      * Observe all active requests for the current user.
      * If the user joins multiple queues, the UI updates automatically.
      */
-    @Query("SELECT * FROM requests WHERE userId = :userId ORDER BY localCreationTimestamp DESC")
-    fun observeUserRequests(userId: Uuid): Flow<List<Request>>
+    @Query("SELECT * FROM requests WHERE userId = (SELECT id FROM logged_user LIMIT 1) ORDER BY localCreationTimestamp DESC")
+    fun observeUserRequests(): Flow<List<Request>>
 
     /**
      * Observe a specific request. Useful for the "Status Screen" of a single restaurant.
      */
-    @Query("SELECT * FROM requests WHERE restaurantId = :restaurantId AND userId = :userId LIMIT 1")
-    fun observeRequestForRestaurant(restaurantId: Uuid, userId: Uuid): Flow<Request?>
+    @Query("SELECT * FROM requests WHERE restaurantId = :restaurantId AND userId = (SELECT id FROM logged_user LIMIT 1) LIMIT 1")
+    fun observeRequestForRestaurant(restaurantId: Uuid): Flow<Request?>
 
     @Query("SELECT * FROM requests WHERE restaurantId = :restaurantId LIMIT 1")
     suspend fun getRequestByRestaurantId(restaurantId: Uuid): Request?
@@ -58,22 +58,22 @@ interface RequestDao {
     @Query("""
         SELECT EXISTS(
             SELECT 1 FROM requests 
-            WHERE userId = :userId 
+            WHERE userId = (SELECT id FROM logged_user LIMIT 1) 
             AND restaurantId = :restaurantId 
             AND status IN ('QUEUED', 'ACCEPTED')
             LIMIT 1
         )
     """)
-    suspend fun containsPendingRestaurant(userId: Uuid, restaurantId: Uuid): Boolean
+    suspend fun containsPendingRestaurant(restaurantId: Uuid): Boolean
 
     @Query("""
         SELECT * FROM requests 
         WHERE restaurantId = :restaurantId 
-        AND userId = :userId 
+        AND userId = (SELECT id FROM logged_user LIMIT 1) 
         AND status NOT IN ('CANCELLED', 'PAID') 
         LIMIT 1
     """)
-    suspend fun getRequestByRestaurantAndUser(restaurantId: Uuid, userId: Uuid): Request?
+    suspend fun getRequestByRestaurantAndUser(restaurantId: Uuid): Request?
 
     @Query("SELECT * FROM requests WHERE status = 'READY' ORDER BY localCreationTimestamp DESC LIMIT 1")
     suspend fun getLatestReadyRequest(): Request?   // TODO: Include an expiration cheking like an attribute or creating a new status in "RequestStatusToken"

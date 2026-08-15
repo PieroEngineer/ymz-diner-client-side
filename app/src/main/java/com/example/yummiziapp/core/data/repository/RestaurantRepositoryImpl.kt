@@ -2,6 +2,7 @@ package com.example.yummiziapp.core.data.repository
 
 import android.util.Log
 import com.example.yummiziapp.core.data.di.IoDispatcher
+import com.example.yummiziapp.core.data.local.dao.LoggedUserDao
 import com.example.yummiziapp.core.data.local.dao.MenuDao
 import com.example.yummiziapp.core.data.local.dao.RequestDao
 import com.example.yummiziapp.core.data.local.dao.RestaurantDao
@@ -30,6 +31,7 @@ class RestaurantRepositoryImpl @Inject constructor(
     private val restaurantDao: RestaurantDao,
     private val menuDao: MenuDao,
 
+    private val loggedUserDao: LoggedUserDao,
     private val yummiziApi: RestaurantApi,
     private val dataSource: AblyDataSource,
 
@@ -73,7 +75,8 @@ class RestaurantRepositoryImpl @Inject constructor(
     // Fetch from remote and save to Room
     override suspend fun syncFeedRestaurants() = withContext(ioDispatcher) {
         try {
-            val userId = Uuid.parse("00000000-0000-4000-a000-000000000000")
+            val userId = loggedUserDao.getCurrentUserId() ?: throw IllegalStateException("No logged-in user found")
+
             Log.d("MyActivity", "🚀 Starting API call wit this user ID ${userId}...")
             val remoteData = yummiziApi.getFeedRestaurants(userId.toString())
             Log.d("MyActivity", "✅📩 Data fetched from API to sync the feed:\n$remoteData\n")
@@ -130,8 +133,6 @@ class RestaurantRepositoryImpl @Inject constructor(
 
     // In UserRepository / RestaurantRepository
     override fun observePendingRestaurantsWithStatus(): Flow<List<RestaurantWithStatus>> = flow {  // "Pending" means "QUEUED" and "ACCEPTED"
-        // 1. Get current ID (keeping your mock for now, but using the DAO)
-        val currentUserId = Uuid.parse("00000000-0000-4000-a000-000000000000")
 
         // 🚀 Stream emission strategy:
         // 1. Emit local Room Flow directly to UI (SSOT)
@@ -142,12 +143,11 @@ class RestaurantRepositoryImpl @Inject constructor(
             launch { syncWebSocketToRoom() } // TODO (#527): Try to move this to the request Repo. In the end, there is no problem if the user's mobile listen when they are not in the screen
 
             // Immediately start emitting data from Room
-            emitAll(restaurantDao.observePendingRestaurantsWithStatus(currentUserId))
+            emitAll(restaurantDao.observePendingRestaurantsWithStatus())
         }
     }
 
     override fun observePendingRestaurantWithStatusById(restaurantId: Uuid): Flow<RestaurantWithStatus?> = flow {
-        val currentUserId = Uuid.parse("00000000-0000-4000-a000-000000000000")
 
         // 🚀 Stream emission strategy:
         // 1. Emit local Room Flow directly to UI (SSOT)
@@ -158,7 +158,7 @@ class RestaurantRepositoryImpl @Inject constructor(
             launch { syncWebSocketToRoom() }    // TODO (#527)
 
             // Immediately start emitting data from Room
-            emitAll(restaurantDao.observePendingRestaurantWithStatusById(currentUserId, restaurantId))
+            emitAll(restaurantDao.observePendingRestaurantWithStatusById(restaurantId))
         }
 
     }
@@ -166,19 +166,16 @@ class RestaurantRepositoryImpl @Inject constructor(
     override suspend fun getRestaurantById(id: Uuid) = restaurantDao.getRestaurantById(id)
 
     override fun observePendingRestaurants(): Flow<List<Restaurant>> {
-        // In a real app, this ID comes from your UserSessionManager
-        val currentUserId = Uuid.parse("00000000-0000-4000-a000-000000000000")
 
-        return restaurantDao.observePendingRestaurants(currentUserId)
+        return restaurantDao.observePendingRestaurants()
     }
 
     override fun observeNoPendingRestaurantWithStatus(): Flow<RestaurantWithStatus?> {
-        val currentUserId = Uuid.parse("00000000-0000-4000-a000-000000000000")
-        return restaurantDao.observeNoPendingRestaurantWithStatus(currentUserId)
+        return restaurantDao.observeNoPendingRestaurantWithStatus()
     }
 
     private suspend fun syncWebSocketToRoom() = withContext(ioDispatcher) {
-        val userId = "00000000-0000-4000-a000-000000000000"
+        val userId = loggedUserDao.getCurrentUserId() ?: throw IllegalStateException("No logged-in user found")
         val channelName = "request:$userId"
 
         Log.d("MyActivity", "🔎  App is going to subscribe to the WebSocket channel: $channelName ...")
