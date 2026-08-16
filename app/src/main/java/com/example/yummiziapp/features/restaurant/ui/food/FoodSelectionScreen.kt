@@ -254,7 +254,7 @@ fun FoodSelectionScreen(    // TODO: Correct the prop-drilling of this and other
 
                     ){
                         Text(
-                            text = "Continuar",
+                            text = "Ir a pago",
                             textAlign = TextAlign.Center,
                             color = YummiziTheme.colors.yummiziWhite,
                             style = YummiziTheme.typography.teacherFontVar2,
