@@ -40,6 +40,8 @@ class HomeViewModel @Inject constructor(
     init {
         viewModelScope.launch { /// I guess this launch scope is unnecessary because the functions included already have it.
 
+            // TODO: Remove every request that has more than 2 hours
+
             // Clean all restaurants
             Log.d("MyActivity", "🧹  Cleaning all restaurants...\n")
 //            clearFeed()   //TODO: Remove this in production. The behavior should cover certain situations. Consider that the cleaning is when the user doesn't enter after a long while

@@ -10,10 +10,8 @@ import com.example.yummiziapp.core.data.network.model.UpdateStatusDto
 import com.example.yummiziapp.core.data.network.model.UpdateStatusResponseDto
 import retrofit2.Response
 import retrofit2.http.Body
-import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
-import retrofit2.http.Query
 
 interface RequestApi {
 
@@ -29,7 +27,7 @@ interface RequestApi {
     ): Response<CreateRequestResponseDto>
 
     @POST("requests/{restaurantId}/update")
-    suspend fun confirmAcceptance(
+    suspend fun updateRequestStatus(
         @Path("restaurantId") restaurantId: String,
         @Body confirmData: UpdateStatusDto,
     ): Response<UpdateStatusResponseDto>

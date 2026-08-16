@@ -65,9 +65,10 @@ fun FoodSelectionScreen(    // TODO: Correct the prop-drilling of this and other
 
     var isTryingToCancelRequest by rememberSaveable { mutableStateOf(false) }
 
-    val snackbarHostState = remember { SnackbarHostState() }
     val uriHandler = LocalUriHandler.current
     val context = LocalContext.current
+
+    val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(Unit) {
         viewModel.navEffect.collect { effect ->
@@ -86,6 +87,9 @@ fun FoodSelectionScreen(    // TODO: Correct the prop-drilling of this and other
                             snackbarHostState.showSnackbar("No app found to open this link.")
                         }
                     }
+                }
+                is FoodSelectionUiEvents.ShowSnackbar -> {
+                    snackbarHostState.showSnackbar(effect.message)
                 }
             }
         }

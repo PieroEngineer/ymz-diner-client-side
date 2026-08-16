@@ -1,5 +1,6 @@
 package com.example.yummiziapp.features.restaurant.ui.food
 
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -26,7 +27,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import kotlin.collections.filter
 import kotlin.collections.sumOf
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.minutes
@@ -102,8 +102,15 @@ class FoodSelectionViewModel @Inject constructor(   //TODO: Change the way of ho
         viewModelScope.launch {
             paymentRepository.selectOrder(_orderMap.value)
 
-            // TODO: If the payment fails, Navigate, but show a snackbar asking for trying again.
-            _effect.send(FoodSelectionUiEvents.NavigateToPayment(restaurantId) )    /// Should I send this contained in the entity or here?
+            requestRepository.notifyAttemptOfPayment(restaurantId)   // It also works as a tester of good connection before go to pay
+                .onSuccess{
+                    Log.d("RequestRepository", "🔎☝️  Notification was sent")
+                    _effect.send(FoodSelectionUiEvents.NavigateToPayment(restaurantId) )    /// Should I send this contained in the entity or here?
+                }
+                .onFailure{ throwable ->
+                    Log.e("FoodSelectionViewModel", "🚩 Error confirming order", throwable)
+                    _effect.send(FoodSelectionUiEvents.ShowSnackbar(message = "Hubo un problema de conexión")) // TODO: Use a better message
+                }
         }
     }
 

@@ -96,7 +96,7 @@ class RequestRepositoryImpl @Inject constructor(
 
         // 1. Fetch the existing request to know WHAT to delete and HOW to rollback
         // We need the requestId to tell the Cloud which specific record to kill.
-        val currentRequest = requestDao.getRequestByRestaurantAndUser(restaurantId) ?: return@withContext
+        val currentRequest = requestDao.getRequestByRestaurantId(restaurantId) ?: return@withContext
 
         try {
             // 2. OPTIMISTIC UPDATE: Remove from Local DB immediately
@@ -130,7 +130,7 @@ class RequestRepositoryImpl @Inject constructor(
         //TODO: Check if the transition is valid (e.g. QUEUED -> ACCEPTED)
 
         // Fetch current and other requests for backup
-        val currentRequest = requestDao.getRequestByRestaurantAndUser(restaurantId) ?: return@withContext
+        val currentRequest = requestDao.getRequestByRestaurantId(restaurantId) ?: return@withContext
         val otherRequests = requestDao.getOtherRequests(currentRequest.requestId)
 
         try {
@@ -138,7 +138,7 @@ class RequestRepositoryImpl @Inject constructor(
             requestDao.confirmAcceptance(currentRequest.requestId, Clock.System.now())  /// In future update, maybe the completly delete won't the best option to get the history of histories. (Maybe just include a DAO function that notify to everyone that there is a READY request)
 
             // NETWORK CALL
-            val response = yummiziApi.confirmAcceptance(
+            val response = yummiziApi.updateRequestStatus(
                 restaurantId = restaurantId.toString(),
                 confirmData = UpdateStatusDto(
                     requestId = currentRequest.requestId.toString(),
@@ -193,6 +193,43 @@ class RequestRepositoryImpl @Inject constructor(
             }
         } catch (e: Exception) {
             Log.e("RequestRepository", "🚩 Error fetching updated statuses from cloud", e)
+        }
+    }
+
+    override suspend fun notifyAttemptOfPayment(restaurantId: Uuid): Result<Unit>{
+
+        val readyRequest = requestDao.getLatestReadyRequest()
+            ?: throw IllegalStateException("No READY request found when confirming an order")
+
+        val userId = loggedUserDao.getCurrentUserId() ?: throw IllegalStateException("No logged-in user found")
+
+        val currentRequest = requestDao.getRequestByRestaurantId(restaurantId) ?: return Result.failure(Exception("No request found"))
+
+        Log.d("RequestRepository", "🔎☝️  About send the notification to the restaurant: current request status is ${currentRequest.status}")
+
+        try{
+            if(currentRequest.status == RequestStatusToken.READY){
+
+                requestDao.updateRequestStatus(readyRequest.requestId, RequestStatusToken.PAY_TRIED)
+
+                Log.d("RequestRepository", "🔎☝️  Request is in ready status so send confirmation")
+
+                yummiziApi.updateRequestStatus(
+                    restaurantId = restaurantId.toString(),
+                    confirmData = UpdateStatusDto(
+                        requestId = currentRequest.requestId.toString(),
+                        userId = userId.toString(),
+                        newState = RequestStatusToken.PAY_TRIED.name
+                    )
+                )
+
+            }
+            return Result.success(Unit)
+        }
+        catch(e: Exception){
+            requestDao.updateRequestStatus(readyRequest.requestId, RequestStatusToken.READY)    /// Won't the navigation skip this line?
+            Log.e("RequestRepository", "🚩 Error sending notification to the restaurant", e)
+            return Result.failure(e)
         }
     }
 }

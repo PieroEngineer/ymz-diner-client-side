@@ -46,11 +46,11 @@ class PaymentRepositoryImpl @Inject constructor(    // TODO: Change the name of 
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ) : PaymentRepository {
 
-    override suspend fun selectOrder(orderMap: Map<Uuid, Int>)/*: Result<Unit>*/ = withContext(ioDispatcher) {
+    override suspend fun selectOrder(orderMap: Map<Uuid, Int>) = withContext(ioDispatcher) {
 //        runCatching { /// Should I use runCatching?
             // Get the current "READY" request and extract its ID and the Restaurant ID
         val readyRequest = requestDao.getLatestReadyRequest()
-            ?: throw IllegalStateException("No READY request found")
+            ?: throw IllegalStateException("No READY request found when selecting an order")
 
         // Get dish details to get historical price
         val dishIds = orderMap.keys.toList()
@@ -76,6 +76,8 @@ class PaymentRepositoryImpl @Inject constructor(    // TODO: Change the name of 
             )
         }
 
+        // TODO: Include these DAO actions as a transacton
+
         // Save locally
         orderDao.insertOrderWithSelections(
             OrderWithSelectionsRelation(
@@ -83,15 +85,13 @@ class PaymentRepositoryImpl @Inject constructor(    // TODO: Change the name of 
                 orderSelections
             )
         )
-//X        paymentDao.insertOrderSelections(orderSelections)
-
 //        }
     }
 
     override suspend fun confirmSelectedOrder(paymentImageRelativePath: String, imageUri: Uri?) = withContext(ioDispatcher) {
         // Get the current "READY" request and extract its ID and the Restaurant ID
         val readyRequest = requestDao.getLatestReadyRequest()
-            ?: throw IllegalStateException("No READY request found")
+            ?: throw IllegalStateException("No READY request found when confirming an order")
 
         val loggedUser = loggedUserDao.getUser() ?: throw IllegalStateException("No logged user found")
 
@@ -114,14 +114,6 @@ class PaymentRepositoryImpl @Inject constructor(    // TODO: Change the name of 
         )
 
         Log.d("MyActivity", "⏫  Payload of the request: $payload")
-
-
-        try{
-
-        }
-        catch (e: Exception){
-
-        }
 
         // POST the sendOrderReadyToBePaidDto with the api function "selectOrder"
         val response = yummiziApi.selectOrder(payload)
@@ -218,7 +210,7 @@ class PaymentRepositoryImpl @Inject constructor(    // TODO: Change the name of 
         withContext(ioDispatcher) {
 
             val readyRequest = requestDao.getLatestReadyRequest()
-                ?: throw IllegalStateException("No READY request found")
+                ?: throw IllegalStateException("No READY request found when retrieving image")
 
             // Extracts base name regardless of whether 'fileName' contains an extension or not
             val baseName = "current_payment_image_${readyRequest.requestId}"
@@ -251,7 +243,7 @@ class PaymentRepositoryImpl @Inject constructor(    // TODO: Change the name of 
     override suspend fun savePaymentImageToInternalStorage(uri: Uri): Result<File> = withContext(ioDispatcher) {
         runCatching {
             val readyRequest = requestDao.getLatestReadyRequest()
-                ?: throw IllegalStateException("No READY request found")
+                ?: throw IllegalStateException("No READY request found when saving image")
 
             // Generation handler
             val contentResolver = context.contentResolver

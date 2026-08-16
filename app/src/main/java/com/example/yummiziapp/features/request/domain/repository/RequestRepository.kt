@@ -38,4 +38,6 @@ interface RequestRepository {
     suspend fun confirmAcceptance(restaurantId: Uuid)
 
     suspend fun fetchUpdatedRequestStatuses()
+
+    suspend fun notifyAttemptOfPayment(restaurantId: Uuid): Result<Unit>
 }

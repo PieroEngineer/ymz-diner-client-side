@@ -66,20 +66,21 @@ interface RequestDao {
     """)
     suspend fun containsPendingRestaurant(restaurantId: Uuid): Boolean
 
-    @Query("""
-        SELECT * FROM requests 
-        WHERE restaurantId = :restaurantId 
-        AND userId = (SELECT id FROM logged_user LIMIT 1) 
-        AND status NOT IN ('CANCELLED', 'PAID') 
-        LIMIT 1
-    """)
-    suspend fun getRequestByRestaurantAndUser(restaurantId: Uuid): Request?
+    // X
+//    @Query("""
+//        SELECT * FROM requests
+//        WHERE restaurantId = :restaurantId
+//        AND userId = (SELECT id FROM logged_user LIMIT 1)
+//        AND status NOT IN ('CANCELLED', 'PAID')
+//        LIMIT 1
+//    """)
+//    suspend fun getRequestByRestaurantAndUser(restaurantId: Uuid): Request?
 
-    @Query("SELECT * FROM requests WHERE status = 'READY' ORDER BY localCreationTimestamp DESC LIMIT 1")
-    suspend fun getLatestReadyRequest(): Request?   // TODO: Include an expiration cheking like an attribute or creating a new status in "RequestStatusToken"
+    @Query("SELECT * FROM requests WHERE status IN ('READY', 'PAY_TRIED') ORDER BY localCreationTimestamp DESC LIMIT 1")
+    suspend fun getLatestReadyRequest(): Request?   // TODO: Include an expiration cheking like an attribute or creating a new status in "RequestStatusToken" // Maybe not because the request is locally removed
 
     @Query("SELECT * FROM requests WHERE status = 'PAID' ORDER BY localCreationTimestamp DESC LIMIT 1")
-    suspend fun getLatestPaidRequest(): Request?   // TODO: Include an expiration cheking like an attribute or creating a new status in "RequestStatusToken"
+    suspend fun getLatestPaidRequest(): Request?   // TODO: Include an expiration cheking like an attribute or creating a new status in "RequestStatusToken" // Maybe not because the request is locally removed
 
 //X    @Query("UPDATE requests SET status = :status WHERE requestId = :requestId")
     @Query("UPDATE requests SET status = :status, localConfirmationTimestamp = :confirmationTimestamp WHERE requestId = :requestId")

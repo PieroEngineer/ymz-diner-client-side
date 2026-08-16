@@ -7,4 +7,5 @@ interface FoodSelectionUiEvents {   // TODO: Change to sealed interface
     data object NavigateToHome: FoodSelectionUiEvents
 
     data class IntentContactRestaurant(val url: String) : FoodSelectionUiEvents
+    data class ShowSnackbar(val message: String) : FoodSelectionUiEvents
 }

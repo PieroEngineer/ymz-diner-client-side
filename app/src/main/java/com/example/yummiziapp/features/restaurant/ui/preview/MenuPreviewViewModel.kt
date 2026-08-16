@@ -46,7 +46,7 @@ class MenuPreviewViewModel @Inject constructor(
             val currentRestaurantState = requestRepository.getRequestStatusByRestaurantId(restaurantId)
 
             when (currentRestaurantState) {
-                RequestStatusToken.READY -> {
+                RequestStatusToken.READY, RequestStatusToken.PAY_TRIED -> {
                     _effect.send(MenuPreviewUiEvents.NavigateToReadyRestaurantMenu(restaurantId))
                 }
                 RequestStatusToken.PAID -> {
