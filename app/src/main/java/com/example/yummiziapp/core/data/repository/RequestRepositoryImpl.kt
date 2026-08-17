@@ -94,6 +94,8 @@ class RequestRepositoryImpl @Inject constructor(
 
     override suspend fun leaveQueue(restaurantId: Uuid) = withContext(ioDispatcher) {
 
+        val userId = loggedUserDao.getCurrentUserId() ?: throw IllegalStateException("No logged-in user found")
+
         // 1. Fetch the existing request to know WHAT to delete and HOW to rollback
         // We need the requestId to tell the Cloud which specific record to kill.
         val currentRequest = requestDao.getRequestByRestaurantId(restaurantId) ?: return@withContext
@@ -107,7 +109,11 @@ class RequestRepositoryImpl @Inject constructor(
             // We use the requestId from our 'backup' variable.
             val response = yummiziApi.cancelRequest(
                 requestId = currentRequest.requestId.toString(),
-                cancelData = LeaveQueueDto(restaurantId = restaurantId.toString())
+                cancelData = LeaveQueueDto(
+                    userId = userId.toString(),
+                    restaurantId = restaurantId.toString(),
+                    actor = "USER"
+                )
             )
 
             if (!response.isSuccessful) throw Exception("Cloud failed to cancel request")
@@ -176,16 +182,24 @@ class RequestRepositoryImpl @Inject constructor(
             val response = yummiziApi.getActiveRequest(dto)
 
             if (response.isSuccessful) {
-                // 4. Update the state of the requests in DAO
-                response.body()?.statuses?.forEach { statusDto ->
-                    val newStatus = RequestStatusToken.fromString(statusDto.state)
-                    if (newStatus != null) {
+                /// Consider increase the performance of the following lines
+                val remoteActiveRequests = response.body()?.statuses?: return@withContext
+
+                val remoteMap = remoteActiveRequests.associateBy { it.requestId }
+
+                requests.forEach { localRequest ->
+                    val remoteRequest = remoteMap[localRequest.requestId.toString()]
+
+                    if(remoteRequest != null){
+                        val newStatus = RequestStatusToken.fromString(remoteRequest.state)?: return@forEach
+
                         requestDao.updateRequestStatus(
-                            requestId = Uuid.parse(statusDto.requestId),
+                            requestId = localRequest.requestId,
                             status = newStatus
                         )
-                    } else {
-                        Log.w("RequestRepository", "🚩 Unknown status from cloud: ${statusDto.state}")
+                    }
+                    else{
+                        requestDao.deleteRequestById(localRequest.requestId)
                     }
                 }
             } else {

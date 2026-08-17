@@ -1,6 +1,7 @@
 package com.example.yummiziapp.core.data.network.model
 
 import android.util.Log
+import com.example.yummiziapp.core.data.domain.models.RequestCancellation
 import com.example.yummiziapp.core.data.local.entities.RequestUpdate
 import com.example.yummiziapp.core.data.local.model.RequestStatusToken
 import kotlinx.serialization.SerialName
@@ -53,7 +54,9 @@ data class UpdatedRequestStatusDto(
 
 @Serializable
 data class LeaveQueueDto(
-    val restaurantId: String
+    val userId: String,
+    val restaurantId: String,
+    val actor: String
 )
 
 @Serializable
@@ -75,11 +78,11 @@ data class UpdateStatusResponseDto(
 )
 
 @Serializable
-data class RequestStatusMessageDto(
+data class UpdateRequestStatusMessageDto(
     @SerialName("requestId") val requestId: String,
     @SerialName("newStatus") val newStatus: String
 ){
-    fun toEntity(): RequestUpdate {
+    fun toEntity(): RequestUpdate { // TODO: It should change to domain, not entity
         val newLocalStatus = RequestStatusToken.fromString(newStatus) ?: run {
             Log.e("MyActivity", "🚩Invalid status in WebSockets: $newStatus")
             throw IllegalArgumentException("Invalid status: $newStatus")    // TODO: Handle it in another way
@@ -87,6 +90,17 @@ data class RequestStatusMessageDto(
         return RequestUpdate(
             requestId = Uuid.parse(requestId),
             newStatus = newLocalStatus
+        )
+    }
+}
+
+@Serializable
+data class CancelRequestMessageDto(
+    @SerialName("requestId") val requestId: String
+){
+    fun toDomain(): RequestCancellation {
+        return RequestCancellation(
+            requestId = requestId
         )
     }
 }

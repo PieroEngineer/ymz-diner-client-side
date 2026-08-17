@@ -10,7 +10,8 @@ import com.example.yummiziapp.core.data.local.entities.Dish
 import com.example.yummiziapp.core.data.local.entities.Restaurant
 import com.example.yummiziapp.core.data.local.model.RestaurantWithStatus
 import com.example.yummiziapp.core.data.network.api.RestaurantApi
-import com.example.yummiziapp.core.data.network.model.RequestStatusMessageDto
+import com.example.yummiziapp.core.data.network.model.CancelRequestMessageDto
+import com.example.yummiziapp.core.data.network.model.UpdateRequestStatusMessageDto
 import com.example.yummiziapp.core.data.network.model.toEntity
 import com.example.yummiziapp.core.data.network.websocket.AblyDataSource
 import com.example.yummiziapp.core.data.network.websocket.mappers.toRawJsonString
@@ -182,29 +183,72 @@ class RestaurantRepositoryImpl @Inject constructor(
 
         dataSource.subscribeToChannel(channelName)
             .collect { rawMessage ->
-                // Safely extracts JSON String regardless of Ably's internal type
-                val rawJsonString = rawMessage.toRawJsonString() ?: return@collect
 
-                Log.d("MyActivity", "🔎📩  Received a WebSocket String raw message: $rawJsonString (${rawJsonString::class.simpleName})")
+                Log.d("MyActivity", "🔎📩  Received a WebSocket message whose event name is : ${rawMessage.name}")
 
-                // 🛡️ STEP 1: Parse payload safely
-                val dtoResult = runCatching {
-                    json.decodeFromString<RequestStatusMessageDto>(rawJsonString)
-                }
+                when (rawMessage.name) {
+                    "request-status-updated" -> {
+                        // Safely extracts JSON String regardless of Ably's internal type
+                        val rawJsonDataString = rawMessage.toRawJsonString() ?: return@collect
 
-                dtoResult.onSuccess { dto ->
-                    // 🛡️ STEP 2: Write to Room DB safely
-                    try {
-                        val requestUpdate = dto.toEntity()
-                        // TODO: Verify here if the transition between request status is valid (e.g. Accepted only is allowed if the previous state was QUEUED)
+                        Log.d("MyActivity", "🔎📩  Received a WebSocket for 'request-status-updated' String raw message: $rawJsonDataString (${rawJsonDataString::class.simpleName})")
 
-                        requestDao.updateRequestStatus(requestUpdate.requestId, requestUpdate.newStatus)
-                    } catch (e: Exception) {
-                        Log.e("MyActivity", "🚩  Database write failure", e)
+                        // 🛡️ STEP 1: Parse payload safely
+                        val dtoResult = runCatching {
+                            json.decodeFromString<UpdateRequestStatusMessageDto>(rawJsonDataString)
+                        }
+
+                        dtoResult
+                            .onSuccess { dto ->
+                                // 🛡️ STEP 2: Write to Room DB safely
+                                try {
+                                    val requestUpdate = dto.toEntity()
+                                    // TODO: Verify here if the transition between request status is valid (e.g. Accepted only is allowed if the previous state was QUEUED)
+
+                                    requestDao.updateRequestStatus(requestUpdate.requestId, requestUpdate.newStatus)
+                                } catch (e: Exception) {
+                                    Log.e("MyActivity", "🚩  Database write failure in request-status-updated", e)
+                                }
+                            }
+                            .onFailure { error ->
+                            Log.w("MyActivity", "🚩  Malformed WebSocket payload dropped for request-status-updated", error)
+                        }
                     }
-                }.onFailure { error ->
-                    Log.w("MyActivity", "🚩  Malformed WebSocket payload dropped", error)
+                    "request-canceled" -> { // TODO: Include it in the home too
+                        // Safely extracts JSON String regardless of Ably's internal type
+                        val rawJsonDataString = rawMessage.toRawJsonString() ?: return@collect
+
+                        Log.d("MyActivity", "🔎📩  Received a WebSocket for 'request-canceled' String raw message: $rawJsonDataString (${rawJsonDataString::class.simpleName})")
+
+                        // 🛡️ STEP 1: Parse payload safely
+                        val dtoResult = runCatching {
+                            json.decodeFromString<CancelRequestMessageDto>(rawJsonDataString)
+                        }
+
+                        dtoResult
+                            .onSuccess { dto ->
+                                // 🛡️ STEP 2: Write to Room DB safely
+                                try {
+                                    val requestUpdate = dto.toDomain()
+                                    requestDao.deleteRequestById(Uuid.parse(requestUpdate.requestId))
+                                }
+                                catch (e: Exception){
+                                    Log.e("MyActivity", "🚩  Error when trying to remove a value from the room", e)
+                                }
+                            }
+                            .onFailure { error ->
+                                Log.w("MyActivity", "🚩  Malformed WebSocket payload dropped for request-canceled", error)
+                            }
+
+
+
+                    }
+                    else -> { return@collect }
+
+
                 }
+
+
             }
     }
 }
