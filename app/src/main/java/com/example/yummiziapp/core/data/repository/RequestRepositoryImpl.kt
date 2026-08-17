@@ -92,7 +92,7 @@ class RequestRepositoryImpl @Inject constructor(
 
     override suspend fun clearAll() = requestDao.clearAll() // TODO: This function should have a logic to use different API functions: A function when there is only one request, and another when there are more.
 
-    override suspend fun leaveQueue(restaurantId: Uuid) = withContext(ioDispatcher) {
+    override suspend fun cancelRequest(restaurantId: Uuid) = withContext(ioDispatcher) {
 
         val userId = loggedUserDao.getCurrentUserId() ?: throw IllegalStateException("No logged-in user found")
 
@@ -105,13 +105,17 @@ class RequestRepositoryImpl @Inject constructor(
             // The UI (observing via Flow) will instantly see the "Join" button again.
             requestDao.deleteRequestById(currentRequest.requestId)
 
+            Log.d("Yummizi", "🔎  currentRequest.requestId.toString(): ${currentRequest.requestId.toString()}")
+            Log.d("Yummizi", "🔎  restaurantId.toString(): ${restaurantId.toString()}")
+            Log.d("Yummizi", "🔎  userId.toString(): ${userId.toString()}")
+
             // 3. NETWORK CALL: Tell the cloud
             // We use the requestId from our 'backup' variable.
             val response = yummiziApi.cancelRequest(
                 requestId = currentRequest.requestId.toString(),
                 cancelData = LeaveQueueDto(
-                    userId = userId.toString(),
                     restaurantId = restaurantId.toString(),
+                    userId = userId.toString(),
                     actor = "USER"
                 )
             )

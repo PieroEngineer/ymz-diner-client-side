@@ -100,7 +100,7 @@ class SpecificationViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 if(restaurantId != null){
-                    requestRepository.leaveQueue(restaurantId)
+                    requestRepository.cancelRequest(restaurantId)
                 }
             } catch (e: Exception) {
                 // This is where you tell the user the "Optimistic" part failed

@@ -184,7 +184,8 @@ class RestaurantRepositoryImpl @Inject constructor(
         dataSource.subscribeToChannel(channelName)
             .collect { rawMessage ->
 
-                Log.d("MyActivity", "🔎📩  Received a WebSocket message whose event name is : ${rawMessage.name}")
+                Log.d("MyActivity", "🔎📩  Received a WebSocket message whose event name is:")
+                Log.d("MyActivity", "🔎📩  ${rawMessage.name}")
 
                 when (rawMessage.name) {
                     "request-status-updated" -> {

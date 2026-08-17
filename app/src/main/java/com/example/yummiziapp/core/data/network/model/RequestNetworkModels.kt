@@ -54,8 +54,8 @@ data class UpdatedRequestStatusDto(
 
 @Serializable
 data class LeaveQueueDto(
-    val userId: String,
     val restaurantId: String,
+    val userId: String,
     val actor: String
 )
 

@@ -117,7 +117,7 @@ class FoodSelectionViewModel @Inject constructor(   //TODO: Change the way of ho
     fun cancelRequest(){    /// Also handle the Order cancelation if in later updates this screen create Order items in its inizialitation
         viewModelScope.launch {
             //Remove current request
-            requestRepository.clearAll()    // TODO: Change this function that exclusively delete the current Ready request local and remotely
+            requestRepository.cancelRequest(restaurantId)
 
             //Navigate to home
             _effect.send(FoodSelectionUiEvents.NavigateToHome)

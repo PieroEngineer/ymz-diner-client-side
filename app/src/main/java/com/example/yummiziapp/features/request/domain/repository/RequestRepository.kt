@@ -27,7 +27,7 @@ interface RequestRepository {
 //        newStatus: QueueStatusToken
 //    )
 
-    suspend fun leaveQueue(restaurantId: Uuid)
+    suspend fun cancelRequest(restaurantId: Uuid)
 
     suspend fun getRequestStatusByRestaurantId(restaurantId: Uuid): RequestStatusToken
     fun observeRequestByRestaurantId(restaurantId: Uuid): Flow<Request?>
