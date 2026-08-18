@@ -54,7 +54,7 @@ class FoodSelectionViewModel @Inject constructor(   //TODO: Change the way of ho
         viewModelScope.launch {
             // Trigger the GET request to cloud immediately on start
             refreshMenu()
-            initializeOrder()
+            initializeOrder()   // To allow us to use a local map and minimize room overhead when update the order frequently
         }
     }
 
@@ -144,7 +144,7 @@ class FoodSelectionViewModel @Inject constructor(   //TODO: Change the way of ho
     // We observe the database. If the network refresh succeeds later,
     // this Flow automatically emits the new data.
     val menuUiState: StateFlow<FoodSelectionUiState> = restaurantRepository
-        .observeRestaurantMenuWithItsDishes(restaurantId)
+        .observeRestaurantMenuWithAvailableDishes(restaurantId)
         .map { map ->
             // Transform the map to the UI model list
             val uiModels = map.toUiModels()

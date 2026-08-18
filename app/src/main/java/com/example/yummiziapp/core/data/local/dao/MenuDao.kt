@@ -12,16 +12,26 @@ import kotlin.uuid.Uuid
 
 @Dao
 interface MenuDao {
+//    @Query(
+//        """
+//        SELECT * FROM menu_pages
+//        JOIN dishes ON menu_pages.id = dishes.menuPageId
+//        WHERE menu_pages.restaurantId = :restaurantId
+//        ORDER BY menu_pages.pageNumber ASC
+//    """
+//    )
+//    fun observeRestaurantMenuWithItsDishes(restaurantId: Uuid): Flow<Map<MenuPage, List<Dish>>>
+
     @Query(
         """
         SELECT * FROM menu_pages 
         JOIN dishes ON menu_pages.id = dishes.menuPageId 
-        WHERE menu_pages.restaurantId = :restaurantId
+        WHERE menu_pages.restaurantId = :restaurantId AND dishes.isOutOfStock = 0
         ORDER BY menu_pages.pageNumber ASC
-    """
+        """
     )
-    fun observeRestaurantMenuWithItsDishes(restaurantId: Uuid): Flow<Map<MenuPage, List<Dish>>>
-
+    fun observeRestaurantMenuWithAvailableDishes(restaurantId: Uuid): Flow<Map<MenuPage, List<Dish>>>
+    
 //    @Query("SELECT * FROM dishes WHERE restaurantId = :restaurantId")
 //    fun observeDishesByRestaurant(restaurantId: Uuid): Flow<List<Dish>>
 

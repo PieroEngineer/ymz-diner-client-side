@@ -42,7 +42,9 @@ class RestaurantRepositoryImpl @Inject constructor(
 
     override fun observeDishes(restaurantId: Uuid): Flow<List<Dish>> = menuDao.observeDishesByRestaurant(restaurantId)
 
-    override fun observeRestaurantMenuWithItsDishes(id: Uuid) = menuDao.observeRestaurantMenuWithItsDishes(id)
+//    override fun observeRestaurantMenuWithItsDishes(id: Uuid) = menuDao.observeRestaurantMenuWithItsDishes(id)
+
+    override fun observeRestaurantMenuWithAvailableDishes(id: Uuid) = menuDao.observeRestaurantMenuWithAvailableDishes(id)
 
     override fun observeMenuPagesByRestaurant(restaurantId: Uuid) = menuDao.observeMenuPagesByRestaurant(restaurantId)
 

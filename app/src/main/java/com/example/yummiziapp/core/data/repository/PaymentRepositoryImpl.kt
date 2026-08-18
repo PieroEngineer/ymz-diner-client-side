@@ -197,10 +197,7 @@ class PaymentRepositoryImpl @Inject constructor(    // TODO: Change the name of 
 
     override fun observeCurrentOrderSelections(): Flow<List<OrderSelection>> = paymentDao.observeOrderSelections()
 
-    override suspend fun getCurrentOrderSelections(): List<OrderSelection> = withContext(ioDispatcher) {  /// Is this "withContext(ioDispatcher)" inefficient due it's a direct call?
-        paymentDao.getOrderSelections()
-    }
-
+    override suspend fun getCurrentOrderSelections(): List<OrderSelection> = paymentDao.getOrderSelections()
 
     /**
      * Retrieves the image handle from internal storage.

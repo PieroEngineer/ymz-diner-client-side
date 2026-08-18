@@ -21,7 +21,9 @@ interface RestaurantRepository {
     fun observeRestaurantsByIds(restaurantIds: List<Uuid>): Flow<List<Restaurant>>
 
     //    suspend fun deleteRestaurant(id: Uuid)
-    fun observeRestaurantMenuWithItsDishes(id: Uuid): Flow<Map<MenuPage, List<Dish>>>
+//    fun observeRestaurantMenuWithItsDishes(id: Uuid): Flow<Map<MenuPage, List<Dish>>>
+
+    fun observeRestaurantMenuWithAvailableDishes(id: Uuid): Flow<Map<MenuPage, List<Dish>>>
 
     fun observeDishes(restaurantId: Uuid): Flow<List<Dish>>
 
