@@ -22,8 +22,8 @@ data class FeedRestaurantResponseDto(
 
 @Serializable
 data class RestaurantPaymentResponseDto(
-    val phoneNumberToPay: Int,
-    val phoneNumberToContact: Int,
+    val phoneNumberToPay: String,
+    val phoneNumberToContact: String,
     val paymentQrUrl: String
 )
 

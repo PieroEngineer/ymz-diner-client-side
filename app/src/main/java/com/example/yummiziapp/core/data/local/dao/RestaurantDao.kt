@@ -111,8 +111,8 @@ interface RestaurantDao {   // TODO: Remove the Uuid of their arguments because 
     """)
     suspend fun updatePaymentInfo(
         restaurantId: Uuid,
-        phoneToPay: Int,
-        phoneToContact: Int,
+        phoneToPay: String,
+        phoneToContact: String,
         qrUrl: String
     )
 

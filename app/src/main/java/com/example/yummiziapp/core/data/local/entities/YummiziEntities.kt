@@ -43,8 +43,8 @@ data class Restaurant(  // TODO: This is the entity. And the domain should be an
     // Keeping raw primitives (Double) or creating a simple embedded @Embedded data class remains the industry standard.
 //    val latitude: Double?,     // TODO
 //    val longitude: Double?, //
-    val phoneNumberToPay: Int? = null,
-    val phoneNumberToContact: Int? = null,
+    val phoneNumberToPay: String? = null,
+    val phoneNumberToContact: String? = null,
     val paymentQrUrl: String? = null,
     // val maxWaitingTimeInMinutes: Int, // TODO: For now the default time is 15 minutes, but we must implement this attribute
     //val description: String,
