@@ -13,7 +13,7 @@ data class FeedRestaurantResponseDto(
     val name: String,
     val logoUrl: String,      // Changed from logoId to URL for Cloud
     val sectionType: String,
-    val requestId: String = "",
+    val requestId: String = "", // TODO: I guess it doesn't go here
     val dishesToShowUrls: List<String>,// |X -> = emptyList(),
 //X    val menuImageUrls: List<String> = emptyList(),
 //X    val latitude: Double? = null,

@@ -59,6 +59,7 @@ class RestaurantRepositoryImpl @Inject constructor(
         withContext(ioDispatcher) { /// Is "withContext(...)" necessary here?
             try {
                 val response = yummiziApi.getPaymentInfo(restaurantId.toString())
+                Log.d("MyActivity", "✅📩 Data fetched from API to sync the Payment data:\n$response\n")
                 if (response.isSuccessful) {
                     response.body()?.let { paymentInfo ->
                         restaurantDao.updatePaymentInfo(
@@ -112,7 +113,7 @@ class RestaurantRepositoryImpl @Inject constructor(
             val remoteMenu = yummiziApi.getRestaurantMenu(restaurantId.toString())
 
             // Mapping DTOs to Entities (The "Transformation")
-            Log.d("MyActivity", "2")
+            Log.d("MyActivity", "🔎 The remote data is: $remoteMenu")
             val pageEntities = remoteMenu.menuPages.map { it.toEntity(restaurantId.toString()) }    /// Is it necessary to include a the restaurant ID? isn't it already in the arrived data?
             Log.d("MyActivity", "3")
             val dishEntities = remoteMenu.dishes.map { it.toEntity() }
