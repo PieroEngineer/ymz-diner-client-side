@@ -145,14 +145,14 @@ class PaymentRepositoryImpl @Inject constructor(    // TODO: Change the name of 
                 Log.d("MyActivity", "✅💲  The local price matches with the remote price")
             }
 
-            val presignedUrl = response.body()?.paymentImageReferences?.uploadUrl//.replace('172.18.0.2', 'localhost') // FIXME: If we use the "repalce" function, remove it in production
+            val presignedUrl = response.body()?.paymentImageReferences?.uploadUrl
             val fileKey = response.body()?.paymentImageReferences?.publicUrl    // TODO: Pass to the Room and use it in the next screen
 
             Log.d("MyActivity", "🔎⏫  Presigned URL: $presignedUrl")
 
             try{
                 if (imageUri != null && presignedUrl != null){
-                    uploadImage(imageUri, presignedUrl)
+                    uploadImage(imageUri, presignedUrl.replace("172.18.0.2", "localhost"))  // FIXME: If we use the "replace" function, remove it in production
                     Log.d("MyActivity", "✅⏫  Image uploaded successfully")
 
                     Unit

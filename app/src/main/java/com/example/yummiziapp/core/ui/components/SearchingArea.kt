@@ -1,6 +1,7 @@
 package com.example.yummiziapp.core.ui.components
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -30,6 +31,7 @@ import com.example.yummiziapp.R
 import androidx.compose.material3.TextFieldDefaults.shape
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 
@@ -48,72 +50,89 @@ fun SearchingArea(
     ){
         Box(
             modifier = Modifier
-                .dropShadow( // Apply the intense drop shadow
-                    shape = CircleShape,
-                    //shape = shape,
-                    shadow = Shadow(
-                        color = YummiziTheme.colors.yummiziBlack.copy(alpha = .155f),
-                        radius = 10.dp,                          // High radius for a wide, soft spread
-                        offset = DpOffset(x = 0.dp, y = 15.dp), // Offset only to the bottom
-                    )
-                )
-                .height(spacing.barHeight)
+                .fillMaxWidth()
         ){
-            Image(
-                painter = aiMicroBtn,
-                contentDescription = null, // Set to null for decorative backgrounds
-            )
-        }
-
-        Box(
-            modifier = Modifier
-                .dropShadow( // Apply the intense drop shadow
-                    shape = shape,
-                    shadow = Shadow(
-                        color = YummiziTheme.colors.yummiziBlack.copy(alpha = 0.5f),
-                        radius = 10.dp,                        // High radius for a wide, soft spread
-                        offset = DpOffset(x = 4.dp, y = 8.dp) // Offset only to the bottom
-                    )
-                )
-        ) {
-            var searchedText by remember { mutableStateOf("") }
-            TextField(
-                value = searchedText,
-                onValueChange = { searchedText = it },
-                placeholder = {
-                    Text(
-                        "Explora...",
-                        color = Color.Gray.copy(alpha = 0.6f),
-                        fontFamily = comfortaa  //TODO: Standarized this with the theme
-                    )
-                },
-                textStyle = TextStyle(
-                    fontFamily = comfortaa,
-                    color = Color.White
-                ),
+            Box(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .height(spacing.barHeight)
-                    .clip(RoundedCornerShape(spacing.mediumCornerRadius * .75f)),
-                colors = TextFieldDefaults.colors(
-                    focusedContainerColor = YummiziTheme.colors.yummiziDarkBlue,
-                    unfocusedContainerColor = YummiziTheme.colors.yummiziDarkBlue,
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent,
-                    disabledContainerColor = Color.Transparent,
-                ),
-                trailingIcon = {
-                    Icon(
-                        painter = searchIcon,
-                        contentDescription = null,
-                        modifier = Modifier
-                            .padding(end = spacing.regularPadding)
-                            .fillMaxHeight(.5f),
-                        tint = Color.Unspecified
+                    .dropShadow( // Apply the intense drop shadow
+                        shape = CircleShape,
+                        //shape = shape,
+                        shadow = Shadow(
+                            color = YummiziTheme.colors.yummiziBlack.copy(alpha = .155f),
+                            radius = 10.dp,                          // High radius for a wide, soft spread
+                            offset = DpOffset(x = 0.dp, y = 15.dp), // Offset only to the bottom
+                        )
                     )
-                }
-            )
-        }
+                    .height(spacing.barHeight)
+            ){
+                Image(
+                    painter = aiMicroBtn,
+                    contentDescription = null, // Set to null for decorative backgrounds
+                )
+            }
 
+            Box(
+                modifier = Modifier
+                    .dropShadow( // Apply the intense drop shadow
+                        shape = shape,
+                        shadow = Shadow(
+                            color = YummiziTheme.colors.yummiziBlack.copy(alpha = 0.5f),
+                            radius = 10.dp,                        // High radius for a wide, soft spread
+                            offset = DpOffset(x = 4.dp, y = 8.dp) // Offset only to the bottom
+                        )
+                    )
+            ) {
+                var searchedText by remember { mutableStateOf("") }
+                TextField(
+                    value = searchedText,
+                    onValueChange = { searchedText = it },
+                    placeholder = {
+                        Text(
+                            "Explora...",
+                            color = Color.Gray.copy(alpha = 0.6f),
+                            fontFamily = comfortaa  //TODO: Standarized this with the theme
+                        )
+                    },
+                    textStyle = TextStyle(
+                        fontFamily = comfortaa,
+                        color = Color.White
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(spacing.barHeight)
+                        .clip(RoundedCornerShape(spacing.mediumCornerRadius * .75f)),
+                    colors = TextFieldDefaults.colors(
+                        focusedContainerColor = YummiziTheme.colors.yummiziDarkBlue,
+                        unfocusedContainerColor = YummiziTheme.colors.yummiziDarkBlue,
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent,
+                        disabledContainerColor = Color.Transparent,
+                    ),
+                    trailingIcon = {
+                        Icon(
+                            painter = searchIcon,
+                            contentDescription = null,
+                            modifier = Modifier
+                                .padding(end = spacing.regularPadding)
+                                .fillMaxHeight(.5f),
+                            tint = Color.Unspecified
+                        )
+                    }
+                )
+            }
+
+            Box(
+                modifier = Modifier
+                    .matchParentSize()
+                    .background(YummiziTheme.colors.yummiziBlack.copy(alpha = 0.5f)),
+                contentAlignment = Alignment.Center
+            ){
+                Text(
+                    text = "Próximamente",
+                    color = YummiziTheme.colors.yummiziWhite,
+                    style = YummiziTheme.typography.leaguespartanFontVar2
+                )
+            }
+        }
     }
 }
