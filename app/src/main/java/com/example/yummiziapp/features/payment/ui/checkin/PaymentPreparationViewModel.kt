@@ -30,6 +30,7 @@ class PaymentPreparationViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 )  : ViewModel() {
 
+    private val _isLoading = MutableStateFlow(false)
     private val _pickedImageUiState = MutableStateFlow<PickedPaymentImageUiState>(PickedPaymentImageUiState.NoImageSelected)   // Saying that the image starts as not selected always when the screen is started
     val pickedImageUiState = _pickedImageUiState.asStateFlow() /// Ask if it's a bad practice to use this
 
@@ -53,8 +54,11 @@ class PaymentPreparationViewModel @Inject constructor(
         viewModelScope.launch {
             val currentPickedImageUiState = _pickedImageUiState.value
             if (currentPickedImageUiState is PickedPaymentImageUiState.ImageAlreadySelected) {
+                _isLoading.update { true }
                 paymentRepository.confirmSelectedOrder(currentPickedImageUiState.selectedFile.name, Uri.fromFile(currentPickedImageUiState.selectedFile))   // TODO (#945)
+                // TODO: handle this with "onSuccess" and "onError"
                 _effect.send(PaymentPreparationUiEvents.NavigateToArrival(restaurantId))
+                _isLoading.update { false }
             }
             else {
                 // TODO: Else, show a snackbar
@@ -95,25 +99,32 @@ class PaymentPreparationViewModel @Inject constructor(
     val paymentInfoUiState: StateFlow<PaymentPreparationUiState> = combine(
         restaurantRepository.observeRestaurantById(restaurantId),
         paymentRepository.observeCurrentOrderSelections(),    // TODO: Should I change it for an observer that only observes the total cost?
-        _pickedImageUiState
-    ) { restaurant, orderSelections, pickedImageUiState ->
+        _pickedImageUiState,
+        _isLoading
+    ) { restaurant, orderSelections, pickedImageUiState, isLoading ->
 
-        val imageReady = pickedImageUiState is PickedPaymentImageUiState.ImageAlreadySelected
-
-        if (restaurant == null) {
-            PaymentPreparationUiState.Error("Restaurant not found")
-        } else {
-            val totalCents = orderSelections.sumOf { it.quantity * it.historicalUnitPriceInCents }  // TODO: Consider that this price should be from the backend and not from local
-            PaymentPreparationUiState.CheckIn(
-                PaymentPreparationUiModel(
-                    restaurantLogoUrl = restaurant.logoUrl,
-                    totalPayment = totalCents.toCurrencyFormat(),
-                    paymentQrCodeUrl = restaurant.paymentQrUrl ?: "",
-                    phoneNumberToPay = restaurant.phoneNumberToPay.toString() ?: "",
-                    imageReady = imageReady
-                )
-            )
+        if(isLoading){
+            return@combine PaymentPreparationUiState.Loading
         }
+        else{
+            val imageReady = pickedImageUiState is PickedPaymentImageUiState.ImageAlreadySelected
+
+            if (restaurant == null) {
+                return@combine PaymentPreparationUiState.Error("Restaurant not found")
+            } else {
+                val totalCents = orderSelections.sumOf { it.quantity * it.historicalUnitPriceInCents }  // TODO: Consider that this price should be from the backend and not from local
+                return@combine PaymentPreparationUiState.CheckIn(
+                    PaymentPreparationUiModel(
+                        restaurantLogoUrl = restaurant.logoUrl,
+                        totalPayment = totalCents.toCurrencyFormat(),
+                        paymentQrCodeUrl = restaurant.paymentQrUrl ?: "",
+                        phoneNumberToPay = restaurant.phoneNumberToPay.toString() ?: "",
+                        imageReady = imageReady
+                    )
+                )
+            }
+        }
+
     }
     .catch { e -> emit(PaymentPreparationUiState.Error(e.message ?: "Unknown Error in payment stage")) }
     .stateIn(
