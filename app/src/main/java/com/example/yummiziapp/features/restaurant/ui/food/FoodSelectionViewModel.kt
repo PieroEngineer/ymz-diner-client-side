@@ -101,17 +101,23 @@ class FoodSelectionViewModel @Inject constructor(   //TODO: Change the way of ho
 
     fun confirmOrder(){
         viewModelScope.launch {
-            paymentRepository.selectOrder(_orderMap.value)
+            if(_orderMap.value.isEmpty()){
+                _effect.send(FoodSelectionUiEvents.ShowSnackbar(message = "Por favor, seleccione al menos un plato"))
+                return@launch
+            }
+            else{
+                paymentRepository.selectOrder(_orderMap.value)
 
-            requestRepository.notifyAttemptOfPayment(restaurantId)   // It also works as a tester of good connection before go to pay
-                .onSuccess{
-                    Log.d("RequestRepository", "🔎☝️  Notification was sent")
-                    _effect.send(FoodSelectionUiEvents.NavigateToPayment(restaurantId) )    /// Should I send this contained in the entity or here?
-                }
-                .onFailure{ throwable ->
-                    Log.e("FoodSelectionViewModel", "🚩 Error confirming order", throwable)
-                    _effect.send(FoodSelectionUiEvents.ShowSnackbar(message = "Hubo un problema de conexión")) // TODO: Use a better message
-                }
+                requestRepository.notifyAttemptOfPayment(restaurantId)   // It also works as a tester of good connection before go to pay
+                    .onSuccess{
+                        Log.d("RequestRepository", "🔎☝️  Notification was sent")
+                        _effect.send(FoodSelectionUiEvents.NavigateToPayment(restaurantId) )    /// Should I send this contained in the entity or here?
+                    }
+                    .onFailure{ throwable ->
+                        Log.e("FoodSelectionViewModel", "🚩 Error confirming order", throwable)
+                        _effect.send(FoodSelectionUiEvents.ShowSnackbar(message = "Hubo un problema de conexión")) // TODO: Use a better message
+                    }
+            }
         }
     }
 

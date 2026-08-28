@@ -31,7 +31,7 @@ fun ImageReel(
     Log.d("MyActivity", "🍲  Links of the food images $imageUrls\n")
     val spacing = YummiziTheme.spacing
 
-    val activeImageUrls = if (imageUrls.size == 1) list else list.filter { it.isNotEmpty() }
+    val activeImageUrls = if (imageUrls.size == 1) imageUrls else imageUrls.filter { it.isNotEmpty() }
 
     if(reelOn && activeImageUrls.size>1){
         val painters = activeImageUrls.map { id ->
