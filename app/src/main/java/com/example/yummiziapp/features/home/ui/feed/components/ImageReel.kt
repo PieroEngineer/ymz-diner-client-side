@@ -31,8 +31,10 @@ fun ImageReel(
     Log.d("MyActivity", "🍲  Links of the food images $imageUrls\n")
     val spacing = YummiziTheme.spacing
 
-    if(reelOn && imageUrls.size>1){
-        val painters = imageUrls.map { id ->
+    val activeImageUrls = if (imageUrls.size == 1) list else list.filter { it.isNotEmpty() }
+
+    if(reelOn && activeImageUrls.size>1){
+        val painters = activeImageUrls.map { id ->
             rememberAsyncImagePainter(model = id)
         }
         val displayDurationMillis = 3000
@@ -91,14 +93,14 @@ fun ImageReel(
         )
     }
     else{
-        if (imageUrls.isNotEmpty()){
+        if (activeImageUrls.isNotEmpty()){
             Box(
                 modifier = Modifier
                     .fillMaxSize()
             ) {
 
                 AsyncYummiziImage(
-                    model = imageUrls[0],
+                    model = activeImageUrls[0],
                     contentDescription = null,
                     modifier = Modifier
                         .matchParentSize()
@@ -107,6 +109,7 @@ fun ImageReel(
                 )
             }
         }
+        // TODO: Plan a fallback
     }
 
 }
