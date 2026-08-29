@@ -112,14 +112,14 @@ fun SelectionSection(
 //X                            onRestaurantSelected(restaurantInList.restaurantId, restaurantInList.waitingState) },  /// Should I avoid to pass the waiting state because it's a UI state?
                         verticalAlignment = Alignment.CenterVertically
                     ){
-                        Text(
-                            text = "A\n${restaurantInList.distanceKm}km",
-                            textAlign = TextAlign.Center,
-                            color = YummiziTheme.colors.yummiziWhite,
-                            style = YummiziTheme.typography.teacherFontVar3
-                        )
-
-                        Spacer(Modifier.width(spacing.mediumSeparation))
+//                        Text( // TODO
+//                            text = "A\n${restaurantInList.distanceKm}km",
+//                            textAlign = TextAlign.Center,
+//                            color = YummiziTheme.colors.yummiziWhite,
+//                            style = YummiziTheme.typography.teacherFontVar3
+//                        )
+//
+//                        Spacer(Modifier.width(spacing.mediumSeparation))
 
                         Row(
                             modifier = Modifier
