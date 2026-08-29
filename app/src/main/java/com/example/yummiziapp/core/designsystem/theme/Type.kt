@@ -19,6 +19,7 @@ data class YummiziTypography (
     val teacherFontVar6: TextStyle,
     val teacherFontVar7: TextStyle,
     val teacherFontVar8: TextStyle,
+    val teacherFontVar9: TextStyle,
     val comfortaaFontVar1: TextStyle,
     val comfortaaFontVar2: TextStyle,
     val comfortaaFontVar3: TextStyle,
@@ -80,6 +81,12 @@ val YummiziTypographies = YummiziTypography(
         fontFamily = FontFamily(Font(R.font.teachers_variable)),
         fontWeight = FontWeight.Bold,
         fontSize = 12.sp
+    ),
+
+    teacherFontVar9 = TextStyle(
+        fontFamily = FontFamily(Font(R.font.teachers_variable)),
+        fontWeight = FontWeight.Bold,
+        fontSize = 14.sp
     ),
 
     comfortaaFontVar1 = TextStyle(

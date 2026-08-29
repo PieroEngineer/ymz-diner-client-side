@@ -124,6 +124,7 @@ fun SearchingArea(
             Box(
                 modifier = Modifier
                     .matchParentSize()
+                    .clip(RoundedCornerShape(spacing.mediumCornerRadius * .75f))
                     .background(YummiziTheme.colors.yummiziBlack.copy(alpha = 0.5f)),
                 contentAlignment = Alignment.Center
             ){

@@ -91,19 +91,22 @@ class FoodSelectionViewModel @Inject constructor(   //TODO: Change the way of ho
         viewModelScope.launch {
             val currentRestaurant = restaurantRepository.getRestaurantById(restaurantId)
             if (currentRestaurant != null){
+                Log.d("FoodSelectionViewModel", "Current restaurant\n${currentRestaurant}")
                 _effect.send(FoodSelectionUiEvents.IntentContactRestaurant(
                     "https://wa.me/${currentRestaurant.phoneNumberToContact}?text=Hola%2C%20vengo%20desde%20la%20aplicaci%C3%B3n%20de%20Yummizi%2C%20quisiera%20comentarle%20que%20"    // FIXME
-//                    "https://wa.me/+51950214782?text=Hola%2C%20vengo%20desde%20la%20aplicaci%C3%B3n%20de%20Yummizi%2C%20quisiera%20comentarle%20que%20"
+                //                    "https://wa.me/+51950214782?text=Hola%2C%20vengo%20desde%20la%20aplicaci%C3%B3n%20de%20Yummizi%2C%20quisiera%20comentarle%20que%20"
                 ))
+
             }
         }
     }
 
     fun confirmOrder(){
         viewModelScope.launch {
+            Log.d("FoodSelectionViewModel", "Confirming order ${_orderMap.value}")
             if(_orderMap.value.isEmpty()){
                 _effect.send(FoodSelectionUiEvents.ShowSnackbar(message = "Por favor, seleccione al menos un plato"))
-                return@launch
+//                return@launch
             }
             else{
                 paymentRepository.selectOrder(_orderMap.value)
@@ -123,10 +126,12 @@ class FoodSelectionViewModel @Inject constructor(   //TODO: Change the way of ho
 
     fun cancelRequest(){    /// Also handle the Order cancelation if in later updates this screen create Order items in its inizialitation
         viewModelScope.launch {
+            Log.d("FoodSelectionViewModel", "🔎  Cancelling request")
             //Remove current request
             requestRepository.cancelRequest(restaurantId)
 
             //Navigate to home
+            Log.d("FoodSelectionViewModel", "🔎  Navigating to home")
             _effect.send(FoodSelectionUiEvents.NavigateToHome)
 
         }   // TODO: Clean the stack too

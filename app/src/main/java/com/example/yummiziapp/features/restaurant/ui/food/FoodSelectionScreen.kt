@@ -31,6 +31,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -38,6 +39,7 @@ import com.example.yummiziapp.core.designsystem.theme.YummiziTheme
 import com.example.yummiziapp.features.restaurant.ui.food.components.MenuArea
 import com.example.yummiziapp.R
 import com.example.yummiziapp.core.ui.components.CautionConfirmationModal
+import com.example.yummiziapp.core.ui.components.YummiziSnackbar
 import com.example.yummiziapp.features.payment.ui.arrival.components.RemainingTimeText
 import com.example.yummiziapp.features.restaurant.ui.food.components.MenuSettingArea
 import com.example.yummiziapp.features.restaurant.ui.model.MenuSetting
@@ -290,6 +292,12 @@ fun FoodSelectionScreen(    // TODO: Correct the prop-drilling of this and other
             onOptimisticOptionClicked = { isTryingToCancelRequest = false },
         )
 
+        YummiziSnackbar(
+            snackbarHostState = snackbarHostState,
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 24.dp, start = 32.dp, end = 32.dp)
+        )
     }
 
 }

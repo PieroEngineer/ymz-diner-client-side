@@ -71,24 +71,25 @@ fun MenuArea(
 //                .height(spacing.bigIconSize)
 //        )
 
-        Box(
-            modifier = Modifier
-                .background(
-                    color = YummiziTheme.colors.yummiziWhite,
-                    shape = CircleShape
-                )
-                .padding(spacing.bigPadding)
-                .align(Alignment.TopEnd)
-                .clickable{ onContactRestaurantClicked() },
-            contentAlignment = Alignment.Center
-        ){
-            Image(
-                painter = painterResource(R.drawable.headphones_icon),
-                contentDescription = null,
-                modifier = Modifier
-                    .size(spacing.regularIconSize)
-            )
-        }
+        // TODO
+//        Box(
+//            modifier = Modifier
+//                .background(
+//                    color = YummiziTheme.colors.yummiziWhite,
+//                    shape = CircleShape
+//                )
+//                .padding(spacing.bigPadding)
+//                .align(Alignment.TopEnd)
+//                .clickable{ onContactRestaurantClicked() },
+//            contentAlignment = Alignment.Center
+//        ){
+//            Image(
+//                painter = painterResource(R.drawable.headphones_icon),
+//                contentDescription = null,
+//                modifier = Modifier
+//                    .size(spacing.regularIconSize)
+//            )
+//        }
 
         PageIndicator(
             modifier = Modifier.align(Alignment.BottomCenter),
