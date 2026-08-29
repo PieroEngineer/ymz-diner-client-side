@@ -56,9 +56,13 @@ class PaymentPreparationViewModel @Inject constructor(
             if (currentPickedImageUiState is PickedPaymentImageUiState.ImageAlreadySelected) {
                 _isLoading.update { true }
                 paymentRepository.confirmSelectedOrder(currentPickedImageUiState.selectedFile.name, Uri.fromFile(currentPickedImageUiState.selectedFile))   // TODO (#945)
-                // TODO: handle this with "onSuccess" and "onError"
-                _effect.send(PaymentPreparationUiEvents.NavigateToArrival(restaurantId))
-                _isLoading.update { false }
+                    .onSuccess {
+                        _effect.send(PaymentPreparationUiEvents.NavigateToArrival(restaurantId))
+                    }
+                    .onFailure {
+                        _effect.send(PaymentPreparationUiEvents.ShowSnackbar("Hubo un problema al enviar la imagen, por favor, intente de nuevo\nSi ya pagó, puede acercarse al restaurante."))
+                        _isLoading.update { false }
+                    }
             }
             else {
                 // TODO: Else, show a snackbar

@@ -88,7 +88,7 @@ class PaymentRepositoryImpl @Inject constructor(    // TODO: Change the name of 
 //        }
     }
 
-    override suspend fun confirmSelectedOrder(paymentImageRelativePath: String, imageUri: Uri?) = withContext(ioDispatcher) {
+    override suspend fun confirmSelectedOrder(paymentImageRelativePath: String, imageUri: Uri?): Result<Unit> = withContext(ioDispatcher) {
         // Get the current "READY" request and extract its ID and the Restaurant ID
         val readyRequest = requestDao.getLatestReadyRequest()
             ?: throw IllegalStateException("No READY request found when confirming an order")
@@ -155,19 +155,19 @@ class PaymentRepositoryImpl @Inject constructor(    // TODO: Change the name of 
                     uploadImage(imageUri, presignedUrl.replace("172.18.0.2", "localhost"))  // FIXME: If we use the "replace" function, remove it in production
                     Log.d("MyActivity", "✅⏫  Image uploaded successfully")
 
-                    Unit
+                    Result.success(Unit)
                 }
                 else{
-                    throw Exception("🚩  Image URI or Presigned URL is null")
+                    Result.failure(Exception("🚩  Image URI or Presigned URL is null"))
                 }
             }
             catch (e: Exception){
                 // TODO: Let know to the restaurant that the image payment wasn't successfully sent (But depend in what part of the Lambda the error occured)
-                throw Exception("🚩  Image Uploading to S3 failed: ${e.message}")
+                Result.failure(Exception("🚩  Image Uploading to S3 failed: ${e.message}"))
             }
 
         } else {
-            throw Exception("API call failed: ${response.code()} ${response.message()}")
+            Result.failure(Exception("API call failed: ${response.code()} ${response.message()}"))
         }
     }
     private suspend fun uploadImage(uri: Uri, presignedUrl: String) {

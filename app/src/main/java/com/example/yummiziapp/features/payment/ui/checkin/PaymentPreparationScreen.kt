@@ -79,6 +79,9 @@ fun PaymentPreparationScreen(
 
                     snackbarHostState.showSnackbar(message = effect.accompanyingText)
                 }
+                is PaymentPreparationUiEvents.ShowSnackbar -> {
+                    snackbarHostState.showSnackbar(message = effect.message)
+                }
             }
         }
     }
