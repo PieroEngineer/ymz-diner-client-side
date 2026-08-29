@@ -65,7 +65,7 @@ class PaymentPreparationViewModel @Inject constructor(
                     }
             }
             else {
-                // TODO: Else, show a snackbar
+                _effect.send(PaymentPreparationUiEvents.ShowSnackbar("Por favor, seleccione una imagen"))
             }
         }
     }
