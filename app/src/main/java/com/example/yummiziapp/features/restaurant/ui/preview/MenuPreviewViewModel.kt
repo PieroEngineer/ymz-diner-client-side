@@ -59,6 +59,18 @@ class MenuPreviewViewModel @Inject constructor(
         }
     }
 
+    fun onFindLocationClicked(){
+        viewModelScope.launch {
+
+            val currentRestaurant =
+                restaurantRepository.getRestaurantById(restaurantId) ?: return@launch
+
+            _effect.send(MenuPreviewUiEvents.IntentFindLocation(
+                "https://www.google.com/maps/search/?api=1&query=${currentRestaurant.latitude},${currentRestaurant.longitude}"
+            ))
+        }
+    }
+
 
     private fun refreshMenu() {
         viewModelScope.launch { // TODO: move the "viewModelScope.launch"s to the init

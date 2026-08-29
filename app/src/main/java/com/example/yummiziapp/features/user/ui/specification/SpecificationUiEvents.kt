@@ -7,4 +7,5 @@ sealed interface SpecificationUiEvents {
     data object NavigateToHome : SpecificationUiEvents
     data object NavigateToPreferences : SpecificationUiEvents
     data object NavigateToContact : SpecificationUiEvents
+    data class IntentFindLocation(val url: String) : SpecificationUiEvents
 }

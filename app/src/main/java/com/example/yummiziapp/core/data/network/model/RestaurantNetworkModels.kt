@@ -13,11 +13,11 @@ data class FeedRestaurantResponseDto(
     val name: String,
     val logoUrl: String,      // Changed from logoId to URL for Cloud
     val sectionType: String,
-    val requestId: String = "", // TODO: I guess it doesn't go here
-    val dishesToShowUrls: List<String>,// |X -> = emptyList(),
-//X    val menuImageUrls: List<String> = emptyList(),
-//X    val latitude: Double? = null,
-//X    val longitude: Double? = null
+//X    val requestId: String = "",
+    val dishesToShowUrls: List<String>,
+    val latitude: Double,
+    val longitude: Double,
+    val phoneNumberToContact: String,
 )
 
 @Serializable
@@ -89,6 +89,7 @@ fun FeedRestaurantResponseDto.toEntity() = Restaurant(
     logoUrl = logoUrl,
     sectionType = sectionType,
     dishesToShowLink = dishesToShowUrls,
-//X    latitude = latitude,
-//X    longitude = longitude
+    latitude = latitude,
+    longitude = longitude,
+    phoneNumberToContact = phoneNumberToContact
 )

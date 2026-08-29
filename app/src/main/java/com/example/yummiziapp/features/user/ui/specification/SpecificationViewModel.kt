@@ -111,6 +111,19 @@ class SpecificationViewModel @Inject constructor(
         }
     }
 
+    fun onFindLocationClicked(){
+        viewModelScope.launch {
+            val currentRestaurantId = _focusedRestaurantId.value
+            if(currentRestaurantId != null){
+                val currentRestaurant = restaurantRepository.getRestaurantById(currentRestaurantId) ?: return@launch
+
+                _effect.send(SpecificationUiEvents.IntentFindLocation(
+                    "https://www.google.com/maps/search/?api=1&query=${currentRestaurant.latitude},${currentRestaurant.longitude}"
+                ))
+            }
+        }
+    }
+
     // 🔄 2. The Main UI State Machine Pipeline
     @OptIn(ExperimentalCoroutinesApi::class)
     val uiRestaurantState: StateFlow<RestaurantSpecificationUiState> = _focusedRestaurantId
@@ -184,7 +197,9 @@ class SpecificationViewModel @Inject constructor(
         distanceKm = 10,    // TODO: Remove mockup
         name = name,
         customerArrivalTimeInMinutes = customerArrivalTimeInMinutes,
-        MaxWaitingTimeInMinutesByRestaurant = 15 // TODO: It will be unmocked when the restaurant is able to select its own waiting time
+        maxWaitingTimeInMinutesByRestaurant = 15, // TODO: It will be unmocked when the restaurant is able to select its own waiting time
+        latitude = latitude,
+        longitude = longitude
     )
 
     // Extension function for clean mapping

@@ -9,5 +9,7 @@ data class FocusedRestaurantUiModel(
     val distanceKm: Int,
     val name: String,
     val customerArrivalTimeInMinutes: Int,
-    val MaxWaitingTimeInMinutesByRestaurant: Int
+    val maxWaitingTimeInMinutesByRestaurant: Int,
+    val latitude: Double,
+    val longitude: Double
 )

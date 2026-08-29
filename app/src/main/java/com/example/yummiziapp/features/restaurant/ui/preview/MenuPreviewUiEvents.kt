@@ -9,4 +9,5 @@ sealed interface MenuPreviewUiEvents {
     data object NavigateToHome : MenuPreviewUiEvents
     data object NavigateToYou : MenuPreviewUiEvents
     data object NavigateToContact : MenuPreviewUiEvents
+    data class IntentFindLocation(val url: String) : MenuPreviewUiEvents
 }

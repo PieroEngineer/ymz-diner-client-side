@@ -28,7 +28,8 @@ import com.example.yummiziapp.R
 fun ControlBar(
     modifier: Modifier = Modifier,
 
-    onAddRestaurantClicked: () -> Unit
+    onAddRestaurantClicked: () -> Unit,
+    onFindLocationClicked: () -> Unit
 ) {
     val spacing = YummiziTheme.spacing
 
@@ -53,6 +54,7 @@ fun ControlBar(
 
         ){
             val iconSize = spacing.bigIconSize
+
             Spacer(Modifier.weight(1f))
 
             Image(
@@ -81,6 +83,16 @@ fun ControlBar(
 //                    textAlign = TextAlign.Center
 //                )
 //            }
+
+            Spacer(Modifier.weight(1f))
+
+            Image(
+                painter = painterResource(R.drawable.pin_icon),
+                contentDescription = null,
+                modifier = Modifier
+                    .size(iconSize)
+                    .clickable { onFindLocationClicked() }
+            )
 
             Spacer(Modifier.weight(1f))
 

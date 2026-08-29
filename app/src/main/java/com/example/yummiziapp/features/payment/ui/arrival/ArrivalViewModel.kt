@@ -71,10 +71,21 @@ class ArrivalViewModel @Inject constructor(
         viewModelScope.launch {
             val currentRestaurant = restaurantRepository.getRestaurantById(restaurantId)
             if (currentRestaurant != null){
-                _effect.send(ArrivalUiEvent.IntentContactRestaurant(
+                _effect.send(ArrivalUiEvent.IntentNavigateToLink(
                     "https://wa.me/${currentRestaurant.phoneNumberToContact}?text=Hola%2C%20vengo%20desde%20la%20aplicaci%C3%B3n%20de%20Yummizi%2C%20quisiera%20comentarle%20que%20"
                 ))
             }
+        }
+    }
+
+    fun onFindLocationClicked(){
+        viewModelScope.launch {
+
+            val currentRestaurant = restaurantRepository.getRestaurantById(restaurantId) ?: return@launch
+
+            _effect.send(ArrivalUiEvent.IntentNavigateToLink(
+                "https://www.google.com/maps/search/?api=1&query=${currentRestaurant.latitude},${currentRestaurant.longitude}"
+            ))
         }
     }
 

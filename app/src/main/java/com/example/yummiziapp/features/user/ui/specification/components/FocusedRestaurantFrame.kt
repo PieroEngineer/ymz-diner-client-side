@@ -1,6 +1,9 @@
 package com.example.yummiziapp.features.user.ui.specification.components
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -22,10 +25,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.dropShadow
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.shadow.Shadow
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
+import com.example.yummiziapp.R
 import com.example.yummiziapp.core.designsystem.theme.YummiziTheme
 import com.example.yummiziapp.features.user.ui.model.FocusedRestaurantUiModel
 import com.example.yummiziapp.core.designsystem.theme.AsyncYummiziImage
@@ -42,7 +48,9 @@ fun FocusedRestaurantFrame(
 
     onQueueJoiningClicked: (Int, Uuid) -> Unit,
 
-    onTryToConfirmAcceptanceClicked: () -> Unit
+    onTryToConfirmAcceptanceClicked: () -> Unit,
+
+    onFindLocationClicked: () -> Unit
 ){
     val spacing = YummiziTheme.spacing
 
@@ -88,24 +96,53 @@ fun FocusedRestaurantFrame(
             Row(
                 modifier = Modifier
                     .padding(top = spacing.mediumPadding)
-                    .padding(horizontal = spacing.bigPadding)
+                    .padding(horizontal = spacing.bigPadding),
+                verticalAlignment = Alignment.CenterVertically
             ){  // Restaurant info
                 AsyncYummiziImage(
                     model = selectedRestaurant.restaurantLogoUrl,
                     contentDescription = null,
                     modifier = Modifier
-                        .size(spacing.smallImageSize)
+                        .size(spacing.reducedImageSize)
                         .clip(RoundedCornerShape(spacing.mediumCornerRadius))
                 )
 
-                Spacer(Modifier.width(spacing.regularSeparation))
+                Spacer(Modifier.width(spacing.mediumSeparation))
 
                 Text(
-                    text = "A ${selectedRestaurant.distanceKm}km\n\n${selectedRestaurant.name} espera\nhasta ${selectedRestaurant.MaxWaitingTimeInMinutesByRestaurant} min.",
+//                    text = "A ${selectedRestaurant.distanceKm}km\n\n${selectedRestaurant.name} espera\nhasta ${selectedRestaurant.MaxWaitingTimeInMinutesByRestaurant} min.",
+                    text = "${selectedRestaurant.name} espera\nhasta ${selectedRestaurant.maxWaitingTimeInMinutesByRestaurant} min.",
                     textAlign = TextAlign.Start,
                     color = YummiziTheme.colors.yummiziDarkBlue,
-                    style = YummiziTheme.typography.teacherFontVar3
+                    style = YummiziTheme.typography.teacherFontVar9
                 )
+
+                Spacer(Modifier.width(spacing.mediumSeparation))
+
+                Box(
+                    modifier = Modifier
+                        .dropShadow( /// Apply the intense drop shadow
+                            shape = shape,
+                            shadow = Shadow(
+                                color = YummiziTheme.colors.yummiziBlack.copy(alpha = 0.2f),
+                                radius = 20.dp,                        // High radius for a wide, soft spread
+                            )
+                        )
+                        .clip(RoundedCornerShape(spacing.mediumCornerRadius))
+                        .background(YummiziTheme.colors.yummiziWhite)
+                        .padding(spacing.smallPadding)
+                        .clickable{ onFindLocationClicked() }
+                ){
+                    Image(
+                        painter = painterResource(R.drawable.pin_icon),
+                        colorFilter = ColorFilter.tint(color = YummiziTheme.colors.yummiziDarkBlue),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(spacing.bigIconSize),
+                    )
+                }
+
+
             }
 
             Spacer(Modifier.height(spacing.smallSeparation))

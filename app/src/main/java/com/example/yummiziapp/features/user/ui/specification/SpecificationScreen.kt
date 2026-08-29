@@ -1,5 +1,7 @@
 package com.example.yummiziapp.features.user.ui.specification
 
+import android.content.ActivityNotFoundException
+import android.content.Intent
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -9,14 +11,19 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.zIndex
+import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.yummiziapp.core.designsystem.theme.YummiziTheme
@@ -44,14 +51,42 @@ fun SpecificationScreen(
 ) {
     val spacing = YummiziTheme.spacing
 
+    val uriHandler = LocalUriHandler.current
+    val context = LocalContext.current
+
     // Listen for the ViewModel's commands
     LaunchedEffect(Unit) {
         viewModel.navEffect.collect { effect ->
             when (effect) {
-                is SpecificationUiEvents.NavigateToRestaurantMenu -> { onRestaurantSelectedNav(effect.restaurantId) }
-                is SpecificationUiEvents.NavigateToHome -> { onHomeClickedNav() }
-                is SpecificationUiEvents.NavigateToPreferences -> { onYouClickedNav() }
-                is SpecificationUiEvents.NavigateToContact -> { onContactNavigation() }
+                is SpecificationUiEvents.NavigateToRestaurantMenu -> {
+                    onRestaurantSelectedNav(effect.restaurantId)
+                }
+
+                is SpecificationUiEvents.NavigateToHome -> {
+                    onHomeClickedNav()
+                }
+
+                is SpecificationUiEvents.NavigateToPreferences -> {
+                    onYouClickedNav()
+                }
+
+                is SpecificationUiEvents.NavigateToContact -> {
+                    onContactNavigation()
+                }
+
+                is SpecificationUiEvents.IntentFindLocation -> {
+                    try {
+                        uriHandler.openUri(effect.url)
+                    } catch (e: Exception) {
+                        // Fallback for specific deep links
+                        val intent = Intent(Intent.ACTION_VIEW, effect.url.toUri())
+                        try {
+                            context.startActivity(intent)
+                        } catch (anfe: ActivityNotFoundException) {
+                            Log.d("MyActivity", "🚩  No se pudo abrir el link")
+                        }
+                    }
+                }
             }
         }
     }
@@ -173,7 +208,9 @@ fun SpecificationScreen(
                                 Log.i("MyActivity", "🔎🍽️  Trying to confirm acceptance")
 
                                 isConfirmationPopupVisible = true
-                            }
+                            },
+
+                            onFindLocationClicked = { viewModel.onFindLocationClicked() }
                         )
                     }
                     is RestaurantSpecificationUiState.Error -> {

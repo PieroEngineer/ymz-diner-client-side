@@ -1,5 +1,8 @@
 package com.example.yummiziapp.features.restaurant.ui.preview
 
+import android.content.ActivityNotFoundException
+import android.content.Intent
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,12 +12,17 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalUriHandler
+import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.yummiziapp.core.designsystem.theme.YummiziTheme
@@ -42,6 +50,12 @@ fun MenuPreviewScreen(
 ) {
     val spacing = YummiziTheme.spacing
 
+    val uriHandler = LocalUriHandler.current
+    val context = LocalContext.current
+
+//    val snackbarHostState = remember { SnackbarHostState() }
+
+
     LaunchedEffect(Unit) {
         viewModel.navEffect.collect { effect ->
             when(effect) {
@@ -51,6 +65,20 @@ fun MenuPreviewScreen(
                 is MenuPreviewUiEvents.NavigateToHome -> { onHomeClickedNav() }
                 is MenuPreviewUiEvents.NavigateToYou -> {onYouClickedNav() }
                 is MenuPreviewUiEvents.NavigateToContact -> { onContactNavigation() }
+                is MenuPreviewUiEvents.IntentFindLocation -> {
+                    try {
+                        uriHandler.openUri(effect.url)
+                    } catch (e: Exception) {
+                        // Fallback for specific deep links
+                        val intent = Intent(Intent.ACTION_VIEW, effect.url.toUri())
+                        try {
+                            context.startActivity(intent)
+                        } catch (anfe: ActivityNotFoundException) {
+//                            snackbarHostState.showSnackbar("No se pudo abrir el link")
+                            Log.d("MyActivity", "🚩  No se pudo abrir el link")
+                        }
+                    }
+                }
             }
         }
     }
@@ -78,7 +106,8 @@ fun MenuPreviewScreen(
                 .fillMaxWidth()
                 .padding(spacing.mediumPadding),
 
-            onAddRestaurantClicked = { viewModel.onAddRestaurantClicked() }
+            onAddRestaurantClicked = { viewModel.onAddRestaurantClicked() },
+            onFindLocationClicked = { viewModel.onFindLocationClicked() }
         )
 
         Spacer(Modifier.height(spacing.smallSeparation))

@@ -16,10 +16,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults.shape
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -32,11 +34,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.dropShadow
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.yummiziapp.R
@@ -74,7 +79,7 @@ fun ArrivalScreen(  // TODO: For some reason, the keyboard is pushing the UI upw
         viewModel.navEffect.collect { effect -> // TODO: Research the difference between "collectLatest" and "collect"
             when (effect) {
                 is ArrivalUiEvent.NavigateToHome -> { onHomeClickedNav() }
-                is ArrivalUiEvent.IntentContactRestaurant -> {
+                is ArrivalUiEvent.IntentNavigateToLink -> {
                     try {
                         uriHandler.openUri(effect.url)
                     } catch (e: Exception) {
@@ -125,11 +130,43 @@ fun ArrivalScreen(  // TODO: For some reason, the keyboard is pushing the UI upw
                         File(context.filesDir, state.arrivalInfo.paymentImagePath)
                     }
 
-                    AsyncYummiziImage(    // Restaurant logo
-                        model = state.arrivalInfo.restaurantLogoUrl,
-                        contentDescription = null,
-                        modifier = Modifier.weight(1f)
-                    )
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f)
+                    ){
+                        AsyncYummiziImage(    // Restaurant logo
+                            model = state.arrivalInfo.restaurantLogoUrl,
+                            contentDescription = null,
+                            modifier = Modifier
+                                .align(Alignment.Center)
+                        )
+
+                        Box(
+                            modifier = Modifier
+                                .dropShadow( /// Apply the intense drop shadow
+                                    shape = shape,
+                                    shadow = Shadow(
+                                        color = YummiziTheme.colors.yummiziBlack.copy(alpha = 0.2f),
+                                        radius = 20.dp,                        // High radius for a wide, soft spread
+                                    )
+                                )
+                                .clip(RoundedCornerShape(spacing.mediumCornerRadius))
+                                .padding(vertical = spacing.smallPadding)
+                                .background(YummiziTheme.colors.yummiziWhite)
+                                .padding(spacing.mediumPadding)
+                                .clickable{ viewModel.onFindLocationClicked() }
+                                .align(Alignment.CenterEnd)
+                        ){
+                            Image(
+                                painter = painterResource(R.drawable.pin_icon),
+                                colorFilter = ColorFilter.tint(color = YummiziTheme.colors.yummiziDarkBlue),
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .size(spacing.hugeIconSize),
+                            )
+                        }
+                    }
 
                     Column( // Main frame
                         modifier = Modifier
