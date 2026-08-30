@@ -67,6 +67,7 @@ class RequestRepositoryImpl @Inject constructor(
         )
 
         // 3. OPTIMISTIC UPDATE
+        Log.d("MainActivity", "🔎The request is about to be inserted in the DB: $newRequest")
         requestDao.insertRequest(newRequest)
 
         try {

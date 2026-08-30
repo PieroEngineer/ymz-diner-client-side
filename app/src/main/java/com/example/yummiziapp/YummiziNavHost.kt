@@ -173,7 +173,13 @@ fun YummiziNavHost(
             PaymentPreparationScreen(
                 modifier = modifier,
                 onPaymentDoneNav = { id ->
-                    navController.navigate(YummiziRoute.Arrival(restaurantId = id.toString()))
+                    navController.navigate(YummiziRoute.Arrival(restaurantId = id.toString())){
+                        // Wipes the ENTIRE backstack back to root graph
+                        popUpTo(navController.graph.id) {
+                            inclusive = true
+                        }
+                        launchSingleTop = true
+                    }
                 }
             )
         }

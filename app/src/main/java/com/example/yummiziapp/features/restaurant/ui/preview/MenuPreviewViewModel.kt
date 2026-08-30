@@ -1,5 +1,6 @@
 package com.example.yummiziapp.features.restaurant.ui.preview
 
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.ViewModel
@@ -53,6 +54,7 @@ class MenuPreviewViewModel @Inject constructor(
                     _effect.send(MenuPreviewUiEvents.NavigateToPaidRestaurant(restaurantId))
                 }
                 else -> {
+                    Log.d("MyActivity", "🔎  From the Menu Preview ViewModel, the Current restaurant ID is $restaurantId whose status is ${ currentRestaurantState.name}")
                     _effect.send(MenuPreviewUiEvents.NavigateToFocusedRestaurant(restaurantId))
                 }
             }
