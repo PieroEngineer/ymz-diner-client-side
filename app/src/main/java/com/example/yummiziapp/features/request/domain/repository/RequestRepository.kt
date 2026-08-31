@@ -35,7 +35,7 @@ interface RequestRepository {
     fun observeIfThereAreRequests(): Flow<Boolean>
 
     suspend fun clearAll()
-    suspend fun confirmAcceptance(restaurantId: Uuid)
+    suspend fun confirmAcceptance(restaurantId: Uuid): Result<Unit>
 
     suspend fun fetchUpdatedRequestStatuses()
 

@@ -134,7 +134,7 @@ class FoodSelectionViewModel @Inject constructor(   //TODO: Change the way of ho
             Log.d("FoodSelectionViewModel", "🔎  Navigating to home")
             _effect.send(FoodSelectionUiEvents.NavigateToHome)
 
-        }   // TODO: Clean the stack too
+        }   // TODO: Clean the stack too // Or not?
     }
 
 

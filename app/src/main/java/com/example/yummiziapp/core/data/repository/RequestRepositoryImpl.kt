@@ -9,6 +9,7 @@ import com.example.yummiziapp.core.data.local.model.RequestStatusToken
 import com.example.yummiziapp.core.data.network.api.RequestApi
 import com.example.yummiziapp.core.data.network.model.LeaveQueueDto
 import com.example.yummiziapp.core.data.network.model.UpdateStatusDto
+import com.example.yummiziapp.core.data.network.model.mappers.mapToBatchRequestCancellationDto
 import com.example.yummiziapp.core.data.network.model.mappers.mapToGetUpdatedRequestStatusesDto
 import com.example.yummiziapp.core.data.network.model.mappers.mapToJoinQueueDto
 import com.example.yummiziapp.features.request.domain.repository.RequestRepository
@@ -135,21 +136,21 @@ class RequestRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun confirmAcceptance(restaurantId: Uuid) = withContext(ioDispatcher) {
+    override suspend fun confirmAcceptance(restaurantId: Uuid): Result<Unit> = withContext(ioDispatcher) {
         val userId = loggedUserDao.getCurrentUserId() ?: throw IllegalStateException("No logged-in user found")
 
         //TODO: Check if the transition is valid (e.g. QUEUED -> ACCEPTED)
 
         // Fetch current and other requests for backup
-        val currentRequest = requestDao.getRequestByRestaurantId(restaurantId) ?: return@withContext
+        val currentRequest = requestDao.getRequestByRestaurantId(restaurantId) ?: return@withContext Result.failure(Exception("No request found"))
         val otherRequests = requestDao.getOtherRequests(currentRequest.requestId)
 
+        Log.d("RequestRepository", "🔎  The other requests are $otherRequests")
+
         try {
-            // OPTIMISTIC UPDATE: Update status to READY and remove other requests
-            requestDao.confirmAcceptance(currentRequest.requestId, Clock.System.now())  /// In future update, maybe the completly delete won't the best option to get the history of histories. (Maybe just include a DAO function that notify to everyone that there is a READY request)
 
             // NETWORK CALL
-            val response = yummiziApi.updateRequestStatus(
+            val updateResponse = yummiziApi.updateRequestStatus(
                 restaurantId = restaurantId.toString(),
                 confirmData = UpdateStatusDto(
                     requestId = currentRequest.requestId.toString(),
@@ -158,19 +159,37 @@ class RequestRepositoryImpl @Inject constructor(
                 )
             )
 
-            if (!response.isSuccessful) throw Exception("Cloud failed to confirm acceptance")
+            if (!updateResponse.isSuccessful) throw Exception("Cloud failed to confirm acceptance")
+
+            Log.d("RequestRepository", "✅☁️ Update successful: ${currentRequest.requestId}")
+
+            val batchCancellationResponse = yummiziApi.cancelRequests( mapToBatchRequestCancellationDto(otherRequests) )
+
+            if (!batchCancellationResponse.isSuccessful) throw Exception("Cloud failed to do the batch cancellation")
+
+            Log.d("RequestRepository", "✅☁️ Batch cancellation successful")
+
+            // Update status to READY and remove other requests
+            requestDao.confirmAcceptance(currentRequest.requestId, Clock.System.now())  /// In future update, maybe the completly delete won't the best option to get the history of histories. (Maybe just include a DAO function that notify to everyone that there is a READY request)
+
+            Result.success(Unit)
 
         } catch (e: Exception) {
-            // ROLLBACK: Restore everything
-            withContext(NonCancellable) { // TODO: Try it without "withContext(NonCancellable)", because now it's in repo /// Gemini: Warning: Do NOT use NonCancellable to start long-running network or database calls in a ViewModel. It is strictly designed for immediate, lightweight cleanup operations in a finally block.
-                requestDao.updateRequestStatus(currentRequest.requestId, currentRequest.status)
-                if(otherRequests.isNotEmpty()){
-                    otherRequests.forEach { requestDao.insertRequest(it) }
-                }
-            }
 
-            Log.e("RequestRepository", "❌ Failed to confirm acceptance, rolling back local state", e)
-            throw e
+            Log.e("RequestRepository", "❌ Failed to confirm acceptance", e)
+            Result.failure(e)
+
+            //X
+//            // ROLLBACK: Restore everything
+//            withContext(NonCancellable) { // TODO: Try it without "withContext(NonCancellable)", because now it's in repo /// Gemini: Warning: Do NOT use NonCancellable to start long-running network or database calls in a ViewModel. It is strictly designed for immediate, lightweight cleanup operations in a finally block.
+//                requestDao.updateRequestStatus(currentRequest.requestId, currentRequest.status)
+//                if(otherRequests.isNotEmpty()){
+//                    otherRequests.forEach { requestDao.insertRequest(it) }
+//                }
+//            }
+//
+//            Log.e("RequestRepository", "❌ Failed to confirm acceptance, rolling back local state", e)
+//            throw e
         }
     }
 

@@ -1,5 +1,7 @@
 package com.example.yummiziapp.core.data.network.api
 
+import com.example.yummiziapp.core.data.network.model.BatchRequestCancellationDto
+import com.example.yummiziapp.core.data.network.model.BatchRequestCancellationResponseDto
 import com.example.yummiziapp.core.data.network.model.JoinQueueDto
 import com.example.yummiziapp.core.data.network.model.CreateRequestResponseDto
 import com.example.yummiziapp.core.data.network.model.GetUpdatedRequestStatusesDto
@@ -20,6 +22,11 @@ interface RequestApi {
         @Path("requestId") requestId: String,
         @Body cancelData: LeaveQueueDto
     ): Response<LeaveQueueResponseDto>
+
+    @POST("requests/cancel")
+    suspend fun cancelRequests(
+        @Body cancelData: BatchRequestCancellationDto
+    ): Response<BatchRequestCancellationResponseDto>
 
     @POST("requests/create")
     suspend fun createRequest(

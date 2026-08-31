@@ -260,20 +260,18 @@ class SpecificationViewModel @Inject constructor(
             Log.e("MyActivity", "🚩  Aborting confirmation: No active restaurant focused.")
             return
         }
+
         viewModelScope.launch {
-
-            try {
-                // Send acceptance confirmation to the backend network/API and disable the current requests.
-                requestRepository.confirmAcceptance(restaurantId)
-
-                // Fire the navigation side-effect safely using the frozen ID
-                _effect.send(SpecificationUiEvents.NavigateToRestaurantMenu(restaurantId))
-
-            } catch (error: Exception) {
-                // Handle network or database transaction failures cleanly
-//                _effect.send(SpecificationUiEvents.ShowErrorSnackbar(error.message ?: "Transaction failed"))
-            }
-
+            // Send acceptance confirmation to the backend network/API and disable the current requests.
+            requestRepository.confirmAcceptance(restaurantId)
+                .onSuccess{
+                    // Fire the navigation side-effect safely using the frozen ID
+                    _effect.send(SpecificationUiEvents.NavigateToRestaurantMenu(restaurantId))
+                }
+                .onFailure {
+                    // TODO: Implement SnackBar and loading state
+//                    _effect.send(SpecificationUiEvents.ShowSnackbar("Hubo un problema al confirmar la aceptación, por favor, intente de nuevo"))
+                }
         }
     }
 

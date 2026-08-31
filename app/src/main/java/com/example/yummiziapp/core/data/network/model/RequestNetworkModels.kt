@@ -60,6 +60,23 @@ data class LeaveQueueDto(
 )
 
 @Serializable
+data class BatchRequestCancellationDto(
+    val requestsToCancel: List<BatchRequestCancellationItemDto>
+)
+
+@Serializable
+data class BatchRequestCancellationItemDto(
+    val restaurantId: String,
+    val requestId: String
+)
+
+@Serializable
+data class BatchRequestCancellationResponseDto(
+    val message: String
+)
+
+
+@Serializable
 data class LeaveQueueResponseDto(
     val message: String,
 //    val onCancellationTimestamp: String  //TODO: Use this timestamp in other DTOs so the client-side can have the online timestamp of the cloud

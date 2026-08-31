@@ -2,6 +2,8 @@ package com.example.yummiziapp.core.data.network.model.mappers
 
 import com.example.yummiziapp.core.data.local.entities.LoggedUser
 import com.example.yummiziapp.core.data.local.entities.Request
+import com.example.yummiziapp.core.data.network.model.BatchRequestCancellationDto
+import com.example.yummiziapp.core.data.network.model.BatchRequestCancellationItemDto
 import com.example.yummiziapp.core.data.network.model.GetUpdatedRequestStatusesDto
 import com.example.yummiziapp.core.data.network.model.JoinQueueDto
 import com.example.yummiziapp.core.data.network.model.RequestUpdateDto
@@ -21,6 +23,17 @@ fun mapToGetUpdatedRequestStatusesDto(requests: List<Request>): GetUpdatedReques
     return GetUpdatedRequestStatusesDto(
         requestsToUpdate = requests.map {
             RequestUpdateDto(
+                restaurantId = it.restaurantId.toString(),
+                requestId = it.requestId.toString()
+            )
+        }
+    )
+}
+
+fun mapToBatchRequestCancellationDto(requests: List<Request>): BatchRequestCancellationDto {
+    return BatchRequestCancellationDto(
+        requestsToCancel = requests.map {
+            BatchRequestCancellationItemDto(
                 restaurantId = it.restaurantId.toString(),
                 requestId = it.requestId.toString()
             )
