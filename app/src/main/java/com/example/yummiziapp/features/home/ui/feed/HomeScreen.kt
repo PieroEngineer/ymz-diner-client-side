@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -28,6 +29,7 @@ import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.foundation.lazy.items
+import androidx.compose.runtime.key
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -166,23 +168,36 @@ fun HomeScreen(
                 is HomeUiState.Success -> {
 
                     // Slot Composition Approach
-                    SectionArea(    // Section area takes it parameters and pass the others to its child
-                        Modifier
-                            .weight(1f)
-                            .background(YummiziTheme.colors.yummiziWhite),
-                    ) {
-                        // Lazy items and keys perfectly right here
-                        items(
-                            items = state.sections,
-                            key = { section -> section.id }
-                        ) { section ->
-                            FeedSection(    // Feed section takes it parameters and pass the others to its child
+//                    SectionArea(    // Section area takes it parameters and pass the others to its child  // TODO (#830)
+//                        Modifier
+//                            .weight(1f)
+//                            .background(YummiziTheme.colors.yummiziWhite),
+//                    ) {
+//                        // Lazy items and keys perfectly right here
+//                        items(
+//                            items = state.sections,
+//                            key = { section -> section.id }
+//                        ) { section ->
+
+
+                Column( // X // TODO (#830)
+                    modifier = Modifier.weight(1f),
+                    verticalArrangement = Arrangement.spacedBy(spacing.mediumSeparation),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    state.sections.forEach { section ->
+                        key(section.id){
+
+                            ///
+                            FeedSection(
+                                // Feed section takes it parameters and pass the others to its child
                                 Modifier
                                     .fillMaxWidth(),
 
                                 section.title,
                             ) {
-                                RestaurantScrollable(   // Restaurant scrollable takes it parameters and pass the others to its child
+                                RestaurantScrollable(
+                                    // Restaurant scrollable takes it parameters and pass the others to its child
                                     Modifier,
 
                                     section.id,
@@ -191,7 +206,7 @@ fun HomeScreen(
                                     { controlledSectionId ->
                                         currentControlledSectionId = controlledSectionId
                                     },
-                                ){
+                                ) {
                                     items(
                                         items = section.restaurants,
                                         key = { restaurant -> restaurant.id }
@@ -201,24 +216,25 @@ fun HomeScreen(
                                             Modifier
                                                 .width((section.restaurantBlockHeight * 2).dp)
                                                 .height(section.restaurantBlockHeight.dp)
-                                                .clickable { viewModel.onRestaurantClicked(restaurant.id)},
+                                                .clickable { viewModel.onRestaurantClicked(restaurant.id) },
 
                                             restaurant,
                                             currentControlledSectionId == section.id,
 
                                             { restaurant, startPos ->
                                                 //If there is a restaurant ready, don't allow drag
-                                                if(activeRestaurantsUiState is ActiveRestaurantsUiState.ReadyStatus) return@RestaurantBlock    /// Should I move all this dragging logic to the ViewModel?
+                                                if (activeRestaurantsUiState is ActiveRestaurantsUiState.ReadyStatus) return@RestaurantBlock    /// Should I move all this dragging logic to the ViewModel?
                                                 //TODO: add a snackbar or some kind of message to notify the user that the restaurant is already selected, so he can't drag another restaurant ("Por favor, presione en el bloque naranja")
 
                                                 draggingRestaurant = restaurant
 
                                                 // Convert DP to PX properly using density.density
                                                 val widthPx = with(density) { spacing.bigImageSize.toPx() }
-                                                val heightPx = with(density) { spacing.smallImageSize.toPx() }
+                                                val heightPx =
+                                                    with(density) { spacing.smallImageSize.toPx() }
 
                                                 // Now the math uses the same "language" (pixels)
-                                                grabOffset = Offset(widthPx / 2f, heightPx*1.5f)
+                                                grabOffset = Offset(widthPx / 2f, heightPx * 1.5f)
 
                                                 dragPosition = startPos - grabOffset
                                             },
@@ -229,9 +245,14 @@ fun HomeScreen(
                                                 val bounds = dropZoneBounds
                                                 if (bounds != null) {
                                                     // Calculate the center of the dragged overlay for accurate detection
-                                                    val itemWidthPx = with(density) { spacing.bigImageSize.toPx() }
-                                                    val itemHeightPx = with(density) { spacing.smallImageSize.toPx() }
-                                                    val centerPosition = dragPosition + Offset(itemWidthPx / 2f, itemHeightPx / 2f)
+                                                    val itemWidthPx =
+                                                        with(density) { spacing.bigImageSize.toPx() }
+                                                    val itemHeightPx =
+                                                        with(density) { spacing.smallImageSize.toPx() }
+                                                    val centerPosition = dragPosition + Offset(
+                                                        itemWidthPx / 2f,
+                                                        itemHeightPx / 2f
+                                                    )
 
                                                     if (bounds.contains(centerPosition)) {
                                                         draggingRestaurant?.let {
@@ -245,11 +266,22 @@ fun HomeScreen(
                                     }
                                 }
                             }
-                        }
-                        item {
+
                             Spacer(Modifier.height(spacing.barHeight))
+                            ///
+
                         }
                     }
+
+
+
+                }
+
+//                        }
+//                        item {
+//                            Spacer(Modifier.height(spacing.barHeight))
+//                        }
+//                    }
                 }
                 is HomeUiState.Error -> {
                     Text(

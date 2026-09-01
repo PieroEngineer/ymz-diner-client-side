@@ -29,7 +29,8 @@ fun FeedSection(
 ){
     val spacing = YummiziTheme.spacing
     Column(
-        modifier = modifier
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally
     ){
         Row(    // Section header
             modifier = Modifier
@@ -51,26 +52,26 @@ fun FeedSection(
                     .background(YummiziTheme.colors.yummiziBlack)
             )
 
-            Row(
-                modifier = Modifier
-                //.height(spacing.hugeSeparation)  /// Should wrap the content
-                /// clickable
-            ){  // "More" button
-                Text(
-                    text = "Más",
-                    style = YummiziTheme.typography.comfortaaFontVar3,
-                    color = YummiziTheme.colors.yummiziGray2
-                )
-
-                Spacer(Modifier.width(spacing.smallSeparation))
-
-                Image(
-                    painter = painterResource(R.drawable.more_button),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .size(spacing.regularIconSize)
-                )
-            }
+//            Row(  // TODO
+//                modifier = Modifier
+//                //.height(spacing.hugeSeparation)  /// Should wrap the content
+//                /// clickable
+//            ){  // "More" button
+//                Text(
+//                    text = "Más",
+//                    style = YummiziTheme.typography.comfortaaFontVar3,
+//                    color = YummiziTheme.colors.yummiziGray2
+//                )
+//
+//                Spacer(Modifier.width(spacing.smallSeparation))
+//
+//                Image(
+//                    painter = painterResource(R.drawable.more_button),
+//                    contentDescription = null,
+//                    modifier = Modifier
+//                        .size(spacing.regularIconSize)
+//                )
+//            }
         }
 
         Spacer(Modifier.height(spacing.tinySeparation))
