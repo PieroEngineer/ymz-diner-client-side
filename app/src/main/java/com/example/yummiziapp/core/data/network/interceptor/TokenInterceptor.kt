@@ -26,6 +26,11 @@ class TokenInterceptor @Inject constructor() : Interceptor {
             }
         }
 
+        // Do not send Bearer token when uploading directly to S3
+//        if (originalRequest.url.host.contains("s3.amazonaws.com")) {
+//            return chain.proceed(originalRequest)
+//        }
+
         val requestBuilder = originalRequest.newBuilder()
             .header("Content-Type", "application/json")
             .header("Accept", "application/json")

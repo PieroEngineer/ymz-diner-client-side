@@ -137,7 +137,7 @@ fun SpecificationScreen(
                     )
                 )
 
-                when (val state = uiUserState) {    // FIXME: There is a bug that allows user change their compony size while the app is trying to cancel the unique active request. But if there is no internet the request comes back and the company size remains changed. We can fix it by connecting this UI state to the internet connection or state of the request UI.
+                when (val state = uiUserState) {    // TODO: There is a bug that allows user change their compony size while the app is trying to cancel the unique active request. But if there is no internet the request comes back and the company size remains changed. We can fix it by connecting this UI state to the internet connection or state of the request UI. // Or in the rollback
                     is UserSpecificationUiState.Loading -> {
                         // Loading UI
                     }

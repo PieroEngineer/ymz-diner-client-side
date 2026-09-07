@@ -152,7 +152,7 @@ class PaymentRepositoryImpl @Inject constructor(    // TODO: Change the name of 
 
             try{
                 if (imageUri != null && presignedUrl != null){
-                    uploadImage(imageUri, presignedUrl.replace("172.18.0.2", "localhost"))  // FIXME: If we use the "replace" function, remove it in production
+                    uploadImage(imageUri, presignedUrl.replace("172.18.0.2", "localhost"))
                     Log.d("MyActivity", "✅⏫  Image uploaded successfully")
 
                     Result.success(Unit)

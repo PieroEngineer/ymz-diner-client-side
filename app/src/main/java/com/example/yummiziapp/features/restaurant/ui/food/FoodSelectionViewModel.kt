@@ -93,8 +93,7 @@ class FoodSelectionViewModel @Inject constructor(   //TODO: Change the way of ho
             if (currentRestaurant != null){
                 Log.d("FoodSelectionViewModel", "Current restaurant\n${currentRestaurant}")
                 _effect.send(FoodSelectionUiEvents.IntentContactRestaurant(
-                    "https://wa.me/${currentRestaurant.phoneNumberToContact}?text=Hola%2C%20vengo%20desde%20la%20aplicaci%C3%B3n%20de%20Yummizi%2C%20quisiera%20comentarle%20que%20"    // FIXME
-                //                    "https://wa.me/+51950214782?text=Hola%2C%20vengo%20desde%20la%20aplicaci%C3%B3n%20de%20Yummizi%2C%20quisiera%20comentarle%20que%20"
+                    "https://wa.me/${currentRestaurant.phoneNumberToContact}?text=Hola%2C%20vengo%20desde%20la%20aplicaci%C3%B3n%20de%20Yummizi%2C%20quisiera%20comentarle%20que%20"
                 ))
 
             }

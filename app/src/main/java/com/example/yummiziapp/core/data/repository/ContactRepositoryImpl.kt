@@ -28,7 +28,7 @@ class ContactRepositoryImpl @Inject constructor(
 
             val userId = loggedUserDao.getCurrentUserId() ?: return@withContext // TODO: Rethink the consequent action
 
-            val lastRequest = requestDao.getLatestPaidRequest() // FIXME: Change it by a function that get a READY or a PAID request
+            val lastRequest = requestDao.getLatestPaidRequest() // TODO: Change it by a function that get a READY or a PAID request
 
             val associatedRequestId = lastRequest?.requestId?.toString()
                 ?: ""  // it determines if the feedback is related to a request or not
