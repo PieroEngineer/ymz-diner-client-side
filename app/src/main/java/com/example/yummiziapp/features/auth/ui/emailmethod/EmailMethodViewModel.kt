@@ -53,6 +53,11 @@ class EmailMethodViewModel @Inject constructor(
         initialValue = EmailMethodUiState.Loading
     )
 
+    fun onTermsCheckBoxClicked(){
+        if(!_formUiState.value.acceptTerms) _formUiState.update { it.copy(formIssueText = null) }
+        _formUiState.update { it.copy(acceptTerms = !it.acceptTerms) }
+    }
+
     fun onCreateAccountClicked() {
         viewModelScope.launch {
 
@@ -74,7 +79,7 @@ class EmailMethodViewModel @Inject constructor(
                     return@launch
                 }
                 if(!state.password.isPasswordValid()){
-                    _formUiState.update { it.copy(formIssueText = "La contraseña debe tener al menos 6 caracteres.") }
+                    _formUiState.update { it.copy(formIssueText = "La contraseña debe tener al menos 9 caracteres.") }
                     _isLoading.update { false }
                     return@launch
                 }
@@ -106,11 +111,6 @@ class EmailMethodViewModel @Inject constructor(
                 }
             }
         }
-    }
-
-    fun onTermsCheckBoxClicked(){
-        if(!_formUiState.value.acceptTerms) _formUiState.update { it.copy(formIssueText = null) }
-        _formUiState.update { it.copy(acceptTerms = !it.acceptTerms) }
     }
 
     fun onAccessAccountClicked() {

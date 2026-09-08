@@ -27,8 +27,8 @@ fun YummiziNavHost(
     NavHost(
         navController = navController,
 //        startDestination = YummiziRoute.Home, // 🛡️ Completely type-safe start node
-//        startDestination = YummiziRoute.AuthSelection
-        startDestination = YummiziRoute.Intro
+        startDestination = YummiziRoute.AuthSelection
+//        startDestination = YummiziRoute.Intro
     ) {
 
         composable<YummiziRoute.AuthSelection> {
@@ -50,7 +50,7 @@ fun YummiziNavHost(
                     navController.navigate(YummiziRoute.Home)
                 },
                 onIntroNavigation = {
-//                    navController.navigate(YummiziRoute.Intro)
+                    navController.navigate(YummiziRoute.Intro)
 
                 }
 

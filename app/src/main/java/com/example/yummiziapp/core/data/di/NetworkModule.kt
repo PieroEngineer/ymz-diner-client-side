@@ -3,7 +3,7 @@ package com.example.yummiziapp.core.data.di
 import com.example.yummiziapp.BuildConfig
 import com.example.yummiziapp.core.data.network.api.ContactApi
 import com.example.yummiziapp.core.data.network.api.PaymentApi
-import com.example.yummiziapp.core.data.network.api.PreferenceApi
+import com.example.yummiziapp.core.data.network.api.UserApi
 import com.example.yummiziapp.core.data.network.api.RequestApi
 import com.example.yummiziapp.core.data.network.api.RestaurantApi
 import com.example.yummiziapp.core.data.network.interceptor.TokenInterceptor
@@ -38,8 +38,8 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun providePreferenceApi(retrofit: Retrofit): PreferenceApi {
-        return retrofit.create(PreferenceApi::class.java)
+    fun providePreferenceApi(retrofit: Retrofit): UserApi {
+        return retrofit.create(UserApi::class.java)
     }
 
     @Provides

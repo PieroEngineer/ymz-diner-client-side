@@ -1,14 +1,13 @@
 package com.example.yummiziapp.core.data.repository
 
 import android.util.Log
-import com.amplifyframework.auth.AuthUserAttributeKey
 import com.amplifyframework.kotlin.core.Amplify
 import com.example.yummiziapp.core.data.di.IoDispatcher
 import com.example.yummiziapp.core.data.local.dao.LoggedUserDao
 import com.example.yummiziapp.core.data.local.dao.PreferenceDao
 import com.example.yummiziapp.core.data.local.entities.LoggedUser
 import com.example.yummiziapp.core.data.local.entities.Preference
-import com.example.yummiziapp.core.data.network.api.PreferenceApi
+import com.example.yummiziapp.core.data.network.api.UserApi
 import com.example.yummiziapp.core.data.network.model.toDto
 import com.example.yummiziapp.features.user.domain.repository.UserRepository
 import kotlinx.coroutines.CoroutineDispatcher
@@ -19,7 +18,7 @@ import kotlin.uuid.Uuid
 
 
 class UserRepositoryImpl @Inject constructor(
-    private val api: PreferenceApi,
+    private val api: UserApi,
     private val loggedUserDao: LoggedUserDao,
     private val preferenceDao: PreferenceDao,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher
@@ -27,50 +26,53 @@ class UserRepositoryImpl @Inject constructor(
 
     override fun observePreferences() = preferenceDao.observePreferences(Uuid.parse("00000000-0000-4000-a000-000000000000")) // TODO: Remove this hardcoded value when daling with preferences
 
-    override suspend fun seedUser() = withContext(ioDispatcher) {
-        try{
-            val user = Amplify.Auth.getCurrentUser()
-//            val attributes = Amplify.Auth.fetchUserAttributes()
-
-            // Helper function to extract attribute values cleanly
-//            fun getAttr(key: AuthUserAttributeKey) =
-//                attributes.firstOrNull { it.key == key }?.value.orEmpty()
-
-            val savedUser = loggedUserDao.getUser()
-
-            if(savedUser == null){
-                loggedUserDao.emptyUserTable()
-
-                val newUser = LoggedUser(
-                    id = Uuid.parse(user.userId),
-                    name = user.username,
-                    favoriteRestaurants = emptyList(),
-                    companySize = 0,
-                    specifics = emptyList() // TODO: Business data must be bringed from dynamoDB
-                )
-
-                loggedUserDao.saveUser(newUser)
-            }
-            else{
-                loggedUserDao.updateUser(savedUser.copy(companySize = 0))
-            }
-        }
-        catch (e: Exception){   // FIXME: Remove this catch behavior from production
-            Log.d("MyActivity", "⚠️  User not found in Cognito, using mockup user")
-            loggedUserDao.emptyUserTable()
-
-            val mockUuid = Uuid.parse("00000000-0000-4000-a000-000000000000")
-            val newUser = LoggedUser(
-                id = mockUuid,
-                name = "Sir Mock User",
-                favoriteRestaurants = emptyList(),
-                companySize = 0,
-                specifics = emptyList()
-            )
-
-            loggedUserDao.saveUser(newUser)
-        }
-    }
+    //X Already seed in the sign in
+//    override suspend fun seedUser() = withContext(ioDispatcher) {   // TODO: Move it to "AuthRepo"
+//        try{
+//            val user = Amplify.Auth.getCurrentUser()
+////            val attributes = Amplify.Auth.fetchUserAttributes()
+//
+//            // Helper function to extract attribute values cleanly
+////            fun getAttr(key: AuthUserAttributeKey) =
+////                attributes.firstOrNull { it.key == key }?.value.orEmpty()
+//
+//            val savedUser = loggedUserDao.getUser()
+//
+//            if(savedUser == null){
+//                loggedUserDao.emptyUserTable()  /// Necessary?
+//
+//                val remoteUserData = api.getUserData(user.userId)
+//
+//                val newUser = LoggedUser(
+//                    id = Uuid.parse(user.userId),
+//                    name = remoteUserData.username,
+//                    favoriteRestaurants = emptyList(),
+//                    companySize = 0,
+//                    specifics = emptyList() // TODO: Business data must be brought from dynamoDB
+//                )
+//
+//                loggedUserDao.saveUser(newUser)
+//            }
+//            else{
+//                loggedUserDao.updateUser(savedUser.copy(companySize = 0))
+//            }
+//        }
+//        catch (e: Exception){   // FIXME: Remove this catch behavior from production
+//            Log.d("MyActivity", "⚠️  User not found in Cognito, using mockup user")
+//            loggedUserDao.emptyUserTable()
+//
+//            val mockUuid = Uuid.parse("00000000-0000-4000-a000-000000000000")
+//            val newUser = LoggedUser(
+//                id = mockUuid,
+//                name = "Sir Mock User",
+//                favoriteRestaurants = emptyList(),
+//                companySize = 0,
+//                specifics = emptyList()
+//            )
+//
+//            loggedUserDao.saveUser(newUser)
+//        }
+//    }
 
     // We observe the logged user. If the lists change, the flow emits.
     override fun observeCurrentUserInfo(): Flow<LoggedUser?> {

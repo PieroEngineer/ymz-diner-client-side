@@ -6,7 +6,7 @@ fun String.isEmailValid(): Boolean {
 }
 
 fun String.isPasswordValid(): Boolean {
-    return this.length > 5
+    return this.length > 8
 }
 
 fun String.isUsernameValid(): Boolean {

@@ -22,7 +22,7 @@ interface RestaurantApi {
     @GET("restaurants/{restaurantId}/menu")
     suspend fun getRestaurantMenu(
         @Path("restaurantId") restaurantId: String
-    ): RestaurantMenuDto
+    ): RestaurantMenuDto    // TODO: Change all the GET requests to "Responses"
 
     @GET("restaurants/{restaurantId}/payment")
     suspend fun getPaymentInfo(
