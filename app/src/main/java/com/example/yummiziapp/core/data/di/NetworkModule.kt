@@ -95,9 +95,8 @@ object NetworkModule {
         val contentType = "application/json".toMediaType()
 
         return Retrofit.Builder()
-// FIXME:           .baseUrl(BuildConfig.BASE_URL) // Pulls safely from the environment configuration we set up earlier!
+            .baseUrl(BuildConfig.BASE_URL)
 //            .baseUrl("http://localhost:4566/_aws/execute-api/9mailuwoqt/prod/")
-            .baseUrl("https://<api-id>.execute-api.us-east-1.amazonaws.com/dev/")
             .client(okHttpClient)
             .addConverterFactory(json.asConverterFactory(contentType))
             .build()

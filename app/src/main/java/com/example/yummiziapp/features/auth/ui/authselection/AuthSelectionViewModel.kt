@@ -40,7 +40,9 @@ class AuthSelectionViewModel  @Inject constructor(
 
     fun checkExistingSession() {
         viewModelScope.launch {
-            when (val result = authRepository.checkSession()) {
+            _uiState.update { AuthSelectionUiState.Loading }
+
+            when (val result = authRepository.checkSession()) { /// Change it by ".onSuccess" way?
                 is AuthResult.Success -> {
                     val isSignedIn = result.data
 

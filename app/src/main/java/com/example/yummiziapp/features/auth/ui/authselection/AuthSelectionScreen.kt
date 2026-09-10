@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -32,6 +33,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.yummiziapp.R
@@ -132,10 +134,10 @@ fun AuthSelectionScreen(
                 when (val state = uiState) {
                     is AuthSelectionUiState.Loading -> {
                         // Loading UI
-                        Text(
-                            text = "Loading",
-                            color = YummiziTheme.colors.yummiziDarkBlue,
-                            style = YummiziTheme.typography.leaguespartanFontVar3
+                        CircularProgressIndicator(
+                            modifier = Modifier.width(spacing.hugeIconSize),
+                            color = YummiziTheme.colors.yummiziLightOrange,
+                            trackColor = YummiziTheme.colors.yummiziWhite,
                         )
                     }
                     is AuthSelectionUiState.UnauthenticatedSession -> {
