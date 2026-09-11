@@ -43,8 +43,8 @@ android {
 
         buildConfigField(
             "String",
-            "BASE_URL",
-            "\"https://api.yummizi.com/\""
+            "API_GATEWAY_URL",
+            "\"${localProperties.getProperty("API_GATEWAY_URL", "")}\""
         )
 
         // Secret / per-dev — pulled from local.properties

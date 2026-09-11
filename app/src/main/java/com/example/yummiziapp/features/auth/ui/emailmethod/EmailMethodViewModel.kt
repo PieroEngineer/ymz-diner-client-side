@@ -9,7 +9,9 @@ import com.example.yummiziapp.core.utils.isPasswordValid
 import com.example.yummiziapp.core.utils.isUsernameValid
 import com.example.yummiziapp.features.auth.domain.model.AuthResult
 import com.example.yummiziapp.features.auth.domain.repository.AuthRepository
+import com.example.yummiziapp.features.user.domain.repository.UserRepository
 import com.example.yummiziapp.features.auth.ui.model.UserInfoTab
+import com.example.yummiziapp.features.auth.ui.utils.getAuthErrorMessage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -25,7 +27,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class EmailMethodViewModel @Inject constructor(
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
+    private val userRepository: UserRepository
 ) : ViewModel() {
 
     private val _effect = Channel<EmailMethodUiEvent>(Channel.BUFFERED)
@@ -61,10 +64,15 @@ class EmailMethodViewModel @Inject constructor(
     fun onCreateAccountClicked() {
         viewModelScope.launch {
 
+            Log.d("MainActivity" ,"🔎🪪  Starting sign up...")
+
             if(_isSigningIn.value){
+                Log.d("MainActivity" ,"🔎🪪  Just toggle mode")
                 _isSigningIn.update { false }
             }
             else{
+                Log.d("MainActivity" ,"🔎🪪  No toggle, starting sign up...")
+
                 _isLoading.update { true }
 
                 val state = _formUiState.value
@@ -93,20 +101,27 @@ class EmailMethodViewModel @Inject constructor(
 
                 val signUpResult = authRepository.signUp(state.username, state.email, state.password)
 
+                Log.d("MainActivity" ,"🔎🪪  Sign up result: $signUpResult")
+
                 if(signUpResult is AuthResult.Success){
-                    val signInResult = authRepository.signIn(state.email, state.password)
+                    Log.d("MainActivity" ,"🔎🪪  Sign up was successful")
+                    val signInResult = authRepository.signIn(state.email, state.password, state.username)
                     if(signInResult is AuthResult.Success){
+                        Log.d("MainActivity" ,"🔎🪪  Sign in just after sign up was successful")
+                        userRepository.createNewUser(state.username)
                         _effect.send(EmailMethodUiEvent.NavigateToIntro)
                     }
                     else{
+                        Log.d("MainActivity" ,"🔎🪪  Sign in just after sign up was not successful")
                         signInResult as AuthResult.Error
-                        _formUiState.update { it.copy(formIssueText = "Se creó la cuenta con éxito,\npero la autenticación falló (${signInResult.message})") }
+                        _formUiState.update { it.copy(formIssueText = getAuthErrorMessage(signInResult.exception)) }
                         _isLoading.update { false }
                     }
                 }
                 else{
+                    Log.d("MainActivity" ,"🔎🪪  Sign up was not successful")
                     signUpResult as AuthResult.Error
-                    _formUiState.update { it.copy(formIssueText = "La creación de cuenta falló (${signUpResult.message})") }
+                    _formUiState.update { it.copy(formIssueText = getAuthErrorMessage(signUpResult.exception)) }
                     _isLoading.update { false }
                 }
             }
@@ -116,6 +131,7 @@ class EmailMethodViewModel @Inject constructor(
     fun onAccessAccountClicked() {
         viewModelScope.launch {
             _isLoading.update { true }
+            Log.d("MainActivity" ,"🔎🪪  Starting sign in...")
 
             val state = _formUiState.value
             if(!state.email.isEmailValid()){
@@ -128,11 +144,13 @@ class EmailMethodViewModel @Inject constructor(
 
             val result = authRepository.signIn(state.email, state.password)
             if(result is AuthResult.Success){
+                Log.d("MainActivity" ,"🔎🪪  Sign in was successful")
                 _effect.send(EmailMethodUiEvent.NavigateToHome)
             }
             else{
+                Log.d("MainActivity" ,"🔎🪪  Sign in was not successful")
                 result as AuthResult.Error
-                _formUiState.update { it.copy(formIssueText = "La autenticación falló (${result.message})") }
+                _formUiState.update { it.copy(formIssueText = getAuthErrorMessage(result.exception)) }
                 _isLoading.update { false }
             }
         }

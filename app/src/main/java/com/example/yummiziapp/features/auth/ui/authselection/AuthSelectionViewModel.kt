@@ -46,7 +46,7 @@ class AuthSelectionViewModel  @Inject constructor(
                 is AuthResult.Success -> {
                     val isSignedIn = result.data
 
-                    Log.i("MyActivity", "🔎  Existing session found: $isSignedIn")
+                    Log.i("MyActivity", "🔎🪪  Existing session found: $isSignedIn")
 
                     if (isSignedIn) {
                         _effect.send(AuthSelectionUiEvents.NavigateToHome)
@@ -56,6 +56,7 @@ class AuthSelectionViewModel  @Inject constructor(
                     }
                 }
                 is AuthResult.Error -> {
+                    Log.d("MyActivity", "🚩🪪  Error when trying to check session: ${result.message}")
 
                     _uiState.update { AuthSelectionUiState.UnauthenticatedSession }
 

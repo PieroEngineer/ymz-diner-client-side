@@ -101,7 +101,7 @@ fun ProfileScreen(
                 .padding(vertical = spacing.regularPadding)
         ){
             Text(
-                text = "Alberta K.",
+                text = "Alberta K.",    // FIXME: Change it be real user
                 color = YummiziTheme.colors.yummiziWhite,
                 style = YummiziTheme.typography.leaguespartanFontVar6,
                 textAlign = TextAlign.Center,

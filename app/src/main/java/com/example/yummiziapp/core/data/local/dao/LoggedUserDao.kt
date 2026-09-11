@@ -13,8 +13,8 @@ import kotlin.uuid.Uuid
 @Dao
 interface LoggedUserDao {
 
-    @Upsert
-    suspend fun upsertUser(user: LoggedUser)
+//    @Upsert
+//    suspend fun upsertUser(user: LoggedUser)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun saveUser(user: LoggedUser)

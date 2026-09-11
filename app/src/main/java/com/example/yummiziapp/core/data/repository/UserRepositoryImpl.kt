@@ -8,6 +8,7 @@ import com.example.yummiziapp.core.data.local.dao.PreferenceDao
 import com.example.yummiziapp.core.data.local.entities.LoggedUser
 import com.example.yummiziapp.core.data.local.entities.Preference
 import com.example.yummiziapp.core.data.network.api.UserApi
+import com.example.yummiziapp.core.data.network.model.UserCreationPayload
 import com.example.yummiziapp.core.data.network.model.toDto
 import com.example.yummiziapp.features.user.domain.repository.UserRepository
 import kotlinx.coroutines.CoroutineDispatcher
@@ -133,4 +134,13 @@ class UserRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun createNewUser(username: String) {
+        val userId = Amplify.Auth.getCurrentUser().userId
+        api.createUser(
+            userId = userId,
+            user = UserCreationPayload(
+                username = username
+            )
+        )
+    }
 }

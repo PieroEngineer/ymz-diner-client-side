@@ -107,7 +107,7 @@ class PaymentRepositoryImpl @Inject constructor(    // TODO: Change the name of 
             requestId = readyRequest.requestId,
             restaurantId = readyRequest.restaurantId,
             userId = loggedUser.id,
-            userName = "Sir Mock User p", //readyRequest.userName,
+            userName = loggedUser.name,
             arrivalTime = readyRequest.arrivalTimeInMinutes,
             groupSize = loggedUser.companySize + 1,
             selections = orderSelectionDtos

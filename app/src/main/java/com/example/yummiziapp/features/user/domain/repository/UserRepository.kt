@@ -26,4 +26,6 @@ interface UserRepository {
     fun observePreferences(): Flow<List<Preference>>
 
     suspend fun updateCompanySize(isIncreasing: Boolean)
+
+    suspend fun createNewUser(username: String)
 }

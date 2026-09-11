@@ -95,7 +95,7 @@ object NetworkModule {
         val contentType = "application/json".toMediaType()
 
         return Retrofit.Builder()
-            .baseUrl(BuildConfig.BASE_URL)
+            .baseUrl(BuildConfig.API_GATEWAY_URL)
 //            .baseUrl("http://localhost:4566/_aws/execute-api/9mailuwoqt/prod/")
             .client(okHttpClient)
             .addConverterFactory(json.asConverterFactory(contentType))

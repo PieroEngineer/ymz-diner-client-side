@@ -1,5 +1,7 @@
 package com.example.yummiziapp.core.data.repository
 
+import android.util.Log
+import com.amplifyframework.auth.AuthException
 import com.amplifyframework.auth.options.AuthSignUpOptions
 import com.example.yummiziapp.core.data.network.model.SignUpData
 import com.example.yummiziapp.features.auth.domain.model.AuthResult
@@ -11,7 +13,6 @@ import com.example.yummiziapp.core.data.di.IoDispatcher
 import com.example.yummiziapp.core.data.local.dao.LoggedUserDao
 import com.example.yummiziapp.core.data.local.entities.LoggedUser
 import com.example.yummiziapp.core.data.network.api.UserApi
-import com.example.yummiziapp.core.data.network.model.UserCreationPayload
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import kotlin.uuid.Uuid
@@ -51,32 +52,9 @@ class AuthRepositoryImpl @Inject constructor(
                 options
             )
 
-            val user = Amplify.Auth.getCurrentUser()
-            val userId = user.userId
-
-            // TODO: Handle the situation that Cognito register the user but dynamoDB fails
-
-            // ️Upload the user data to the database
-            api.createUser(
-                userId = userId,    // TODO: Research if the sending of the user ID should be here (like now) or in the backend
-                UserCreationPayload(
-                    username = username
-                )
-            )
-
-            val newUser = LoggedUser(
-                id = Uuid.parse(userId),
-                name = username,
-                favoriteRestaurants = emptyList(),
-                companySize = 0,
-                specifics = emptyList()
-            )
-
-            loggedUserDao.saveUser(newUser)
-
             // Returns true if sign up is complete, false if user pool requires confirmation/OTP
             AuthResult.Success(result.isSignUpComplete)
-        } catch (e: Exception) {
+        } catch (e: AuthException) {
             AuthResult.Error(e, e.message ?: "Sign up failed due to an unknown error")
         }
     }
@@ -87,20 +65,27 @@ class AuthRepositoryImpl @Inject constructor(
      * Password credentials are securely transmuted using SRP (Secure Remote Password)
      * protocol under the hood by Amplify SDK—passwords are never sent in plain text over the network.
      */
-    override suspend fun signIn(email: String, password: String): AuthResult<Boolean> {
-        return try {
+    override suspend fun signIn(email: String, password: String, newUsername: String?): AuthResult<Boolean> = withContext(ioDispatcher) {
+
+        try {
             val result = Amplify.Auth.signIn(email, password)
+
+            Log.d("MainActivity" ,"🔎🪪  Sign in was successful (inside)")
 
             val user = Amplify.Auth.getCurrentUser()
 
-            val remoteUserData = api.getUserData(user.userId)
+            Log.d("MainActivity" ,"🔎🪪  User: $user\nAnd the username direct is: ${newUsername}")
+
+            val username = newUsername ?: api.getUserData(user.userId).username
+
+            Log.d("MainActivity" ,"🔎🪪   Collected Username: $username")
 
             loggedUserDao.emptyUserTable()
 
             loggedUserDao.saveUser(
                 LoggedUser(
                     id = Uuid.parse(user.userId),
-                    name = remoteUserData.username,
+                    name = username,
                     favoriteRestaurants = emptyList(),
                     companySize = 0,
                     specifics = emptyList()
@@ -108,8 +93,12 @@ class AuthRepositoryImpl @Inject constructor(
             )
 
             AuthResult.Success(result.isSignedIn)
-        } catch (e: Exception) {
+        } catch (e: AuthException) {
+            Log.d("MainActivity" ,"🔎🪪  It's an auth error : ${e.message}")
             AuthResult.Error(e, e.message ?: "Authentication failed")
+        } catch (e: Exception) {
+            Log.d("MainActivity" ,"🔎🪪  It's default error : ${e.message}")
+            AuthResult.Error(e, e.message ?: "An unexpected error occurred during sign in")
         }
     }
 
@@ -121,7 +110,7 @@ class AuthRepositoryImpl @Inject constructor(
             val session = Amplify.Auth.fetchAuthSession()
             AuthResult.Success(session.isSignedIn)
 
-        } catch (e: Exception) {
+        } catch (e: AuthException) {
             AuthResult.Error(e, e.message ?: "Session check failed")
         }
     }
@@ -130,7 +119,7 @@ class AuthRepositoryImpl @Inject constructor(
         return try {
             Amplify.Auth.signOut()
             AuthResult.Success(Unit)
-        } catch (e: Exception) {
+        } catch (e: AuthException) {
             AuthResult.Error(e)
         }
     }
