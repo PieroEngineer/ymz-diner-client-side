@@ -17,6 +17,7 @@ import com.example.yummiziapp.core.data.local.model.RequestStatusToken
 import com.example.yummiziapp.core.data.network.api.PaymentApi
 import com.example.yummiziapp.core.data.network.model.mappers.createSendOrderDto
 import com.example.yummiziapp.core.data.network.model.mappers.toDtoList
+import com.example.yummiziapp.core.utils.convertToWebp
 import com.example.yummiziapp.features.payment.domain.repository.PaymentRepository
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
@@ -153,43 +154,64 @@ class PaymentRepositoryImpl @Inject constructor(    // TODO: Change the name of 
             try{
                 if (imageUri != null && presignedUrl != null){
                     uploadImage(imageUri, presignedUrl.replace("172.18.0.2", "localhost"))
+
                     Log.d("MyActivity", "✅⏫  Image uploaded successfully")
 
-                    Result.success(Unit)
+                    return@withContext Result.success(Unit)
                 }
                 else{
-                    Result.failure(Exception("🚩  Image URI or Presigned URL is null"))
+                    return@withContext Result.failure(Exception("🚩  Image URI or Presigned URL is null"))
                 }
             }
             catch (e: Exception){
                 // TODO: Let know to the restaurant that the image payment wasn't successfully sent (But depend in what part of the Lambda the error occured)
-                Result.failure(Exception("🚩  Image Uploading to S3 failed: ${e.message}"))
+                return@withContext Result.failure(Exception("🚩  Image Uploading to S3 failed: ${e.message}"))
             }
 
         } else {
-            Result.failure(Exception("API call failed: ${response.code()} ${response.message()}"))
+            return@withContext Result.failure(Exception("API call failed: ${response.code()} ${response.message()}"))
         }
     }
     private suspend fun uploadImage(uri: Uri, presignedUrl: String) {
-        runCatching {
-            val mimeType = context.contentResolver.getType(uri) ?: "image/jpeg"
+        val contentResolver = context.contentResolver
+        
+        // 1. Determine MIME type and exact size. 
+        // S3 Presigned URLs REQUIRE Content-Length and do not support 'Transfer-Encoding: chunked'.
+        val mimeType = when {
+            uri.path?.endsWith(".webp") == true -> "image/webp"
+            uri.path?.endsWith(".png") == true -> "image/png"
+            uri.path?.endsWith(".jpg") == true || uri.path?.endsWith(".jpeg") == true -> "image/jpeg"
+            else -> contentResolver.getType(uri) ?: "image/jpeg"
+        }
 
-            // 2. Efficiently stream image from Uri without loading whole file in RAM
-            val requestBody = object : RequestBody() {
-                override fun contentType() = mimeType.toMediaTypeOrNull()
-
-                override fun writeTo(sink: BufferedSink) {
-                    context.contentResolver.openInputStream(uri)?.use { inputStream ->
-                        sink.writeAll(inputStream.source())
-                    } ?: throw IllegalStateException("🚩  Could not open InputStream for Uri")
-                }
+        val size = when (uri.scheme) {
+            "file" -> uri.path?.let { File(it).length() } ?: -1L
+            "content" -> {
+                contentResolver.openAssetFileDescriptor(uri, "r")?.use { it.length } ?: -1L
             }
+            else -> -1L
+        }
 
-            // 3. Upload directly to S3
-            val uploadResponse = yummiziApi.uploadToPresignedUrl(presignedUrl, mimeType, requestBody)
-            if (!uploadResponse.isSuccessful) {
-                throw IllegalStateException("S3 Upload failed with code: ${uploadResponse.code()}")
+        Log.d("MyActivity", "🔎⏫🖼️  Uploading to S3: MIME=$mimeType, Size=$size bytes")
+
+        // 2. Efficiently stream image from Uri while providing the mandatory Content-Length
+        val requestBody = object : RequestBody() {
+            override fun contentType() = mimeType.toMediaTypeOrNull()
+            
+            override fun contentLength() = size
+
+            override fun writeTo(sink: BufferedSink) {
+                contentResolver.openInputStream(uri)?.use { inputStream ->
+                    sink.writeAll(inputStream.source())
+                } ?: throw IllegalStateException("🚩  Could not open InputStream for Uri")
             }
+        }
+
+        // 3. Upload directly to S3
+        val uploadResponse = yummiziApi.uploadToPresignedUrl(presignedUrl, mimeType, requestBody)
+        if (!uploadResponse.isSuccessful) {
+            Log.d("MyActivity", "🚩uploadFile: API call failed: ${uploadResponse.code()} ${uploadResponse.message()}")
+            throw IllegalStateException("S3 Upload failed with code: ${uploadResponse.code()}")
         }
     }
 
@@ -212,20 +234,26 @@ class PaymentRepositoryImpl @Inject constructor(    // TODO: Change the name of 
             // Extracts base name regardless of whether 'fileName' contains an extension or not
             val baseName = "current_payment_image_${readyRequest.requestId}"
 
-            // 1. Primary Attempt: Check for .png candidate
+            // 1. Primary Attempt: Check for .webp candidate (Preferred)
+            val webpCandidate = File(context.filesDir, "$baseName.webp")
+            if (webpCandidate.isValidImageFile()) {
+                return@withContext webpCandidate
+            }
+
+            // 2. Fallback Attempt: Check for .png candidate
             val pngCandidate = File(context.filesDir, "$baseName.png")
             if (pngCandidate.isValidImageFile()) {
                 return@withContext pngCandidate
             }
 
-            // 2. Fallback Attempt: Check for .jpg candidate
+            // 3. Fallback Attempt: Check for .jpg candidate
             val jpgCandidate = File(context.filesDir, "$baseName.jpg")
             if (jpgCandidate.isValidImageFile()) {
                 return@withContext jpgCandidate
             }
 
             throw FileNotFoundException(
-                "Image file for '$baseName' (tried .png, .jpg) does not exist in filesDir."
+                "Image file for '$baseName' (tried .webp, .png, .jpg) does not exist in filesDir."
             )
         }
     }
@@ -242,22 +270,11 @@ class PaymentRepositoryImpl @Inject constructor(    // TODO: Change the name of 
             val readyRequest = requestDao.getLatestReadyRequest()
                 ?: throw IllegalStateException("No READY request found when saving image")
 
-            // Generation handler
-            val contentResolver = context.contentResolver
+            // Shaping output - always WebP for performance and size
+            val targetFile = File(context.filesDir, "current_payment_image_${readyRequest.requestId}.webp")
 
-            // Determine file extension or default to jpg
-            val mimeType = contentResolver.getType(uri)
-            val extension = if (mimeType?.contains("png") == true) "png" else "jpg" // I guess it doesn't cover all extensions, but maybe it's ok because the phones' SS has these extension
-
-            // Shaping output
-            val targetFile = File(context.filesDir/* *Or cacheDir */, "current_payment_image_${readyRequest.requestId}.$extension")   // TODO: Change that random UUID by a timestamp, so we can use it later in the logic to get or delete it.
-
-            // Byte Streaming and Copying
-            contentResolver.openInputStream(uri)?.use { inputStream ->
-                targetFile.outputStream().use { outputStream ->
-                    inputStream.copyTo(outputStream)
-                }
-            } ?: throw IllegalStateException("Unable to open input stream for Uri: $uri")
+            // Convert and save as WebP
+            uri.convertToWebp(context, targetFile, quality = 80)
 
             targetFile
         }

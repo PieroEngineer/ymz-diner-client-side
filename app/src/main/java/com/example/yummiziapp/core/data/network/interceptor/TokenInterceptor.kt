@@ -1,5 +1,6 @@
 package com.example.yummiziapp.core.data.network.interceptor
 
+import android.util.Log
 import com.amplifyframework.auth.cognito.AWSCognitoAuthSession
 import com.amplifyframework.kotlin.core.Amplify
 import kotlinx.coroutines.runBlocking
@@ -26,14 +27,32 @@ class TokenInterceptor @Inject constructor() : Interceptor {
             }
         }
 
-        // Do not send Bearer token when uploading directly to S3
-        if (originalRequest.url.host.contains("s3.amazonaws.com")) {
+        // Robust S3/Presigned URL detection:
+        // We check for bucket name, S3 host, OR the presence of 'X-Amz-Algorithm'
+        val urlString = originalRequest.url.toString()
+        val isS3Request = urlString.contains("yummizi-media-storage", ignoreCase = true) ||
+                urlString.contains("s3.amazonaws.com", ignoreCase = true) ||
+                originalRequest.url.queryParameter("X-Amz-Algorithm") != null
+
+        Log.d("MainActivity", "🔎🔑 Request URL: $urlString")
+        
+        if (isS3Request) {
+            Log.d("MainActivity", "🔎🔑 S3/Presigned request detected. Skipping auth injection.")
             return chain.proceed(originalRequest)
         }
 
+        Log.d("MainActivity", "🔎🔑 Normal API request detected.")
+
         val requestBuilder = originalRequest.newBuilder()
-            .header("Content-Type", "application/json")
-            .header("Accept", "application/json")
+
+        // Only add default JSON headers if they are not already present.
+        // This prevents overwriting MIME types for uploads if detection fails.
+        if (originalRequest.header("Content-Type") == null) {
+            requestBuilder.header("Content-Type", "application/json")
+        }
+        if (originalRequest.header("Accept") == null) {
+            requestBuilder.header("Accept", "application/json")
+        }
 
         // Injects token only if user is logged in
         if (!token.isNullOrBlank()) {

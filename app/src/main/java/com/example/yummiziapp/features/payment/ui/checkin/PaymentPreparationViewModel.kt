@@ -1,6 +1,7 @@
 package com.example.yummiziapp.features.payment.ui.checkin
 
 import android.net.Uri
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -57,9 +58,11 @@ class PaymentPreparationViewModel @Inject constructor(
                 _isLoading.update { true }
                 paymentRepository.confirmSelectedOrder(currentPickedImageUiState.selectedFile.name, Uri.fromFile(currentPickedImageUiState.selectedFile))   // TODO (#945)
                     .onSuccess {
+                        Log.d("MyActivity", "✅ ViewModel received a success response of the S3 upload")
                         _effect.send(PaymentPreparationUiEvents.NavigateToArrival(restaurantId))
                     }
                     .onFailure {
+                        Log.d("MyActivity", "🚩 ViewModel received a failure response of the S3 upload")
                         _effect.send(PaymentPreparationUiEvents.ShowSnackbar("Hubo un problema al enviar la imagen, por favor, intente de nuevo\nSi ya pagó, puede acercarse al restaurante."))
                         _isLoading.update { false }
                     }
@@ -96,6 +99,7 @@ class PaymentPreparationViewModel @Inject constructor(
                 }
                 .onFailure { exception ->
                     _pickedImageUiState.update { PickedPaymentImageUiState.NoImageSelected }
+                    // TODO: SnackBar
                 }
         }
     }

@@ -1,61 +1,57 @@
 package com.example.yummiziapp.core.utils
 
-/// Analyze if their  importations are heavy
+import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.ImageDecoder
+import android.net.Uri
+import android.os.Build
+import java.io.File
+import java.io.FileOutputStream
 
-///**
-// * Chooses the optimal WebP compression format based on Android SDK version.
-// * Android 11 (API 30+) introduced explicit WEBP_LOSSY / WEBP_LOSSLESS constants.
-// */
-//fun getWebpCompressFormat(): Bitmap.CompressFormat {
-//    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-//        Bitmap.CompressFormat.WEBP_LOSSY
-//    } else {
-//        @Suppress("DEPRECATION")
-//        Bitmap.CompressFormat.WEBP
-//    }
-//}
-//
-///**
-// * Safely decodes an InputStream into a Bitmap while downsampling
-// * to avoid OutOfMemory Errors on ultra-high-resolution photos.
-// */
-//fun decodeBitmapWithSampling(
-//    inputStream: InputStream,
-//    maxWidth: Int,
-//    maxHeight: Int
-//): Bitmap {
-//    val bytes = inputStream.readBytes()
-//
-//    // First pass: Read dimensions only (zero memory allocation)
-//    val options = BitmapFactory.Options().apply {
-//        inJustDecodeBounds = true
-//    }
-//    BitmapFactory.decodeByteArray(bytes, 0, bytes.size, options)
-//
-//    // Calculate sample size factor
-//    options.inSampleSize = calculateInSampleSize(options, maxWidth, maxHeight)
-//    options.inJustDecodeBounds = false
-//
-//    // Second pass: Decode downsampled bitmap into RAM
-//    return BitmapFactory.decodeByteArray(bytes, 0, bytes.size, options)
-//        ?: throw IllegalStateException("Bitmap decoding failed.")
-//}
-//
-//fun calculateInSampleSize(
-//    options: BitmapFactory.Options,
-//    reqWidth: Int,
-//    reqHeight: Int
-//): Int {
-//    val (height: Int, width: Int) = options.outHeight to options.outWidth
-//    var inSampleSize = 1
-//
-//    if (height > reqHeight || width > reqWidth) {
-//        val halfHeight: Int = height / 2
-//        val halfWidth: Int = width / 2
-//
-//        while (halfHeight / inSampleSize >= reqHeight && halfWidth / inSampleSize >= reqWidth) {
-//            inSampleSize *= 2
-//        }
-//    }
-//    return inSampleSize
-//}
+/**
+ * Converts an image from a [Uri] to WebP format and saves it to a [File].
+ * Uses [ImageDecoder] for high-performance decoding on API 28+ and [BitmapFactory] as fallback.
+ *
+ * @param context The application context.
+ * @param targetFile The file where the WebP image will be saved.
+ * @param quality Compression quality (0-100). Default is 80.
+ */
+fun Uri.convertToWebp(
+    context: Context,
+    targetFile: File,
+    quality: Int = 80
+) {
+    val bitmap = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+        val source = ImageDecoder.createSource(context.contentResolver, this)
+        ImageDecoder.decodeBitmap(source) { decoder, info, _ ->
+            // Use software allocator to ensure compatibility with Bitmap.compress
+            decoder.allocator = ImageDecoder.ALLOCATOR_SOFTWARE
+            
+            // Limit resolution to a reasonable size for a payment receipt (e.g., max 2048px)
+            val maxSide = 2048
+            if (info.size.width > maxSide || info.size.height > maxSide) {
+                val ratio = info.size.width.toFloat() / info.size.height.toFloat()
+                if (ratio > 1) {
+                    decoder.setTargetSize(maxSide, (maxSide / ratio).toInt())
+                } else {
+                    decoder.setTargetSize((maxSide * ratio).toInt(), maxSide)
+                }
+            }
+        }
+    } else {
+        context.contentResolver.openInputStream(this).use { inputStream ->
+            BitmapFactory.decodeStream(inputStream)
+        } ?: throw IllegalStateException("Could not decode bitmap from Uri: $this")
+    }
+
+    FileOutputStream(targetFile).use { out ->
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            bitmap.compress(Bitmap.CompressFormat.WEBP_LOSSY, quality, out)
+        } else {
+            @Suppress("DEPRECATION")
+            bitmap.compress(Bitmap.CompressFormat.WEBP, quality, out)
+        }
+    }
+    bitmap.recycle()
+}
