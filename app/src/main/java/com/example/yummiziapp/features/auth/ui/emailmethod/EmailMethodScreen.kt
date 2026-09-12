@@ -248,6 +248,15 @@ fun EmailMethodScreen(
                                         .clickable { isReadingTerms = true }
                                 )
                             }
+
+                            Spacer(Modifier.width(spacing.mediumSeparation))
+
+                            Text(
+                                text = "Al menos:\n+ 8 caracteres + 1 mayúscula\n+ 1 minúscula + 1 número\n+ 1 símbolo",
+                                color = YummiziTheme.colors.yummiziDarkBlue,
+                                style = YummiziTheme.typography.teacherFontVar3,
+                                textAlign = TextAlign.Start
+                            )
                         }
 
                         if(state.formState.formIssueText != null){
