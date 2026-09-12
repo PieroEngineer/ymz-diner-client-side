@@ -7,7 +7,7 @@ plugins {
     alias(libs.plugins.hilt)
     alias(libs.plugins.ksp)
     alias(libs.plugins.kotlin.serialization)
-//    alias(libs.plugins.secrets.gradle)
+    alias(libs.plugins.google.services)
 }
 
 val localProperties = Properties().apply {
@@ -55,11 +55,34 @@ android {
         )
     }
 
+    signingConfigs {
+        create("release") {
+            val keystorePath = localProperties.getProperty("KEYSTORE_PATH")
+            if (!keystorePath.isNullOrEmpty()) {
+                storeFile = file(keystorePath)
+                storePassword = localProperties.getProperty("KEYSTORE_PASSWORD")
+                keyAlias = localProperties.getProperty("KEY_ALIAS")
+                keyPassword = localProperties.getProperty("KEY_PASSWORD")
+            }
+        }
+    }
+
     buildTypes {
         release {
-            optimization {
-                enable = false
-            }
+            // Enable R8 code shrinking and obfuscation for security and smaller APK size
+            isMinifyEnabled = true
+
+            // Enable resource shrinking to strip unused resources (images, layouts)
+            isShrinkResources = true
+
+            // Attach default Android optimization rules and project-specific ProGuard rules
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+
+            // Attach release signing configuration
+            signingConfig = signingConfigs.getByName("release")
         }
     }
 
@@ -75,18 +98,6 @@ android {
     }
 
 }
-
-//// 🛡️ Secrets Plugin Configuration
-//secrets {
-//    // Specify which properties file to read
-//    propertiesFileName = "local.properties"
-//
-////    // Optional: Specify a fallback file for CI/CD environments (e.g. local.defaults.properties)
-////    defaultPropertiesFileName = "local.defaults.properties"
-//
-//    // Ignore keys you don't want exposed in BuildConfig
-//    ignoreList.add("sdk.dir")
-//}
 
 dependencies {
     implementation(platform(libs.androidx.compose.bom))
@@ -141,6 +152,10 @@ dependencies {
 
     // Splash Screen
     implementation(libs.androidx.core.splashscreen)
+
+    // Google services (Firebase)
+    implementation(platform(libs.firebase.bom)) // Import the Firebase BoM using the catalog reference
+    implementation(libs.firebase.analytics) // Add Firebase Analytics without specifying a version
 }
 
 configurations.all {

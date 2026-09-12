@@ -10,6 +10,11 @@ composeBom = "2026.02.01"
 kotlin = "2.4.0"
 #secretsPlugin = "2.0.1"
 
+# Google services
+googleServices = "4.5.0"
+# Firebase
+firebaseBom = "34.19.0"
+
 # Inmutable lists
 kotlinx-collections-immutable = "0.5.0"
 
@@ -93,6 +98,10 @@ amplify-auth-cognito = { group = "com.amplifyframework", name = "aws-auth-cognit
 # Splash Screen
 androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "androidx-core-splashscreen" }
 
+# Firebase
+firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
+firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics" } # No version needed when using BoM
+
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
@@ -105,6 +114,9 @@ ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 
 # Serialization
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+
+# Google services
+google-services = { id = "com.google.gms.google-services", version.ref = "googleServices" }
 
 
 # Secrets Gradle Plugin for local.properties compilation
