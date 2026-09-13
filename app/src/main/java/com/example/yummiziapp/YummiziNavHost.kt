@@ -195,6 +195,7 @@ fun YummiziNavHost(
 
         composable<YummiziRoute.Contact>{
             ContactScreen(
+                modifier = modifier,
                 onHomeClickedNav = {
                     navController.navigate(YummiziRoute.Home)
                 },
