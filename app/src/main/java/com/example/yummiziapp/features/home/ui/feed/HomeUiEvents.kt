@@ -10,4 +10,5 @@ sealed interface HomeUiEvents {
     data object ShowConnectionError : HomeUiEvents
     data object NavigateToPreferences : HomeUiEvents
     data object NavigateToContact : HomeUiEvents
+    data class SnackBar(val message: String) : HomeUiEvents
 }

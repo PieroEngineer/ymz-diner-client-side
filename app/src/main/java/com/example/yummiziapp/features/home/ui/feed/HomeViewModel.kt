@@ -40,6 +40,8 @@ class HomeViewModel @Inject constructor(
     init {
         viewModelScope.launch { /// I guess this launch scope is unnecessary because the functions included already have it.
 
+            _effect.send(HomeUiEvents.SnackBar("¡Muchas gracias por usar Yummizi! 🧡\nLas nuevas actualizaciones de la app llegarán\na tu correo electrónico 📧"))
+
             // TODO: Remove every request that has more than 2 hours
 
             // Clean all restaurants

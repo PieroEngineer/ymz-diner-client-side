@@ -29,6 +29,7 @@ import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.key
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.text.style.TextAlign
@@ -42,6 +43,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.yummiziapp.core.ui.components.NavigationBar
 import com.example.yummiziapp.core.ui.components.SearchingArea
 import com.example.yummiziapp.core.ui.components.DiffRoundedCornersRect
+import com.example.yummiziapp.core.ui.components.YummiziSnackbar
 import com.example.yummiziapp.features.home.ui.feed.components.DragOverlay
 import com.example.yummiziapp.features.home.ui.feed.components.FeedSection
 import com.example.yummiziapp.features.home.ui.feed.components.RestaurantBlock
@@ -62,6 +64,8 @@ fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel()
 ) {
 
+    val snackbarHostState = remember { SnackbarHostState() }
+
     // Listen for the ViewModel's commands
     LaunchedEffect(Unit) {
         viewModel.navEffect.collect { effect ->
@@ -73,6 +77,9 @@ fun HomeScreen(
                 is HomeUiEvents.ShowConnectionError -> { /* ... */ }
                 is HomeUiEvents.NavigateToPreferences -> { onPreferenceNavigation() }
                 is HomeUiEvents.NavigateToContact -> { onContactNavigation() }
+                is HomeUiEvents.SnackBar -> {
+                    snackbarHostState.showSnackbar(message = effect.message)
+                }
             }
         }
     }
@@ -314,5 +321,11 @@ fun HomeScreen(
             // onMoreClicked = { viewModel.onMoreClicked()}  //TODO
         )
 
+        YummiziSnackbar(
+            snackbarHostState = snackbarHostState,
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 24.dp, start = 32.dp, end = 32.dp)
+        )
     }
 }
