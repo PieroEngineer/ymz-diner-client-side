@@ -63,6 +63,7 @@ fun ContactScreen(
 
     Box(
         modifier = modifier
+            .fillMaxSize()
     ){
         Image(
             painter = painterResource(id = R.drawable.contact_bg),

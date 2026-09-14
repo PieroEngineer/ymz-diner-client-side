@@ -106,7 +106,7 @@ fun SpecificationScreen(
         // Screen content
         Column(
             modifier = modifier
-                .padding(vertical = spacing.mediumPadding)
+//                .padding(vertical = spacing.mediumPadding)    /// I just removed it
                 .fillMaxSize()
                 .background(YummiziTheme.colors.yummiziWhite)
         ){
@@ -119,7 +119,7 @@ fun SpecificationScreen(
 //X            Spacer(Modifier.height(spacing.regularSeparation))
 
             Column( // Complete option frame
-                modifier = modifier
+                modifier = Modifier
                     .padding(horizontal = spacing.mediumPadding)
             ) {
 
