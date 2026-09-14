@@ -82,10 +82,10 @@ class FoodSelectionViewModel @Inject constructor(   //TODO: Change the way of ho
           }
       }
       .stateIn(
-                 scope = viewModelScope,
-                 started = SharingStarted.WhileSubscribed(5000),
-                 initialValue = Clock.System.now()
-             )
+         scope = viewModelScope,
+         started = SharingStarted.WhileSubscribed(5000),
+         initialValue = Clock.System.now()
+      )
 
     fun onContactRestaurant(){
         viewModelScope.launch {

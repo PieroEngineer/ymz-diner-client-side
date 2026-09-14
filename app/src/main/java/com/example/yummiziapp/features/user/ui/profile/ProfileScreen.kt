@@ -14,9 +14,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -30,6 +32,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.yummiziapp.core.designsystem.theme.YummiziTheme
 import com.example.yummiziapp.R
 import com.example.yummiziapp.core.ui.components.NavigationBar
@@ -57,8 +60,10 @@ fun ProfileScreen(
         }
     }
 
+    val profileUiState by viewModel.profileUiState.collectAsStateWithLifecycle()
+
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .background(YummiziTheme.colors.yummiziWhite),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -100,17 +105,40 @@ fun ProfileScreen(
                 .background(YummiziTheme.colors.yummiziLightOrange)
                 .padding(vertical = spacing.regularPadding)
         ){
-            Text(
-                text = "Alberta K.",    // FIXME: Change it be real user
-                color = YummiziTheme.colors.yummiziWhite,
-                style = YummiziTheme.typography.leaguespartanFontVar6,
-                textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .align(Alignment.Center)
-                    .clickable{
-                        // TODO: Allow user to modifiy its name
-                    }
-            )
+            when( val state = profileUiState){
+                is ProfileUiState.Success -> {
+                    Text(
+                        text = state.user.username,
+                        color = YummiziTheme.colors.yummiziWhite,
+                        style = YummiziTheme.typography.leaguespartanFontVar6,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                            .clickable{
+                                // TODO: Allow user to modifiy its name
+                            }
+                    )
+                }
+                is ProfileUiState.Error -> {
+                    Text(
+                        text = state.message,
+                        color = YummiziTheme.colors.yummiziWhite,
+                        style = YummiziTheme.typography.comfortaaFontVar6,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                    )
+                }
+                is ProfileUiState.Loading -> {
+                    CircularProgressIndicator(
+                        modifier = Modifier
+                            .width(spacing.bigIconSize)
+                            .align(Alignment.Center),
+                        color = YummiziTheme.colors.yummiziLightBlue,
+                        trackColor = YummiziTheme.colors.yummiziWhite
+                    )
+                }
+            }
         }
 
         Spacer(Modifier.weight(1f))
