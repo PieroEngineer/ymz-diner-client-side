@@ -46,6 +46,13 @@ class IntroViewModel @Inject constructor(   // TODO: Consider to load the data h
             )
         )
     )
+
+    fun onTryToSeeVideo() {
+        viewModelScope.launch {
+            _effect.send(IntroUiEvent.IntentNavigateToLink("https://www.youtube.com/shorts/KJiqdxfKxJQ"))   ///✏️
+        }
+    }
+
     val uiState: StateFlow<CarouselUiState> = _uiState.asStateFlow()
 
     fun onPageChanged(newIndex: Int) {

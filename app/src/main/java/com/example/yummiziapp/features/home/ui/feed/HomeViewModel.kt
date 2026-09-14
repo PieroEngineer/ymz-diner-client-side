@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.yummiziapp.core.data.local.entities.Restaurant
 import com.example.yummiziapp.core.data.local.model.RequestStatusToken
-import com.example.yummiziapp.features.user.domain.repository.UserRepository
 import com.example.yummiziapp.features.home.domain.usecase.GetCategorizedFeedUseCase
 import com.example.yummiziapp.features.home.ui.model.SectionUiModel
 import com.example.yummiziapp.features.restaurant.domain.repository.RestaurantRepository
@@ -27,7 +26,6 @@ import kotlin.uuid.Uuid
 class HomeViewModel @Inject constructor(
     private val getCategorizedFeed: GetCategorizedFeedUseCase,
     private val restaurantRepository: RestaurantRepository,
-    private val userRepository: UserRepository,
 ) : ViewModel() {
 
     // Navigation handler
@@ -40,7 +38,7 @@ class HomeViewModel @Inject constructor(
     init {
         viewModelScope.launch { /// I guess this launch scope is unnecessary because the functions included already have it.
 
-            _effect.send(HomeUiEvents.SnackBar("¡Muchas gracias por usar Yummizi! 🧡\nLas nuevas actualizaciones de la app llegarán\na tu correo electrónico 📧"))
+            _effect.send(HomeUiEvents.SnackBar("📧  Las nuevas actualizaciones de la app llegarán a tu correo electrónico\n\n¡Muchas gracias por usar Yummizi! 🧡"))
 
             // TODO: Remove every request that has more than 2 hours
 
@@ -119,15 +117,15 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    private suspend fun clearFeed() {
-        try {
-            Log.d("MyActivity", "🧹  Cleaning all restaurants...\n")
-            restaurantRepository.clearAllRestaurantsAndRequests()
-        }
-        catch (e: Exception) {
-            Log.d("MyActivity", "🚩🧹 There was an error while trying to clean the feed  | $e\n")
-        }
-    }
+//    private suspend fun clearFeed() {
+//        try {
+//            Log.d("MyActivity", "🧹  Cleaning all restaurants...\n")
+//            restaurantRepository.clearAllRestaurantsAndRequests()
+//        }
+//        catch (e: Exception) {
+//            Log.d("MyActivity", "🚩🧹 There was an error while trying to clean the feed  | $e\n")
+//        }
+//    }
 
     private suspend fun syncFeed() {
         try {

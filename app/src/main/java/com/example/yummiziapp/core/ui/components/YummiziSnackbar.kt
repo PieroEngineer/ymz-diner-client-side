@@ -20,10 +20,11 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun YummiziSnackbar(    // TODO: Replace the hardcoded theme with the Yummizi's theme
     snackbarHostState: SnackbarHostState,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     SnackbarHost(
         hostState = snackbarHostState,
+
         modifier = modifier
             .padding(bottom = 24.dp, start = 32.dp, end = 32.dp)
     ) { snackbarData ->

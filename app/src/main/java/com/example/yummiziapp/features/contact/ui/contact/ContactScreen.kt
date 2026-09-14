@@ -1,5 +1,8 @@
 package com.example.yummiziapp.features.contact.ui.contact
 
+import android.content.ActivityNotFoundException
+import android.content.Intent
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -24,7 +27,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
+import androidx.core.net.toUri
 import com.example.yummiziapp.R
 import com.example.yummiziapp.core.designsystem.theme.YummiziTheme
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -33,6 +39,7 @@ import com.example.yummiziapp.core.ui.components.NavigationBar
 import com.example.yummiziapp.core.ui.components.FeedbackModal
 import com.example.yummiziapp.features.contact.ui.contact.components.RestaurantContactModal
 import com.example.yummiziapp.core.ui.components.SquareButton
+import com.example.yummiziapp.features.intro.ui.intro.IntroUiEvent
 
 //@Preview()
 @Composable
@@ -46,11 +53,27 @@ fun ContactScreen(
 ){
     val spacing = YummiziTheme.spacing
 
+    val uriHandler = LocalUriHandler.current
+    val context = LocalContext.current
+
     LaunchedEffect(Unit) {
         viewModel.navEffect.collect { effect ->
             when (effect) {
                 is ContactUiEvent.NavigateToHome -> { onHomeClickedNav() }
                 is ContactUiEvent.NavigateToPreferences -> { onYouClickedNav() }
+                is ContactUiEvent.IntentNavigateToLink -> {
+                    try {
+                        uriHandler.openUri(effect.url)
+                    } catch (e: Exception) {
+                        // Fallback for specific deep links
+                        val intent = Intent(Intent.ACTION_VIEW, effect.url.toUri())
+                        try {
+                            context.startActivity(intent)
+                        } catch (anfe: ActivityNotFoundException) {
+                            Log.d("MyActivity", "🚩  No se pudo abrir el link")
+                        }
+                    }
+                }
             }
         }
     }
@@ -154,6 +177,7 @@ fun ContactScreen(
                     ownImageId = R.drawable.italic_info_icon,
                     ownText = "¿Cómo funciona\nesto?",
                     iconSize = spacing.bigIconSize,
+                    onClick = { viewModel.onTryToSeeVideo() }
                 )
 
                 Spacer(Modifier.weight(1f))

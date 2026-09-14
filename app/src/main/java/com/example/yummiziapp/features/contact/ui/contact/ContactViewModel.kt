@@ -7,6 +7,7 @@ import com.example.yummiziapp.core.data.local.model.FeedbackLevelToken
 import com.example.yummiziapp.features.contact.ui.model.FeedbackUiModel
 import com.example.yummiziapp.features.contact.ui.model.RestaurantInfoTab
 import com.example.yummiziapp.features.contact.ui.model.RestaurantInfoUiModel
+import com.example.yummiziapp.features.intro.ui.intro.IntroUiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -72,6 +73,12 @@ class ContactViewModel @Inject constructor(
             )
 
             _restaurantContactUiModel.update { RestaurantInfoUiModel() }
+        }
+    }
+
+    fun onTryToSeeVideo() {
+        viewModelScope.launch {
+            _effect.send(ContactUiEvent.IntentNavigateToLink("https://www.youtube.com/shorts/KJiqdxfKxJQ"))   ///✏️
         }
     }
 

@@ -1,17 +1,21 @@
 package com.example.yummiziapp.features.intro.ui.intro
 
+import android.content.ActivityNotFoundException
+import android.content.Intent
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -25,9 +29,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.layout
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.zIndex
+import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.yummiziapp.R
@@ -44,10 +51,26 @@ fun IntroScreen(
     onHomeNavigation: () -> Unit = {}
 ){
 
+    val uriHandler = LocalUriHandler.current
+    val context = LocalContext.current
+
     LaunchedEffect(Unit) {
         viewModel.navEffect.collect { effect ->
             when (effect) {
                 is IntroUiEvent.NavigateToHome -> onHomeNavigation()
+                is IntroUiEvent.IntentNavigateToLink -> {
+                    try {
+                        uriHandler.openUri(effect.url)
+                    } catch (e: Exception) {
+                        // Fallback for specific deep links
+                        val intent = Intent(Intent.ACTION_VIEW, effect.url.toUri())
+                        try {
+                            context.startActivity(intent)
+                        } catch (anfe: ActivityNotFoundException) {
+                            Log.d("MyActivity", "🚩  No se pudo abrir el link")
+                        }
+                    }
+                }
             }
         }
     }
@@ -166,28 +189,58 @@ fun IntroScreen(
                     Spacer(Modifier.weight(1f))
 
                     if(carouselItem.isLast){
-                        Box(
-                            modifier = Modifier
-                                .align(Alignment.CenterHorizontally)
-                                .clip(
-                                    RoundedCornerShape(spacing.smallCornerRadius)
-                                )
-                                .background(YummiziTheme.colors.yummiziLightOrange)
-                                .clickable {
-                                    viewModel.onIntroFinished()
-                                }
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
                         ){
-                            Text(
-                                text = "Empezar",
-                                textAlign = TextAlign.Center,
-                                color = YummiziTheme.colors.yummiziWhite,
-                                style = YummiziTheme.typography.teacherFontVar1,
+
+                            Box(
                                 modifier = Modifier
-                                    .padding(horizontal = spacing.regularPadding)
-                                    .padding(vertical = spacing.mediumPadding)
-                                    .align(Alignment.Center)
-                            )
+                                    .clip(
+                                        RoundedCornerShape(spacing.smallCornerRadius)
+                                    )
+                                    .background(YummiziTheme.colors.yummiziLightOrange)
+                                    .clickable {
+                                        viewModel.onIntroFinished()
+                                    }
+                            ){
+                                Text(
+                                    text = "Empezar",
+                                    textAlign = TextAlign.Center,
+                                    color = YummiziTheme.colors.yummiziWhite,
+                                    style = YummiziTheme.typography.teacherFontVar1,
+                                    modifier = Modifier
+                                        .padding(horizontal = spacing.regularPadding)
+                                        .padding(vertical = spacing.mediumPadding)
+                                        .align(Alignment.Center)
+                                )
+                            }
+
+                            Spacer(Modifier.width(spacing.regularPadding))
+
+                            Box(
+                                modifier = Modifier
+                                    .clip(
+                                        RoundedCornerShape(spacing.smallCornerRadius)
+                                    )
+                                    .background(YummiziTheme.colors.yummiziLightOrange)
+                                    .clickable {
+                                        viewModel.onTryToSeeVideo()
+                                    }
+                            ){
+                                Text(
+                                    text = "Introducción  ▶️",
+                                    textAlign = TextAlign.Center,
+                                    color = YummiziTheme.colors.yummiziWhite,
+                                    style = YummiziTheme.typography.teacherFontVar1,
+                                    modifier = Modifier
+                                        .padding(horizontal = spacing.regularPadding)
+                                        .padding(vertical = spacing.mediumPadding)
+                                        .align(Alignment.Center)
+                                )
+                            }
+
                         }
+
                     }
                     else{
                         Image(
