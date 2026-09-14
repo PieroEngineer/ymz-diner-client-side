@@ -37,9 +37,9 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.yummiziapp.R
 import com.example.yummiziapp.core.designsystem.theme.YummiziTheme
-import com.example.yummiziapp.core.ui.components.YummiziTextField
 //import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.yummiziapp.core.ui.components.YummiziDirectTextField
 import com.example.yummiziapp.features.auth.ui.emailmethod.components.TermsModal
 import com.example.yummiziapp.features.auth.ui.model.UserInfoTab
 
@@ -149,12 +149,11 @@ fun EmailMethodScreen(
 
                             Spacer(Modifier.height(spacing.smallSeparation))
 
-                            YummiziTextField(
+                            YummiziDirectTextField( // TODO: Figure out how to jump between inputs with the "Enter" keyboard
                                 modifier = Modifier
                                     .fillMaxWidth(),
 
                                 hintText = "e.g Pablo Perez",
-                                minLines = 1,
                                 backgroundColor = YummiziTheme.colors.yummiziGray3,
                                 textStyle = YummiziTheme.typography.comfortaaFontVar4,
 
@@ -174,12 +173,11 @@ fun EmailMethodScreen(
 
                         Spacer(Modifier.height(spacing.smallSeparation))
 
-                        YummiziTextField(
+                        YummiziDirectTextField(
                             modifier = Modifier
                                 .fillMaxWidth(),
 
-                            hintText = "e.g pabloperez@algúnCorreo.com",
-                            minLines = 1,
+                            hintText = "e.g pablin@dominio.com",
                             backgroundColor = YummiziTheme.colors.yummiziGray3,
                             textStyle = YummiziTheme.typography.comfortaaFontVar4,
 
@@ -199,12 +197,11 @@ fun EmailMethodScreen(
 
                         Spacer(Modifier.height(spacing.smallSeparation))
 
-                        YummiziTextField(
+                        YummiziDirectTextField(
                             modifier = Modifier
                                 .fillMaxWidth(),
 
                             hintText = "e.g MakisLover321",
-                            minLines = 1,
                             backgroundColor = YummiziTheme.colors.yummiziGray3,
                             textStyle = YummiziTheme.typography.comfortaaFontVar4,
 

@@ -50,7 +50,7 @@ import com.example.yummiziapp.core.designsystem.theme.YummiziTheme
 import com.example.yummiziapp.core.ui.components.ConformitySelector
 import com.example.yummiziapp.core.ui.components.FeedbackModal
 import com.example.yummiziapp.features.payment.ui.arrival.components.RemainingTimeText
-import com.example.yummiziapp.core.ui.components.YummiziTextField
+import com.example.yummiziapp.core.ui.components.YummiziMultipleLineTextField
 import com.example.yummiziapp.features.payment.ui.arrival.components.TimeProgressBar
 import java.io.File
 import androidx.core.net.toUri
@@ -305,7 +305,7 @@ fun ArrivalScreen(  // TODO: For some reason, the keyboard is pushing the UI upw
 
                         Spacer(modifier = Modifier.height(spacing.mediumSeparation))
 
-                        YummiziTextField(
+                        YummiziMultipleLineTextField(
 //                            modifier = Modifier.weight(1f),
                             value = feedbackUiState.description,
                             hintText = "Ejemplos:\n\nYo creo que yummizi fue ...\n\nLo que puede mejorar es ...\n\nMe gustó/disgustó que ...",

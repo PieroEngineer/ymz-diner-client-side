@@ -27,7 +27,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.style.TextAlign
 import com.example.yummiziapp.core.designsystem.theme.YummiziTheme
-import com.example.yummiziapp.core.ui.components.YummiziTextField
+import com.example.yummiziapp.core.ui.components.YummiziMultipleLineTextField
 import com.example.yummiziapp.features.contact.ui.model.RestaurantInfoTab
 import com.example.yummiziapp.features.contact.ui.model.RestaurantInfoUiModel
 
@@ -118,7 +118,7 @@ fun RestaurantContactModal(
 
                 Spacer(Modifier.height(spacing.mediumSeparation))
 
-                YummiziTextField(
+                YummiziMultipleLineTextField(
                     value = restaurantContactUiModel.name,
                     hintText = "Nombre del restaurante *",
                     minLines = 1,
@@ -127,7 +127,7 @@ fun RestaurantContactModal(
 
                 Spacer(Modifier.height(spacing.mediumSeparation))
 
-                YummiziTextField(
+                YummiziMultipleLineTextField(
                     value = restaurantContactUiModel.contact,
                     hintText = "Contacto (Correo / Número telefónico) *",
                     minLines = 1,
@@ -136,7 +136,7 @@ fun RestaurantContactModal(
 
                 Spacer(Modifier.height(spacing.mediumSeparation))
 
-                YummiziTextField(
+                YummiziMultipleLineTextField(
                     value = restaurantContactUiModel.comment,
                     hintText = "Comentarios...",
                     minLines = 3,

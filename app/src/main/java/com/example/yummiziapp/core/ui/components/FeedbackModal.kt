@@ -118,7 +118,7 @@ fun FeedbackModal(
 
                 Spacer(Modifier.height(spacing.mediumSeparation))
 
-                YummiziTextField(
+                YummiziMultipleLineTextField(
                     value = currentDescription,
                     hintText = "Ejemplos:\n\nYo creo que yummizi fue ...\n\nLo que puede mejorar es ...\n\nMe gustó/disgustó que ...",
                     onValueChange = { onDescriptionChanged(it) }

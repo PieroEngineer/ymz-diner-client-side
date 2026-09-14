@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -13,38 +15,46 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.ImeAction
 import com.example.yummiziapp.core.designsystem.theme.YummiziTheme
-//import androidx.compose.ui.tooling.preview.Preview
 
-//@Preview
 @Composable
-fun YummiziTextField(
+fun YummiziDirectTextField(
     modifier: Modifier = Modifier,
 
     hintText: String,
-    minLines: Int = 5,
     backgroundColor: Color = YummiziTheme.colors.yummiziWhite,
     textStyle: TextStyle = YummiziTheme.typography.teacherFontVar3,
 
     value: String,
     onValueChange: (String) -> Unit,
 ) {
+    val focusManager = LocalFocusManager.current
+
     val spacing = YummiziTheme.spacing
 
     val shape = RoundedCornerShape(spacing.mediumCornerRadius)
 
-    // BasicTextField eliminates all default Material borders/indicators for full custom styling
     BasicTextField(
-        value = value,
-        onValueChange = onValueChange,
         modifier = modifier
             .fillMaxWidth()
             .shadow(elevation = spacing.mediumSeparation, shape = shape, clip = false)
             .background(color = backgroundColor, shape = shape),
+
+        value = value,
+        onValueChange = onValueChange,
         textStyle = textStyle,
         cursorBrush = SolidColor(YummiziTheme.colors.yummiziBlack),
-        minLines = minLines, // Allows the field to be tall without forcing the cursor to the center
+        keyboardOptions = KeyboardOptions(
+            imeAction = ImeAction.Done
+        ),
+        keyboardActions = KeyboardActions(
+            onDone = {
+                focusManager.clearFocus()
+            }
+        ),
         decorationBox = { innerTextField ->
             Box(
                 modifier = Modifier
