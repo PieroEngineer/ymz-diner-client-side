@@ -145,7 +145,7 @@ fun ProfileScreen(
 
         Box(
             modifier = Modifier
-                .padding(horizontal = spacing.regularPadding),
+                .padding(horizontal = spacing.bigPadding),
             contentAlignment = Alignment.Center
         ){
 

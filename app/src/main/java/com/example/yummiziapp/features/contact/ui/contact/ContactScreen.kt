@@ -39,7 +39,6 @@ import com.example.yummiziapp.core.ui.components.NavigationBar
 import com.example.yummiziapp.core.ui.components.FeedbackModal
 import com.example.yummiziapp.features.contact.ui.contact.components.RestaurantContactModal
 import com.example.yummiziapp.core.ui.components.SquareButton
-import com.example.yummiziapp.features.intro.ui.intro.IntroUiEvent
 
 //@Preview()
 @Composable
@@ -137,8 +136,9 @@ fun ContactScreen(
                     .padding(spacing.smallSeparation)
             )
 
-            Spacer(Modifier.weight(1f))
+//            Spacer(Modifier.weight(1f))
 
+            Spacer(Modifier.height(spacing.mediumSeparation))
 
             Row(
                 modifier = Modifier
@@ -221,7 +221,7 @@ fun ContactScreen(
             onTextFieldChanged = {restaurantInfo, newText -> viewModel.onRestaurantContactTextFieldChanged(restaurantInfo, newText) },
             onSend = {
                 restaurantWantToContact = false
-                viewModel.onRetaurantContactReady()
+                viewModel.onRestaurantContactReady()
                 // TODO: Trigger a confirmation in a snackbar or in screen
             },
         )
