@@ -77,7 +77,7 @@ class ContactViewModel @Inject constructor(
 
     fun onTryToSeeVideo() {
         viewModelScope.launch {
-            _effect.send(ContactUiEvent.IntentNavigateToLink("https://www.youtube.com/shorts/KJiqdxfKxJQ"))   ///✏️
+            _effect.send(ContactUiEvent.IntentNavigateToLink("https://www.youtube.com/watch?v=7b_l_gql7mM"))
         }
     }
 

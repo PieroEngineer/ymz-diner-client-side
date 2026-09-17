@@ -49,7 +49,7 @@ class IntroViewModel @Inject constructor(   // TODO: Consider to load the data h
 
     fun onTryToSeeVideo() {
         viewModelScope.launch {
-            _effect.send(IntroUiEvent.IntentNavigateToLink("https://www.youtube.com/shorts/KJiqdxfKxJQ"))   ///✏️
+            _effect.send(IntroUiEvent.IntentNavigateToLink("https://www.youtube.com/watch?v=7b_l_gql7mM"))
         }
     }
 
