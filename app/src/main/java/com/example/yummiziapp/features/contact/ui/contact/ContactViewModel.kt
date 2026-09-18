@@ -37,6 +37,15 @@ class ContactViewModel @Inject constructor(
         }
     }
 
+    fun onCopyYummiziLink(){
+        viewModelScope.launch {
+            _effect.send(ContactUiEvent.CopyToClipboard(
+                copiedText = "https://yummizi.netlify.app/",
+                accompanyingText = "📢  Link para compartir copiado"
+            ))
+        }
+    }
+
     fun onConformityDegreeChanged(newDegree: FeedbackLevelToken) {
         _feedbackUiModel.update { currentState ->
             currentState.copy(conformityDegree = newDegree)

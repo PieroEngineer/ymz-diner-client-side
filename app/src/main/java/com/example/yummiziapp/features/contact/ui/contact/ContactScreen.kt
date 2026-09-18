@@ -1,6 +1,7 @@
 package com.example.yummiziapp.features.contact.ui.contact
 
 import android.content.ActivityNotFoundException
+import android.content.ClipData
 import android.content.Intent
 import android.util.Log
 import androidx.compose.foundation.Image
@@ -16,20 +17,25 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.ClipEntry
+import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import com.example.yummiziapp.R
 import com.example.yummiziapp.core.designsystem.theme.YummiziTheme
@@ -37,8 +43,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.yummiziapp.core.ui.components.NavigationBar
 import com.example.yummiziapp.core.ui.components.FeedbackModal
-import com.example.yummiziapp.features.contact.ui.contact.components.RestaurantContactModal
+import com.example.yummiziapp.features.contact.ui.contact.components.ShareYummiziModal
 import com.example.yummiziapp.core.ui.components.SquareButton
+import com.example.yummiziapp.core.ui.components.YummiziSnackbar
 
 //@Preview()
 @Composable
@@ -51,6 +58,10 @@ fun ContactScreen(
     viewModel: ContactViewModel = hiltViewModel()
 ){
     val spacing = YummiziTheme.spacing
+
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    val clipboard = LocalClipboard.current
 
     val uriHandler = LocalUriHandler.current
     val context = LocalContext.current
@@ -73,12 +84,21 @@ fun ContactScreen(
                         }
                     }
                 }
+                is ContactUiEvent.CopyToClipboard -> {
+                    // Create Android standard ClipData
+                    val clipData = ClipData.newPlainText("url", effect.copiedText)
+
+                    // Call the modern suspend function to set the clip
+                    clipboard.setClipEntry(ClipEntry(clipData))
+
+                    snackbarHostState.showSnackbar(message = effect.accompanyingText)
+                }
             }
         }
     }
 
     var wantToGiveFeedback by rememberSaveable { mutableStateOf(false) }
-    var restaurantWantToContact by rememberSaveable { mutableStateOf(false) }
+    var userWantToShare by rememberSaveable { mutableStateOf(false) }
 
     val feedbackUiModel by viewModel.feedbackUiModel.collectAsStateWithLifecycle()  /// Is it a bad practice to have to create this state here? If yes, maybe it could go in the "combine" and use it, but the time condition would run every keystroke
     val restaurantContactUiModel by viewModel.restaurantContactUiModel.collectAsStateWithLifecycle()
@@ -113,7 +133,7 @@ fun ContactScreen(
             Text(
                 text = "Mantengamos\ncontacto",
                 color = YummiziTheme.colors.yummiziDarkBlue2,
-                style = YummiziTheme.typography.leaguespartanFontVar6,
+                style = YummiziTheme.typography.leaguespartanFontVar7,
                 modifier = Modifier
                     .background(
                         color = YummiziTheme.colors.yummiziWhite,
@@ -159,8 +179,8 @@ fun ContactScreen(
                     modifier = Modifier
                         .weight(1f),
                     ownImageId = R.drawable.handshake_icon,
-                    ownText = "Probar en mi\nrestaurante",
-                    onClick = { restaurantWantToContact = true }
+                    ownText = "Compartir a\nusuario/restaurante",
+                    onClick = { userWantToShare = true }
                 )
             }
 
@@ -214,16 +234,26 @@ fun ContactScreen(
             }
         )
 
-        RestaurantContactModal( // TODO: Use the proper way to handle pop-ups and (#741)
-            isOpen = restaurantWantToContact,
-            onDismissRequest = { restaurantWantToContact = false},
-            restaurantContactUiModel = restaurantContactUiModel,
-            onTextFieldChanged = {restaurantInfo, newText -> viewModel.onRestaurantContactTextFieldChanged(restaurantInfo, newText) },
-            onSend = {
-                restaurantWantToContact = false
-                viewModel.onRestaurantContactReady()
+        ShareYummiziModal( // TODO: Use the proper way to handle pop-ups and (#741)
+            isOpen = userWantToShare,
+            onDismissRequest = { userWantToShare = false},
+//            restaurantContactUiModel = restaurantContactUiModel,
+//            onTextFieldChanged = {restaurantInfo, newText -> viewModel.onRestaurantContactTextFieldChanged(restaurantInfo, newText) },
+            onReady = {
+                userWantToShare = false
+//                viewModel.onRestaurantContactReady()
                 // TODO: Trigger a confirmation in a snackbar or in screen
             },
+            onCopyUrl = {
+                viewModel.onCopyYummiziLink()
+            }
+        )
+
+        YummiziSnackbar(
+            snackbarHostState = snackbarHostState,
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 24.dp, start = 32.dp, end = 32.dp)
         )
     }
 }

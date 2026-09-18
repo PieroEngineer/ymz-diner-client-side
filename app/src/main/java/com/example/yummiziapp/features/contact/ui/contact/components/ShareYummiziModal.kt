@@ -5,6 +5,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -16,6 +17,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
@@ -25,24 +27,26 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
+import com.example.yummiziapp.R
 import com.example.yummiziapp.core.designsystem.theme.YummiziTheme
-import com.example.yummiziapp.core.ui.components.YummiziMultipleLineTextField
 import com.example.yummiziapp.features.contact.ui.model.RestaurantInfoTab
 import com.example.yummiziapp.features.contact.ui.model.RestaurantInfoUiModel
 
 @Composable
-fun RestaurantContactModal(
+fun ShareYummiziModal(
     modifier: Modifier = Modifier,
 
     isOpen: Boolean = false,
     onDismissRequest: () -> Unit = {},
 
-    restaurantContactUiModel: RestaurantInfoUiModel,
+//    restaurantContactUiModel: RestaurantInfoUiModel,
+//
+//    onTextFieldChanged: (restaurantInfo: RestaurantInfoTab, newText: String) -> Unit,
 
-    onTextFieldChanged: (restaurantInfo: RestaurantInfoTab, newText: String) -> Unit,
-
-    onSend: () -> Unit,
+    onReady: () -> Unit,
+    onCopyUrl: () -> Unit
 ){
     val spacing = YummiziTheme.spacing
 
@@ -104,7 +108,7 @@ fun RestaurantContactModal(
                 HorizontalDivider(
                     thickness = spacing.mediumLineThickness,
                     color = YummiziTheme.colors.yummiziDarkOrange,
-                    modifier = Modifier.fillMaxWidth(.5f)
+                    modifier = Modifier.fillMaxWidth(.4f)
                 )
 
                 Spacer(Modifier.height(spacing.regularSeparation))
@@ -116,31 +120,30 @@ fun RestaurantContactModal(
                     textAlign = TextAlign.Center,
                 )
 
-                Spacer(Modifier.height(spacing.mediumSeparation))
+                Spacer(Modifier.height(spacing.regularSeparation))
 
-                YummiziMultipleLineTextField(
-                    value = restaurantContactUiModel.name,
-                    hintText = "Nombre del restaurante *",
-                    minLines = 1,
-                    onValueChange = { onTextFieldChanged(RestaurantInfoTab.NAME, it) }
+                HorizontalDivider(
+                    thickness = spacing.mediumLineThickness,
+                    color = YummiziTheme.colors.yummiziDarkOrange,
+                    modifier = Modifier.fillMaxWidth(.6f)
                 )
 
                 Spacer(Modifier.height(spacing.mediumSeparation))
 
-                YummiziMultipleLineTextField(
-                    value = restaurantContactUiModel.contact,
-                    hintText = "Contacto (Correo / Número telefónico) *",
-                    minLines = 1,
-                    onValueChange = { onTextFieldChanged(RestaurantInfoTab.CONTACT, it) }
+                Text(
+                    text = "Puedes compartirlo a un restaurante o usuario nuevo\nPara copiar el link, presiona el QR\n👇",
+                    color = YummiziTheme.colors.yummiziDarkBlue,
+                    style = YummiziTheme.typography.teacherFontVar3,
+                    textAlign = TextAlign.Center,
                 )
 
-                Spacer(Modifier.height(spacing.mediumSeparation))
-
-                YummiziMultipleLineTextField(
-                    value = restaurantContactUiModel.comment,
-                    hintText = "Comentarios...",
-                    minLines = 3,
-                    onValueChange = { onTextFieldChanged(RestaurantInfoTab.COMMENT, it) }
+                Image(
+                    painter = painterResource(id = R.drawable.landing_page_qr),
+                    contentDescription = null, // Backgrounds are decorative
+                    modifier = Modifier
+                        .size(spacing.bigImageSize)
+                        .clip(RoundedCornerShape(spacing.smallCornerRadius))
+                        .clickable { onCopyUrl() },
                 )
 
                 Spacer(Modifier.height(spacing.mediumSeparation))
@@ -152,12 +155,12 @@ fun RestaurantContactModal(
                         )
                         .background(YummiziTheme.colors.yummiziBlue)
                         .clickable {
-                            onSend()
+                            onReady()
                         }
 
                 ){
                     Text(
-                        text = "Enviar",
+                        text = "Listo",
                         textAlign = TextAlign.Center,
                         color = YummiziTheme.colors.yummiziWhite,
                         style = YummiziTheme.typography.teacherFontVar1,
@@ -188,3 +191,30 @@ fun RestaurantContactModal(
         }
     }
 }
+
+
+/// If we go back to form way
+//                YummiziMultipleLineTextField(
+//                    value = restaurantContactUiModel.name,
+//                    hintText = "Nombre del restaurante *",
+//                    minLines = 1,
+//                    onValueChange = { onTextFieldChanged(RestaurantInfoTab.NAME, it) }
+//                )
+//
+//                Spacer(Modifier.height(spacing.mediumSeparation))
+//
+//                YummiziMultipleLineTextField(
+//                    value = restaurantContactUiModel.contact,
+//                    hintText = "Contacto (Correo / Número telefónico) *",
+//                    minLines = 1,
+//                    onValueChange = { onTextFieldChanged(RestaurantInfoTab.CONTACT, it) }
+//                )
+//
+//                Spacer(Modifier.height(spacing.mediumSeparation))
+//
+//                YummiziMultipleLineTextField(
+//                    value = restaurantContactUiModel.comment,
+//                    hintText = "Comentarios...",
+//                    minLines = 3,
+//                    onValueChange = { onTextFieldChanged(RestaurantInfoTab.COMMENT, it) }
+//                )
