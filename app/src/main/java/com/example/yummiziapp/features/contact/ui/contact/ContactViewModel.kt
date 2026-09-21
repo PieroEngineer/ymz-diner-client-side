@@ -37,7 +37,7 @@ class ContactViewModel @Inject constructor(
         }
     }
 
-    fun onCopyYummiziLink(){
+    fun onCopyYummiziLink(){    // TODO: Track this action remotely
         viewModelScope.launch {
             _effect.send(ContactUiEvent.CopyToClipboard(
                 copiedText = "https://yummizi.netlify.app/",

@@ -158,7 +158,7 @@ fun ContactScreen(
 
 //            Spacer(Modifier.weight(1f))
 
-            Spacer(Modifier.height(spacing.mediumSeparation))
+            Spacer(Modifier.height(spacing.smallSeparation))
 
             Row(
                 modifier = Modifier
