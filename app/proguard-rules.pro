@@ -49,9 +49,9 @@
 # MVVM Data Layer (Protect Network Request/Response Models from Obfuscation)  # TODO (#904): Change this approach for "@Keep"
 -keepclassmembers class com.example.yummiziapp.core.data.local.** { *; }
 -keepclassmembers class com.example.yummiziapp.core.data.network.** { *; }
-# Keep any class or member explicitly annotated with @Keep  # TODO (#904)
-#-keep @androidx.annotation.Keep class * { *; }
-#-keepclasseswithmembers class * {
-#    @androidx.annotation.Keep <fields>;
-#    @androidx.annotation.Keep <methods>;
-#}
+# Keep any class or member explicitly annotated with @Keep
+-keep @androidx.annotation.Keep class * { *; }
+-keepclasseswithmembers class * {
+    @androidx.annotation.Keep <fields>;
+    @androidx.annotation.Keep <methods>;
+}

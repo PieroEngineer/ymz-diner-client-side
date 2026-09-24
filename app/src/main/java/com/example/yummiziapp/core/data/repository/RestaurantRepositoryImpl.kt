@@ -4,9 +4,12 @@ import android.util.Log
 import com.example.yummiziapp.core.data.di.IoDispatcher
 import com.example.yummiziapp.core.data.local.dao.LoggedUserDao
 import com.example.yummiziapp.core.data.local.dao.MenuDao
+import com.example.yummiziapp.core.data.local.dao.OrderDao
 import com.example.yummiziapp.core.data.local.dao.RequestDao
 import com.example.yummiziapp.core.data.local.dao.RestaurantDao
 import com.example.yummiziapp.core.data.local.entities.Dish
+import com.example.yummiziapp.core.data.local.entities.Order
+import com.example.yummiziapp.core.data.local.entities.OrderSelection
 import com.example.yummiziapp.core.data.local.entities.Restaurant
 import com.example.yummiziapp.core.data.local.model.RestaurantWithStatus
 import com.example.yummiziapp.core.data.network.api.RestaurantApi
@@ -31,6 +34,7 @@ class RestaurantRepositoryImpl @Inject constructor(
     private val requestDao: RequestDao,
     private val restaurantDao: RestaurantDao,
     private val menuDao: MenuDao,
+    private val orderDao: OrderDao,
 
     private val loggedUserDao: LoggedUserDao,
     private val yummiziApi: RestaurantApi,
@@ -47,6 +51,81 @@ class RestaurantRepositoryImpl @Inject constructor(
     override fun observeRestaurantMenuWithAvailableDishes(id: Uuid) = menuDao.observeRestaurantMenuWithAvailableDishes(id)
 
     override fun observeMenuPagesByRestaurant(restaurantId: Uuid) = menuDao.observeMenuPagesByRestaurant(restaurantId)
+
+    override suspend fun generateNewOrder() = withContext(ioDispatcher) {
+
+        /// is it necessary to delete all the previous orders here? Maybe not because the I already remove the request later.
+
+        val readyRequest = requestDao.getLatestReadyRequest()
+            ?: throw IllegalStateException("🚩  No READY request found when generating order order")
+
+        val newBaseOrder = Order(
+            orderId = readyRequest.requestId,   // TODO: Bring it from backend (Perhaps from the acceptance response) /// (#294) Is it ok that I use the request ID here?
+            requestId = readyRequest.requestId,
+//            totalPriceInCentsFromBackend = totalPriceInCentsFromRemote, //TODO: Bring this value from remote
+        )
+
+        orderDao.createOrder(newBaseOrder)
+    }
+
+    override fun observeOrderSelections() = orderDao.observeOrderSelections()
+
+    override suspend fun deleteOrderSelectionById(dishId: Uuid, complementaryDishId: Uuid) = orderDao.deleteOrderSelectionById(dishId, complementaryDishId)
+
+    override suspend fun getQuantityOfASelectionById(dishId: Uuid, complementaryDishId: Uuid) = orderDao.getQuantityOfASelectionById(dishId, complementaryDishId)
+
+    override suspend fun updateOrderSelectionQuantity(dishId: Uuid, complementaryDishId: Uuid, delta: Int) = orderDao.updateSelectionQuantityById(dishId, complementaryDishId, delta)
+
+//    override suspend fun checkIfThereAreSelections() = orderDao.checkIfThereAreSelections()
+
+    override suspend fun includeASelection(dishId: Uuid, complementaryDishId: Uuid?) = withContext(ioDispatcher) {
+
+        // TODO: If "complementaryDishId" arrives as "NIL", use the conditional price
+
+        val hasComplementaryDish = complementaryDishId != null
+        val temporalComplementaryDishIId = if(hasComplementaryDish) complementaryDishId else Uuid.NIL
+
+        // Check if the selection already exists
+        val isSelectionExisting = orderDao.checkIfSelectionExists(dishId, temporalComplementaryDishIId)
+
+        // If it exists, just increase one unit
+        if (isSelectionExisting) {
+            orderDao.updateSelectionQuantityById(dishId, temporalComplementaryDishIId, 1)
+        }
+        else{
+            val currentOrderId = orderDao.getCurrentOrderId()
+                ?: throw IllegalStateException("No order found when generating order order")
+
+
+            val mainDish = menuDao.getDishCostingById(dishId)
+
+            /// Check the types if necessary. I didn't put it jet because it was verified before.
+
+            val mainDishName = mainDish.name
+
+            val complementaryDishName = menuDao.getDishNameById(temporalComplementaryDishIId)
+
+            val selectionName = if(hasComplementaryDish) mainDishName else "$mainDishName + $complementaryDishName"
+
+            val newOrderSelection = OrderSelection(
+                orderId = currentOrderId,
+                complementaryDishId = if (hasComplementaryDish) complementaryDishId else Uuid.NIL,
+                dishId = dishId,
+                dishName = selectionName,   // TODO: Replace the attribute's name by "selectionName"
+                quantity = 1,
+                historicalUnitPriceInCents = mainDish.priceCents // It's just local, it doesn't go in the payload to send.
+            )
+
+            orderDao.insertNewSelection(newOrderSelection)
+        }
+
+    }
+
+    override suspend fun getDishNameById(dishId: Uuid) = menuDao.getDishNameById(dishId)
+
+    override suspend fun getReferencesByDishIds(dishIds: List<Uuid>) = menuDao.getReferencesByDishIds(dishIds)
+
+    override suspend fun getComplementaryDishesById(dishId: Uuid) = menuDao.getComplementaryDishIdsByDishId(dishId)
 
     override suspend fun clearAllRestaurantsAndRequests() {
         /// Does it need a transaction?
@@ -96,7 +175,7 @@ class RestaurantRepositoryImpl @Inject constructor(
 
     // The UI stays "hooked" to this flow. It updates automatically when Room changes.
     override fun observeRestaurantsInUserScope(): Flow<List<Restaurant>> { // This is to get all restaurants in the table; in other words, to get the restaurants' data in of the feed
-        return restaurantDao.getFeedRestaurants()
+        return restaurantDao.observeFeedRestaurants()
     }
 
     override fun observeRestaurantById(id: Uuid) = restaurantDao.observeRestaurantById(id)
@@ -109,13 +188,11 @@ class RestaurantRepositoryImpl @Inject constructor(
     override suspend fun refreshRestaurantMenu(restaurantId: Uuid) = withContext(ioDispatcher) {
         try {
             // Network Call
-            Log.d("MyActivity", "1")
             val remoteMenu = yummiziApi.getRestaurantMenu(restaurantId.toString())
 
             // Mapping DTOs to Entities (The "Transformation")
             Log.d("MyActivity", "🔎 The remote data is: $remoteMenu")
             val pageEntities = remoteMenu.menuPages.map { it.toEntity(restaurantId.toString()) }    /// Is it necessary to include a the restaurant ID? isn't it already in the arrived data?
-            Log.d("MyActivity", "3")
             val dishEntities = remoteMenu.dishes.map { it.toEntity() }
             Log.d("MyActivity", "✅🍽️  Syncing menu for restaurant: $restaurantId was succesful")
 

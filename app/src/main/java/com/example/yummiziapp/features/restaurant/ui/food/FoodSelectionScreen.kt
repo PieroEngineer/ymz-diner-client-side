@@ -41,6 +41,7 @@ import com.example.yummiziapp.R
 import com.example.yummiziapp.core.ui.components.CautionConfirmationModal
 import com.example.yummiziapp.core.ui.components.YummiziSnackbar
 import com.example.yummiziapp.features.payment.ui.arrival.components.RemainingTimeText
+import com.example.yummiziapp.features.restaurant.ui.food.components.ComplementSelectionModal
 import com.example.yummiziapp.features.restaurant.ui.food.components.MenuSettingArea
 import com.example.yummiziapp.features.restaurant.ui.model.MenuSetting
 import kotlin.uuid.Uuid
@@ -61,6 +62,8 @@ fun FoodSelectionScreen(    // TODO: Correct the prop-drilling of this and other
     val foodSelectionState by viewModel.foodSelectionState.collectAsStateWithLifecycle()
     val totalOrderCost by viewModel.totalOrderCost.collectAsStateWithLifecycle()
     val restaurantIdentityUiState by viewModel.restaurantIdentityUiState.collectAsStateWithLifecycle()
+
+    val complementSelectionUiState by viewModel.complementSelectionUiState.collectAsStateWithLifecycle()
 
     val selectionFinishedTimestamp by viewModel.selectionFinishedTimestamp.collectAsStateWithLifecycle()
 
@@ -85,7 +88,7 @@ fun FoodSelectionScreen(    // TODO: Correct the prop-drilling of this and other
                         val intent = Intent(Intent.ACTION_VIEW, effect.url.toUri())
                         try {
                             context.startActivity(intent)
-                        } catch (anfe: ActivityNotFoundException) {
+                        } catch (                                                                        anfe: ActivityNotFoundException) {
                             snackbarHostState.showSnackbar("No app found to open this link.")
                         }
                     }
@@ -114,7 +117,7 @@ fun FoodSelectionScreen(    // TODO: Correct the prop-drilling of this and other
         ){
             // Professional State Switching
             when (val result = menuUiState) {
-                is FoodSelectionUiState.Loading -> {
+                is MenuUiState.Loading -> {
                     //MenuShimmerLoading() // Your placeholder animation
                     Text(
                         text = "Loading data...",   // TODO: Change this to a loading animation
@@ -123,18 +126,19 @@ fun FoodSelectionScreen(    // TODO: Correct the prop-drilling of this and other
                         style = YummiziTheme.typography.teacherFontVar3
                     )
                 }
-                is FoodSelectionUiState.Success -> {
+                is MenuUiState.Success -> {
                     MenuArea(
                         modifier = Modifier
                             .weight(5f),
                         currentPages = result.pages,
-                        onUpdatingSelectionQuantityClicked = { dishId, delta ->
-                            viewModel.updateQuantity(dishId, delta)
+                        onDishClicked = { dishId ->
+//                            viewModel.updateQuantity(dishId, delta)
+                            viewModel.tryToIncludeASelection(dishId)
                         },
                         onContactRestaurantClicked = { viewModel.onContactRestaurant() }
                     )
                 }
-                is FoodSelectionUiState.Error -> {
+                is MenuUiState.Error -> {
                     //ErrorView(message = result.message) // A "Retry" button and error text
                     Text(
                         text = "Error: ${result.message}",
@@ -205,11 +209,11 @@ fun FoodSelectionScreen(    // TODO: Correct the prop-drilling of this and other
                     modifier = Modifier
                         .weight(7f),
                     menuStructure = menuSettingForChosenDishes,  //TODO: Later, this parameter will correspond to the list of menu settings to put it in a horizontal pager *2
-                    onUpdatingSelectionQuantityClicked = { dishId, delta ->
-                        viewModel.updateQuantity(dishId, delta)
+                    onUpdatingSelectionQuantityClicked = { dishId, complementaryDishId, delta ->
+                        viewModel.updateQuantity(dishId, complementaryDishId, delta)
                     },
-                    onRemoveDishClicked = { dishId ->
-                        viewModel.removeDish(dishId)
+                    onRemoveDishClicked = { dishId, complementaryDishId ->
+                        viewModel.removeDish(dishId, complementaryDishId)
                     },
                     totalOrderCost = totalOrderCost
                 )
@@ -255,7 +259,7 @@ fun FoodSelectionScreen(    // TODO: Correct the prop-drilling of this and other
                             )
                             .background(YummiziTheme.colors.yummiziBlue)
                             .clickable {
-                                viewModel.confirmOrder()
+                                viewModel.selectOrder()
                             }
 
                     ){
@@ -290,6 +294,19 @@ fun FoodSelectionScreen(    // TODO: Correct the prop-drilling of this and other
 
             onNoOptimisticOptionClicked = viewModel::cancelRequest,
             onOptimisticOptionClicked = { isTryingToCancelRequest = false },
+        )
+
+        ComplementSelectionModal(
+            modifier = Modifier,
+
+            onCancel = { viewModel.toggleComplementSelectionModalOpening() },
+
+            uiState = complementSelectionUiState,
+
+            onDishSelected = { dishId, complementaryDishId ->
+                viewModel.includeASelection(dishId, complementaryDishId)
+                viewModel.toggleComplementSelectionModalOpening()
+            }
         )
 
         YummiziSnackbar(

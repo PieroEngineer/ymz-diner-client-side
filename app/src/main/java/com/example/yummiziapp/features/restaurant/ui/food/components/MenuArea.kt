@@ -28,7 +28,7 @@ fun MenuArea(
     modifier: Modifier = Modifier,
 
     currentPages: List<MenuUiModel>,
-    onUpdatingSelectionQuantityClicked: (dishId: Uuid, delta: Int) -> Unit,
+    onDishClicked: (dishId: Uuid) -> Unit,
     onContactRestaurantClicked: () -> Unit = {}
 ){
     val spacing = YummiziTheme.spacing
@@ -57,7 +57,7 @@ fun MenuArea(
             ){
                 InteractiveMenu(
                     menuUiModel = currentPages[page],
-                    onUpdatingSelectionQuantityClicked = onUpdatingSelectionQuantityClicked
+                    onDishClicked = onDishClicked
                 )
             }
 

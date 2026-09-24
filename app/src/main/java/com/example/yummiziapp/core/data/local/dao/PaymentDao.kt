@@ -8,17 +8,19 @@ import com.example.yummiziapp.core.data.local.entities.OrderSelection
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface PaymentDao {
+interface PaymentDao { // TODO: Move all the current active functions to the order DAO
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertOrderSelections(selections: List<OrderSelection>)
+    //X
+//    @Insert(onConflict = OnConflictStrategy.REPLACE)
+//    suspend fun insertOrderSelections(selections: List<OrderSelection>)
 
-    @Query("DELETE FROM order_selections")
-    suspend fun deleteAllOrderSelections()
+    //X
+//    @Query("DELETE FROM order_selections")
+//    suspend fun deleteAllOrderSelections()
 
-    @Query("SELECT * FROM order_selections")
-    fun observeOrderSelections(): Flow<List<OrderSelection>>
+    //X
+//    @Query("SELECT * FROM order_selections")
+//    fun observeOrderSelections(): Flow<List<OrderSelection>>
 
-    @Query("SELECT * FROM order_selections")
-    suspend fun getOrderSelections(): List<OrderSelection>
+
 }

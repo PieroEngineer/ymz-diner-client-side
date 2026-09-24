@@ -12,7 +12,6 @@ import com.example.yummiziapp.core.data.local.dao.PaymentDao
 import com.example.yummiziapp.core.data.local.dao.RequestDao
 import com.example.yummiziapp.core.data.local.entities.Order
 import com.example.yummiziapp.core.data.local.entities.OrderSelection
-import com.example.yummiziapp.core.data.local.model.OrderWithSelectionsRelation
 import com.example.yummiziapp.core.data.local.model.RequestStatusToken
 import com.example.yummiziapp.core.data.network.api.PaymentApi
 import com.example.yummiziapp.core.data.network.model.mappers.createSendOrderDto
@@ -31,7 +30,6 @@ import java.io.File
 import java.io.FileNotFoundException
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.minutes
-import kotlin.uuid.Uuid
 
 /// Should I put a singleton in every repository?
 class PaymentRepositoryImpl @Inject constructor(    // TODO: Change the name of "Payment" for another (Perhaps with "Order")
@@ -47,47 +45,48 @@ class PaymentRepositoryImpl @Inject constructor(    // TODO: Change the name of 
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ) : PaymentRepository {
 
-    override suspend fun selectOrder(orderMap: Map<Uuid, Int>) = withContext(ioDispatcher) {
-//        runCatching { /// Should I use runCatching?
-            // Get the current "READY" request and extract its ID and the Restaurant ID
-        val readyRequest = requestDao.getLatestReadyRequest()
-            ?: throw IllegalStateException("No READY request found when selecting an order")
-
-        // Get dish details to get historical price
-        val dishIds = orderMap.keys.toList()
-        val dishes = menuDao.getDishesByIds(dishIds)
-        val dishPriceMap = dishes.associateBy({ it.id }, { it.priceCents }) // TODO: Optimze this double association
-        val dishNameMap = dishes.associateBy({ it.id }, { it.name })
-
-        val newBaseOrder = Order(   // TODO: Move it above and create a mapper for it
-            orderId = readyRequest.requestId,   /// (#294) Is it ok that I use the request ID here?
-            requestId = readyRequest.requestId,
-//            totalPriceInCentsFromBackend = totalPriceInCentsFromRemote, //TODO: Bring this value from remote
-        )
-
-        // Convert the map into a list of "OrderSelection" entities
-        val orderSelections = orderMap.map { (dishId, quantity) ->  // TODO: Move it into a mapper in another file
-            OrderSelection(
-                selectionId = Uuid.random(),
-                orderId = readyRequest.requestId,   /// (#294)
-                dishId = dishId,
-                dishName = dishNameMap[dishId] ?: "unnamed dish",
-                quantity = quantity,
-                historicalUnitPriceInCents = dishPriceMap[dishId] ?: 0
-            )
-        }
-
-        // TODO: Include these DAO actions as a transacton
-
-        // Save locally
-        orderDao.insertOrderWithSelections(
-            OrderWithSelectionsRelation(
-                newBaseOrder,
-                orderSelections
-            )
-        )
+    //X
+//    override suspend fun selectOrder(orderMap: Map<Uuid, Int>) = withContext(ioDispatcher) {
+////        runCatching { /// Should I use runCatching?
+//            // Get the current "READY" request and extract its ID and the Restaurant ID
+//        val readyRequest = requestDao.getLatestReadyRequest()
+//            ?: throw IllegalStateException("No READY request found when selecting an order")
+//
+//        // Get dish details to get historical price
+//        val dishIds = orderMap.keys.toList()
+//        val dishes = menuDao.getDishesByIds(dishIds)
+//        val dishPriceMap = dishes.associateBy({ it.id }, { it.priceCents }) // TODO: Optimze this double association
+//        val dishNameMap = dishes.associateBy({ it.id }, { it.name })
+//
+//        val newBaseOrder = Order(   // TODO: Move it above and create a mapper for it
+//            orderId = readyRequest.requestId,   /// (#294) Is it ok that I use the request ID here?
+//            requestId = readyRequest.requestId,
+////            totalPriceInCentsFromBackend = totalPriceInCentsFromRemote, //TODO: Bring this value from remote
+//        )
+//
+//        // Convert the map into a list of "OrderSelection" entities
+//        val orderSelections = orderMap.map { (dishId, quantity) ->  // TODO: Move it into a mapper in another file
+//            OrderSelection(
+//                selectionId = Uuid.random(),
+//                orderId = readyRequest.requestId,   /// (#294)
+//                dishId = dishId,
+//                dishName = dishNameMap[dishId] ?: "unnamed dish",
+//                quantity = quantity,
+//                historicalUnitPriceInCents = dishPriceMap[dishId] ?: 0
+//            )
 //        }
-    }
+//
+//        // TODO: Include these DAO actions as a transacton
+//
+//        // Save locally
+//        orderDao.insertOrderWithSelections(
+//            OrderWithSelectionsRelation(
+//                newBaseOrder,
+//                orderSelections
+//            )
+//        )
+////        }
+//    }
 
     override suspend fun confirmSelectedOrder(paymentImageRelativePath: String, imageUri: Uri?): Result<Unit> = withContext(ioDispatcher) {
         // Get the current "READY" request and extract its ID and the Restaurant ID
@@ -96,9 +95,9 @@ class PaymentRepositoryImpl @Inject constructor(    // TODO: Change the name of 
 
         val loggedUser = loggedUserDao.getUser() ?: throw IllegalStateException("No logged user found")
 
-        val orderSelection = paymentDao.getOrderSelections()
+        val orderSelections = orderDao.getOrderSelections()
         // Convert the list of "OrderSelection" into a list of "OrderSelectionDto"
-        val orderSelectionDtos = orderSelection.toDtoList()
+        val orderSelectionDtos = orderSelections.toDtoList()
 
         // Sum of prices
         val totalPriceInCentsFromLocal = orderSelectionDtos.sumOf { it.historicalUnitPriceInCents * it.quantity }
@@ -217,9 +216,9 @@ class PaymentRepositoryImpl @Inject constructor(    // TODO: Change the name of 
 
     override fun observeLatestOrder(): Flow<Order> = orderDao.observeLatestOrder()
 
-    override fun observeCurrentOrderSelections(): Flow<List<OrderSelection>> = paymentDao.observeOrderSelections()
+    override fun observeCurrentOrderSelections(): Flow<List<OrderSelection>> = orderDao.observeOrderSelections()
 
-    override suspend fun getCurrentOrderSelections(): List<OrderSelection> = paymentDao.getOrderSelections()
+//X    override suspend fun getCurrentOrderSelections(): List<OrderSelection> = paymentDao.getOrderSelections()
 
     /**
      * Retrieves the image handle from internal storage.

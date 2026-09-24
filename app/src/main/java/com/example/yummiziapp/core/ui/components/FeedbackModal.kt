@@ -36,7 +36,6 @@ fun FeedbackModal(
     isOpen: Boolean = false,
     onDismissRequest: () -> Unit = {},
 
-//X    feedbackUiState: FeedbackUiModel,
     currentDescription: String = "",
     currentConformity: FeedbackLevelToken? = null,
 

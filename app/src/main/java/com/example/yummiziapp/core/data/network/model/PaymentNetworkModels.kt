@@ -16,6 +16,7 @@ data class SendOrderReadyToBePaidDto(
 @Serializable
 data class OrderSelectionDto(
     val dishId: String,
+    val complementaryDishId: String,
     val dishName: String,
     val quantity: Int,
     val historicalUnitPriceInCents: Int

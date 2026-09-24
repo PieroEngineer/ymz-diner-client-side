@@ -5,6 +5,7 @@ import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.example.yummiziapp.core.data.local.model.AvailableSpecificsToken
+import com.example.yummiziapp.core.data.local.model.DishTypeToken
 import com.example.yummiziapp.core.data.local.model.RequestStatusToken
 //X import com.example.yummiziapp.features.request.data.model.QueueStatus
 import kotlin.uuid.Uuid
@@ -52,6 +53,7 @@ data class Restaurant(  // TODO: This is the entity. And the domain should be an
 
 @Entity(
     tableName = "order_selections",
+    primaryKeys = ["dishId", "complementaryDishId"],
     foreignKeys = [
         ForeignKey(
             entity = Order::class,    /// Order::class,?
@@ -63,13 +65,13 @@ data class Restaurant(  // TODO: This is the entity. And the domain should be an
     indices = [Index(value = ["orderId"])] // Indexing FK column speeds up child joins
 )
 data class OrderSelection(
-    @PrimaryKey val selectionId: Uuid,
+//X    @PrimaryKey val selectionId: Uuid,
     val orderId: Uuid,
+    val complementaryDishId: Uuid= Uuid.NIL,
     val dishId: Uuid,
-    val dishName: String,
+    val dishName: String,   // TODO: Change it by "selectionName"
     val quantity: Int,
     val historicalUnitPriceInCents: Int // It's just local, it doesn't go in the payload to send.
-//    val paymentMethod: String // TODO
 )
 
 @Entity(
@@ -91,6 +93,7 @@ data class Order(   // TODO: Include a some kind of "OrderStatus" that defines i
     val paymentImageRelativePath: String? = null,
     val localOrderCreationTimestamp: Instant? = null,   // TODO: Consider the possibility that the time starts since the user enters to the food selection
     val totalPriceInCentsFromBackend: Int? = null
+//    val paymentMethod: String // TODO
 )
 
 @Entity(
@@ -153,6 +156,7 @@ data class MenuPage(
 data class Dish(
     @PrimaryKey val id: Uuid,
     val menuPageId: Uuid,
+    val availableComplementaryDishIds: List<Uuid> = emptyList(),
     val name: String,
     val imageUrl: String,
     val priceCents: Int,
@@ -160,7 +164,9 @@ data class Dish(
     val isOutOfStock: Boolean = false,
     val coordinateXInMenu: Double,  //TODO: Later change it by section area of the menu image (rectangles), not by the a small button
     val coordinateYInMenu: Double,
-    val description: String
+    val description: String,
+    val type: DishTypeToken = DishTypeToken.MAIN, /// The types are "COMPLEMENTARY" or "MAIN", so if it's "MAIN", takes it own price
+//    val conditionalPiceCents: Int? = null, /// Use it when different complementary dishes set a different price to the main dish   /// It defines the price of "MAIN" + "COMPLEMENTARY". This means that the complementary dish decides the set price.
 )
 
 //X @Serializable

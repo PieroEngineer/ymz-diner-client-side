@@ -17,7 +17,7 @@ interface RestaurantDao {   // TODO: Remove the Uuid of their arguments because 
     suspend fun clearRestaurantsFromFeed()
 
     @Query("SELECT * FROM restaurants")
-    fun getFeedRestaurants(): Flow<List<Restaurant>>    /// *1 I think it shouldn't be a flow because the section will be updated everytime but the feed should be static once is called to don't confuse the user
+    fun observeFeedRestaurants(): Flow<List<Restaurant>>    /// *1 I think it shouldn't be a flow because the section will be updated everytime but the feed should be static once is called to don't confuse the user
 
     @Query("SELECT * FROM restaurants WHERE id = :restaurantId")
     fun observeRestaurantById(restaurantId: Uuid): Flow<Restaurant?>

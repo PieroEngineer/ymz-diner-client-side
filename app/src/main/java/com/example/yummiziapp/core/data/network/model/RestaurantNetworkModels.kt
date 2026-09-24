@@ -4,6 +4,7 @@ import android.util.Log
 import com.example.yummiziapp.core.data.local.entities.Dish
 import com.example.yummiziapp.core.data.local.entities.MenuPage
 import com.example.yummiziapp.core.data.local.entities.Restaurant
+import com.example.yummiziapp.core.data.local.model.DishTypeToken
 import kotlinx.serialization.Serializable
 import kotlin.uuid.Uuid
 
@@ -43,6 +44,8 @@ data class MenuPageDto(
 @Serializable
 data class DishDto(
     val id: String,
+    val availableComplementaryDishIds: List<String>,
+    val type: String,
     val name: String,
     val imageUrl: String,
     val priceCents: Int,
@@ -52,7 +55,7 @@ data class DishDto(
     val coordinateXInMenu: Double,
     val coordinateYInMenu: Double,
     val createdAt: Long,
-    val description: String
+    val description: String,
 )
 
 // Mappers for Page
@@ -74,6 +77,8 @@ fun DishDto.toEntity(): Dish {
         name = this.name,
         imageUrl = this.imageUrl,
         priceCents = this.priceCents,
+        availableComplementaryDishIds = this.availableComplementaryDishIds.map { Uuid.parse(it) },
+        type = DishTypeToken.entries.find{ it.name == this.type }?: DishTypeToken.COMPLEMENTARY,
         prepTime = this.prepTime,
         isOutOfStock = this.isOutOfStock,
         menuPageId = Uuid.parse(this.menuPageId),

@@ -9,6 +9,7 @@ import kotlin.uuid.Uuid
 fun OrderSelection.toDto(): OrderSelectionDto {
     return OrderSelectionDto(
         dishId = dishId.toString(),
+        complementaryDishId = complementaryDishId.toString(),
         quantity = quantity,
         dishName = dishName,
         historicalUnitPriceInCents = historicalUnitPriceInCents

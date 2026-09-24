@@ -9,8 +9,8 @@ import kotlin.uuid.Uuid
 
 interface PaymentRepository {
     suspend fun savePaymentImageToInternalStorage(uri: Uri): Result<File>
-    suspend fun selectOrder(orderMap: Map<Uuid, Int>)
-    suspend fun getCurrentOrderSelections(): List<OrderSelection>
+//X    suspend fun selectOrder(orderMap: Map<Uuid, Int>)
+//    suspend fun getCurrentOrderSelections(): List<OrderSelection>
 
     suspend fun getImageFile(): Result<File>
 

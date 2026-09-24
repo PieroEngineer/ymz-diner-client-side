@@ -27,7 +27,7 @@ import com.example.yummiziapp.core.designsystem.theme.AsyncYummiziImage
 fun InteractiveMenu(
     modifier: Modifier = Modifier,
     menuUiModel: MenuUiModel,
-    onUpdatingSelectionQuantityClicked: (dishId: Uuid, delta: Int) -> Unit
+    onDishClicked: (dishId: Uuid) -> Unit
 ) {
     val spacing = YummiziTheme.spacing
     // The Outer Box matches the height of the screen/container
@@ -58,7 +58,7 @@ fun InteractiveMenu(
             val containerWidth = maxWidth
             val containerHeight = maxHeight
 
-            for ((i, element) in menuUiModel.dishIds.withIndex()) {
+            for ((i, elementId) in menuUiModel.dishIds.withIndex()) {
                 // Calculate position
                 // We subtract half the icon size (e.g., 20.dp) to center the icon on the point
                 val xOffset = containerWidth * menuUiModel.coordinatesInPages[i].x
@@ -72,7 +72,7 @@ fun InteractiveMenu(
                         )
                         .size(spacing.regularIconSize) // Size of your small button
                         .clip(CircleShape)
-                        .clickable { onUpdatingSelectionQuantityClicked(element, 1) },
+                        .clickable { onDishClicked(elementId) },
                     contentAlignment = Alignment.Center
                 ) {
                     Image(

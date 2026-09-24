@@ -7,6 +7,8 @@ import androidx.room.Query
 import androidx.room.Transaction
 import com.example.yummiziapp.core.data.local.entities.Dish
 import com.example.yummiziapp.core.data.local.entities.MenuPage
+import com.example.yummiziapp.features.restaurant.domain.model.DishCostingProjection
+import com.example.yummiziapp.features.restaurant.domain.model.DishIdentifier
 import kotlinx.coroutines.flow.Flow
 import kotlin.uuid.Uuid
 
@@ -72,4 +74,15 @@ interface MenuDao {
     @Query("SELECT * FROM dishes WHERE id IN (:dishIds)")
     suspend fun getDishesByIds(dishIds: List<Uuid>): List<Dish>
 
+    @Query("SELECT name, priceCents, type FROM dishes WHERE id = :dishId")
+    suspend fun getDishCostingById(dishId: Uuid): DishCostingProjection
+
+    @Query("SELECT name FROM dishes WHERE id = :dishId")
+    suspend fun getDishNameById(dishId: Uuid): String
+
+    @Query("SELECT id, name FROM dishes WHERE id IN (:dishIds)")
+    suspend fun getReferencesByDishIds(dishIds: List<Uuid>): List<DishIdentifier>
+
+    @Query("SELECT availableComplementaryDishIds FROM dishes WHERE id = :dishId")
+    suspend fun getComplementaryDishIdsByDishId(dishId: Uuid): List<Uuid>
 }

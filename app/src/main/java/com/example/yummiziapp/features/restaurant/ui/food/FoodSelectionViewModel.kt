@@ -6,10 +6,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.yummiziapp.core.data.local.entities.Dish
 import com.example.yummiziapp.core.data.local.entities.MenuPage
+import com.example.yummiziapp.core.data.local.model.DishTypeToken
 import com.example.yummiziapp.core.utils.toCurrencyFormat
 import com.example.yummiziapp.features.payment.domain.repository.PaymentRepository
 import com.example.yummiziapp.features.request.domain.repository.RequestRepository
 import com.example.yummiziapp.features.restaurant.domain.repository.RestaurantRepository
+import com.example.yummiziapp.features.restaurant.ui.model.ComplementSelectionUiState
+import com.example.yummiziapp.features.restaurant.ui.model.ComplementaryDishUiModel
 import com.example.yummiziapp.features.restaurant.ui.model.CoordinatesInPage
 import com.example.yummiziapp.features.restaurant.ui.model.FoodSelectionUiModel
 import com.example.yummiziapp.features.restaurant.ui.model.MenuUiModel
@@ -19,8 +22,8 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
@@ -48,28 +51,39 @@ class FoodSelectionViewModel @Inject constructor(   //TODO: Change the way of ho
     private val restaurantIdString: String = checkNotNull(savedStateHandle["restaurantId"])
     private val restaurantId = Uuid.parse(restaurantIdString)
 
-    private val _orderMap = MutableStateFlow<Map<Uuid, Int>>(emptyMap())
+    private val _complementSelectionUiState = MutableStateFlow(ComplementSelectionUiState())
+    val complementSelectionUiState: StateFlow<ComplementSelectionUiState> = _complementSelectionUiState.asStateFlow()
+
+//    private val _orderMap = MutableStateFlow<Map<Uuid, Int>>(emptyMap())
 
     init {
         viewModelScope.launch {
             // Trigger the GET request to cloud immediately on start
             refreshMenu()
-            initializeOrder()   // To allow us to use a local map and minimize room overhead when update the order frequently
+
+            generateOrder()
+//X            initializeOrder()   // To allow us to use a local map and minimize room overhead when update the order frequently
+
         }
     }
 
-    private suspend fun refreshMenu() {
+    private suspend fun refreshMenu() { // TODO: Move it to "onStart" of some flow
         restaurantRepository.refreshRestaurantMenu(restaurantId)
     }
 
-    private suspend fun initializeOrder() {
-        val currentOrder = paymentRepository.getCurrentOrderSelections()
-        if (currentOrder.isNotEmpty()) {
-            _orderMap.update {
-                currentOrder.associate { it.dishId to it.quantity }
-            }
-        }
+    private suspend fun generateOrder(){
+        restaurantRepository.generateNewOrder()
     }
+
+    //X
+//    private suspend fun initializeOrder() {
+//        val currentOrder = paymentRepository.getCurrentOrderSelections()
+//        if (currentOrder.isNotEmpty()) {
+//            _orderMap.update {
+//                currentOrder.associate { it.dishId to it.quantity }
+//            }
+//        }
+//    }
 
     // Create an observer that give the "localCreationTimestamp" of "Request" entity and return it to the UI for the clock
      val selectionFinishedTimestamp: StateFlow<Instant> = requestRepository.observeRequestByRestaurantId(restaurantId)
@@ -100,16 +114,14 @@ class FoodSelectionViewModel @Inject constructor(   //TODO: Change the way of ho
         }
     }
 
-    fun confirmOrder(){
+    fun selectOrder(){
         viewModelScope.launch {
-            Log.d("FoodSelectionViewModel", "Confirming order ${_orderMap.value}")
-            if(_orderMap.value.isEmpty()){
+
+
+            if(foodSelectionState.value.isEmpty()){
                 _effect.send(FoodSelectionUiEvents.ShowSnackbar(message = "Por favor, seleccione al menos un plato"))
-//                return@launch
             }
             else{
-                paymentRepository.selectOrder(_orderMap.value)
-
                 requestRepository.notifyAttemptOfPayment(restaurantId)   // It also works as a tester of good connection before go to pay
                     .onSuccess{
                         Log.d("RequestRepository", "🔎☝️  Notification was sent")
@@ -120,6 +132,27 @@ class FoodSelectionViewModel @Inject constructor(   //TODO: Change the way of ho
                         _effect.send(FoodSelectionUiEvents.ShowSnackbar(message = "Hubo un problema de conexión")) // TODO: Use a better message
                     }
             }
+
+
+//X
+//            Log.d("FoodSelectionViewModel", "Confirming order ${_orderMap.value}")
+//            if(_orderMap.value.isEmpty()){
+//                _effect.send(FoodSelectionUiEvents.ShowSnackbar(message = "Por favor, seleccione al menos un plato"))
+////                return@launch
+//            }
+//            else{
+//                paymentRepository.selectOrder(_orderMap.value)
+//
+//                requestRepository.notifyAttemptOfPayment(restaurantId)   // It also works as a tester of good connection before go to pay
+//                    .onSuccess{
+//                        Log.d("RequestRepository", "🔎☝️  Notification was sent")
+//                        _effect.send(FoodSelectionUiEvents.NavigateToPayment(restaurantId) )    /// Should I send this contained in the entity or here?
+//                    }
+//                    .onFailure{ throwable ->
+//                        Log.e("FoodSelectionViewModel", "🚩 Error confirming order", throwable)
+//                        _effect.send(FoodSelectionUiEvents.ShowSnackbar(message = "Hubo un problema de conexión")) // TODO: Use a better message
+//                    }
+//            }
         }
     }
 
@@ -136,61 +169,135 @@ class FoodSelectionViewModel @Inject constructor(   //TODO: Change the way of ho
         }   // TODO: Clean the stack too // Or not?
     }
 
+    fun tryToIncludeASelection(dishId: Uuid){
+        viewModelScope.launch {
+            // Check if the dish have possible complementaries
+            val complementaryDishIds = restaurantRepository.getComplementaryDishesById(dishId)
 
-    // 3. Methods to update state
-    fun updateQuantity(dishId: Uuid, delta: Int) {
-        _orderMap.update { current ->
-            val newCount = (current[dishId] ?: 0) + delta
-            if (newCount <= 0) current else current + (dishId to newCount) /// Consider change "current - dishId" by the intention of this "current[dishId] = 1"
+            val complementaryDishReferences = restaurantRepository.getReferencesByDishIds(complementaryDishIds)
+
+            // If have complementaries -> Open modal to select them
+            if (complementaryDishReferences.isNotEmpty()) {
+                val mainDishName = restaurantRepository.getDishNameById(dishId)
+
+                _complementSelectionUiState.update {
+                    ComplementSelectionUiState(
+                        mainDishId = dishId,
+                        availableComplementaryDishes = complementaryDishReferences.map {
+                            ComplementaryDishUiModel(
+                                dishId = it.dishId,
+                                dishName = it.name
+                            )
+                        },
+                        mainDishName = mainDishName,
+                        isModalOpen = true
+                    )
+                }
+            } else {   // If not -> Add to selection directly (Handle the situation of adding the same dish with the same complement)
+                restaurantRepository.includeASelection(dishId)
+            }
         }
     }
 
-    fun removeDish(dishId: Uuid) {
-        _orderMap.update { current ->
-            current - dishId
+    fun includeASelection(dishId: Uuid, complementaryDishId: Uuid){
+        viewModelScope.launch {
+            restaurantRepository.includeASelection(dishId, complementaryDishId)
+        }
+    }
+
+    fun toggleComplementSelectionModalOpening(){
+        _complementSelectionUiState.update {
+            it.copy(isModalOpen = !it.isModalOpen)
+        }
+    }
+
+    // 3. Methods to update state
+    fun updateQuantity(dishId: Uuid, complementaryDishId: Uuid, delta: Int) {  // It only works with existing selections
+
+        viewModelScope.launch {
+            // Get selection's current quantity
+            val currentQuantity =
+                restaurantRepository.getQuantityOfASelectionById(dishId, complementaryDishId)
+
+            if (currentQuantity == 1 && delta == -1) return@launch
+
+            // Update the selection's quantity
+            restaurantRepository.updateOrderSelectionQuantity(dishId, complementaryDishId, delta)
+
+        }
+        //X
+//        _orderMap.update { current ->
+//            val newCount = (current[dishId] ?: 0) + delta
+//            if (newCount <= 0) current else current + (dishId to newCount) /// Consider change "current - dishId" by the intention of this "current[dishId] = 1"
+//        }
+
+        // }
+
+    }
+
+    fun removeDish(dishId: Uuid, complementaryDishId: Uuid) {
+        viewModelScope.launch {
+            restaurantRepository.deleteOrderSelectionById(dishId, complementaryDishId)
+
+            //X
+            //        _orderMap.update { current ->
+//            current - selectionId
+//        }
         }
     }
 
     // High-Performance StateFlow
     // We observe the database. If the network refresh succeeds later,
     // this Flow automatically emits the new data.
-    val menuUiState: StateFlow<FoodSelectionUiState> = restaurantRepository
+    val menuUiState: StateFlow<MenuUiState> = restaurantRepository
         .observeRestaurantMenuWithAvailableDishes(restaurantId)
         .map { map ->
             // Transform the map to the UI model list
             val uiModels = map.toUiModels()
 
-            if (uiModels.isEmpty()) FoodSelectionUiState.Loading
-            else FoodSelectionUiState.Success(uiModels)
+            if (uiModels.isEmpty()) MenuUiState.Loading
+            else MenuUiState.Success(uiModels)
         }
-        .catch { e -> emit(FoodSelectionUiState.Error(e.message ?: "Unknown Error")) }
+        .catch { e -> emit(MenuUiState.Error(e.message ?: "Unknown Error")) }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
-            initialValue = FoodSelectionUiState.Loading
+            initialValue = MenuUiState.Loading
         )
 
 
-    // The Source of Truth (Items)
-    val foodSelectionState: StateFlow<List<FoodSelectionUiModel>> = restaurantRepository
-        .observeDishes(restaurantId)
-        .combine(_orderMap) { dishes, selection ->
-            // Create a lookup map for efficient detail retrieval
-            val dishLookup = dishes.associateBy { it.id }
+    val foodSelectionState: StateFlow<List<FoodSelectionUiModel>> = restaurantRepository.observeOrderSelections()
+        .map{ /*dishes, */selections ->
 
-            // Iterate over 'selection' to maintain the order in which items were added
-            selection.mapNotNull { (dishId, quantity) ->
-                val dish = dishLookup[dishId] ?: return@mapNotNull null
-                if (quantity <= 0) return@mapNotNull null
-
+            selections.map { orderSelection ->
                 FoodSelectionUiModel(
-                    id = dish.id,
-                    name = dish.name,
-                    amount = quantity,
-                    unitPriceCents = dish.priceCents,
-                    accumulatedCost = (quantity * dish.priceCents).toCurrencyFormat()
+                    dishId = orderSelection.dishId,
+                    complementaryDishId = orderSelection.complementaryDishId,
+                    name = orderSelection.dishName,
+                    amount = orderSelection.quantity,
+                    unitPriceCents = orderSelection.historicalUnitPriceInCents,
+                    accumulatedCost = (orderSelection.quantity * orderSelection.historicalUnitPriceInCents).toCurrencyFormat()
                 )
+
             }
+
+//X
+//            // Create a lookup map for efficient detail retrieval
+//            val dishLookup = dishes.associateBy { it.id }
+//
+//            // Iterate over 'selection' to maintain the order in which items were added
+//            selection.mapNotNull { (dishId, quantity) ->
+//                val dish = dishLookup[dishId] ?: return@mapNotNull null
+//                if (quantity <= 0) return@mapNotNull null
+//
+//                FoodSelectionUiModel(
+//                    id = dish.id,
+//                    name = dish.name,
+//                    amount = quantity,
+//                    unitPriceCents = dish.priceCents,
+//                    accumulatedCost = (quantity * dish.priceCents).toCurrencyFormat()
+//                )
+//            }
         }
         .stateIn(
             scope = viewModelScope,
@@ -252,17 +359,20 @@ class FoodSelectionViewModel @Inject constructor(   //TODO: Change the way of ho
 
 
 
-    fun Map<MenuPage, List<Dish>>.toUiModels(): List<MenuUiModel> {
+    fun Map<MenuPage, List<Dish>>.toUiModels(): List<MenuUiModel> { // TODO: Consider change the map for other type made with data classes
         return this.map { (page, dishes) ->
+
+            val mainDishes = dishes.filter { it.type == DishTypeToken.MAIN }
+
             MenuUiModel(
                 page = page,    //TODO: Don't give the entity as such, just the necessary attributes
-                coordinatesInPages = dishes.map {
+                coordinatesInPages = mainDishes.map {
                     CoordinatesInPage(
                         it.coordinateXInMenu.toFloat(),
                         it.coordinateYInMenu.toFloat()
                     )
                 },
-                dishIds = dishes.map { it.id }  /// Consider don't use lists, but UI models as parameters
+                dishIds = mainDishes.map { it.id }  /// Consider don't use lists, but UI models as parameters
             )
         }.sortedBy { it.page.pageNumber }
     }

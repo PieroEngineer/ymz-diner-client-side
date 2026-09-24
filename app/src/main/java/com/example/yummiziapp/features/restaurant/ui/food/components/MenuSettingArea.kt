@@ -33,8 +33,8 @@ import kotlin.uuid.Uuid
 fun <T: Identifiable> MenuSettingArea(
     modifier: Modifier = Modifier,
     menuStructure: MenuSetting<T>,
-    onUpdatingSelectionQuantityClicked: (dishId: Uuid, delta: Int) -> Unit,
-    onRemoveDishClicked: (dishId: Uuid) -> Unit,
+    onUpdatingSelectionQuantityClicked: (dishId: Uuid, complementaryDishId: Uuid, delta: Int) -> Unit,
+    onRemoveDishClicked: (dishId: Uuid, complementaryDishId: Uuid) -> Unit,
     totalOrderCost: String
 ){
     val spacing = YummiziTheme.spacing
@@ -100,7 +100,7 @@ fun <T: Identifiable> MenuSettingArea(
             ) {
                 items(
                     items = menuStructure.elementsInScroll,
-                    key = { selection -> selection.id }
+                    key = { selection -> "${selection.dishId}_${selection.complementaryDishId}" }
                 ) { selection ->
 
                     when (menuStructure) {
@@ -110,11 +110,17 @@ fun <T: Identifiable> MenuSettingArea(
                                 onUpdatingSelectionQuantityClicked = {
                                     increaseQuantity ->
                                     onUpdatingSelectionQuantityClicked(
-                                        selection.id,
+                                        selection.dishId,
+                                        selection.complementaryDishId,
                                         if (increaseQuantity) 1 else -1
                                     )
                                 },
-                                onRemoveDishClicked = { onRemoveDishClicked(selection.id) }
+                                onRemoveDishClicked = {
+                                    onRemoveDishClicked(
+                                        selection.dishId,
+                                        selection.complementaryDishId
+                                    )
+                                }
                             )
                         }
                     }

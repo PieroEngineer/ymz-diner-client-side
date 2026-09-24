@@ -3,7 +3,9 @@ package com.example.yummiziapp.features.restaurant.ui.model
 import kotlin.uuid.Uuid
 
 data class FoodSelectionUiModel(
-    override val id: Uuid,
+//X    override val selectionId: Uuid,
+    override val dishId: Uuid,
+    override val complementaryDishId: Uuid,
     val name: String,
     val amount: Int,
     val unitPriceCents: Int,
@@ -11,5 +13,7 @@ data class FoodSelectionUiModel(
 ) : Identifiable
 
 interface Identifiable {
-    val id: Uuid
+//X    val selectionId: Uuid
+    val dishId: Uuid
+    val complementaryDishId: Uuid
 }
