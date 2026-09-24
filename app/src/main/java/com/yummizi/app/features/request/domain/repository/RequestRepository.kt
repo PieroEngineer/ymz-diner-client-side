@@ -1,0 +1,43 @@
+package com.yummizi.app.features.request.domain.repository
+
+import com.yummizi.app.core.data.local.entities.Request
+import com.yummizi.app.core.data.local.model.RequestStatusToken
+import kotlinx.coroutines.flow.Flow
+import kotlin.uuid.Uuid
+
+interface RequestRepository {
+
+    /**
+     * Creates a new queue request.
+     * 1. Generates a local requestId.
+     * 2. Optimistically updates the Restaurant's requestId and User's queued list.
+     * 3. Syncs with the Cloud (AWS).
+     * 4. Performs a rollback if the network fails.
+     */
+    suspend fun createQueueRequest(restaurantId: Uuid, arrivalTimeInMinutes: Int)
+
+//    /**
+//     * Transitions a restaurant between state lists (Queued -> Paid, etc).
+//     * Uses atomicity to ensure the ID is removed from the old list
+//     * and added to the new one simultaneously.
+//     */
+//    suspend fun updateRestaurantStatus(
+//        restaurantId: Uuid,
+//        requestId: Uuid,
+//        newStatus: QueueStatusToken
+//    )
+
+    suspend fun cancelRequest(restaurantId: Uuid)
+
+    suspend fun getRequestStatusByRestaurantId(restaurantId: Uuid): RequestStatusToken
+    fun observeRequestByRestaurantId(restaurantId: Uuid): Flow<Request?>
+
+    fun observeIfThereAreRequests(): Flow<Boolean>
+
+    suspend fun clearAll()
+    suspend fun confirmAcceptance(restaurantId: Uuid): Result<Unit>
+
+    suspend fun fetchUpdatedRequestStatuses()
+
+    suspend fun notifyAttemptOfPayment(restaurantId: Uuid): Result<Unit>
+}

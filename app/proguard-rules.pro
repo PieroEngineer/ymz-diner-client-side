@@ -41,14 +41,14 @@
 -keep class com.amazonaws.** { *; }
 -dontwarn com.amplifyframework.**
 # Preserve raw resource IDs loaded via reflection
--keepclassmembers class com.example.yummiziapp.R$raw {
+-keepclassmembers class com.yummizi.app.R$raw {
     public static final int amplifyconfiguration;
     public static final int awsconfiguration;
 }
 
 # MVVM Data Layer (Protect Network Request/Response Models from Obfuscation)  # TODO (#904): Change this approach for "@Keep"
--keepclassmembers class com.example.yummiziapp.core.data.local.** { *; }
--keepclassmembers class com.example.yummiziapp.core.data.network.** { *; }
+-keepclassmembers class com.yummizi.app.core.data.local.** { *; }
+-keepclassmembers class com.yummizi.app.core.data.network.** { *; }
 # Keep any class or member explicitly annotated with @Keep  # TODO (#904)
 #-keep @androidx.annotation.Keep class * { *; }
 #-keepclasseswithmembers class * {

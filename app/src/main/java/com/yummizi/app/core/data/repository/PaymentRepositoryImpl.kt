@@ -1,0 +1,292 @@
+package com.yummizi.app.core.data.repository
+
+import javax.inject.Inject
+import android.content.Context
+import android.net.Uri
+import android.util.Log
+import com.yummizi.app.core.data.di.IoDispatcher
+import com.yummizi.app.core.data.local.dao.LoggedUserDao
+import com.yummizi.app.core.data.local.dao.MenuDao
+import com.yummizi.app.core.data.local.dao.OrderDao
+import com.yummizi.app.core.data.local.dao.PaymentDao
+import com.yummizi.app.core.data.local.dao.RequestDao
+import com.yummizi.app.core.data.local.entities.Order
+import com.yummizi.app.core.data.local.entities.OrderSelection
+import com.yummizi.app.core.data.local.model.OrderWithSelectionsRelation
+import com.yummizi.app.core.data.local.model.RequestStatusToken
+import com.yummizi.app.core.data.network.api.PaymentApi
+import com.yummizi.app.core.data.network.model.mappers.createSendOrderDto
+import com.yummizi.app.core.data.network.model.mappers.toDtoList
+import com.yummizi.app.core.utils.convertToWebp
+import com.yummizi.app.features.payment.domain.repository.PaymentRepository
+import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.withContext
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.RequestBody
+import okio.BufferedSink
+import okio.source
+import java.io.File
+import java.io.FileNotFoundException
+import kotlin.time.Clock
+import kotlin.time.Duration.Companion.minutes
+import kotlin.uuid.Uuid
+
+/// Should I put a singleton in every repository?
+class PaymentRepositoryImpl @Inject constructor(    // TODO: Change the name of "Payment" for another (Perhaps with "Order")
+    private val paymentDao: PaymentDao,
+    private val requestDao: RequestDao,
+    private val menuDao: MenuDao,
+    private val loggedUserDao: LoggedUserDao,
+    private val orderDao: OrderDao,
+
+    private val yummiziApi: PaymentApi,
+
+    @ApplicationContext private val context: Context,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher
+) : PaymentRepository {
+
+    override suspend fun selectOrder(orderMap: Map<Uuid, Int>) = withContext(ioDispatcher) {
+//        runCatching { /// Should I use runCatching?
+            // Get the current "READY" request and extract its ID and the Restaurant ID
+        val readyRequest = requestDao.getLatestReadyRequest()
+            ?: throw IllegalStateException("No READY request found when selecting an order")
+
+        // Get dish details to get historical price
+        val dishIds = orderMap.keys.toList()
+        val dishes = menuDao.getDishesByIds(dishIds)
+        val dishPriceMap = dishes.associateBy({ it.id }, { it.priceCents }) // TODO: Optimze this double association
+        val dishNameMap = dishes.associateBy({ it.id }, { it.name })
+
+        val newBaseOrder = Order(   // TODO: Move it above and create a mapper for it
+            orderId = readyRequest.requestId,   /// (#294) Is it ok that I use the request ID here?
+            requestId = readyRequest.requestId,
+//            totalPriceInCentsFromBackend = totalPriceInCentsFromRemote, //TODO: Bring this value from remote
+        )
+
+        // Convert the map into a list of "OrderSelection" entities
+        val orderSelections = orderMap.map { (dishId, quantity) ->  // TODO: Move it into a mapper in another file
+            OrderSelection(
+                selectionId = Uuid.random(),
+                orderId = readyRequest.requestId,   /// (#294)
+                dishId = dishId,
+                dishName = dishNameMap[dishId] ?: "unnamed dish",
+                quantity = quantity,
+                historicalUnitPriceInCents = dishPriceMap[dishId] ?: 0
+            )
+        }
+
+        // TODO: Include these DAO actions as a transacton
+
+        // Save locally
+        orderDao.insertOrderWithSelections(
+            OrderWithSelectionsRelation(
+                newBaseOrder,
+                orderSelections
+            )
+        )
+//        }
+    }
+
+    override suspend fun confirmSelectedOrder(paymentImageRelativePath: String, imageUri: Uri?): Result<Unit> = withContext(ioDispatcher) {
+        // Get the current "READY" request and extract its ID and the Restaurant ID
+        val readyRequest = requestDao.getLatestReadyRequest()
+            ?: throw IllegalStateException("No READY request found when confirming an order")
+
+        val loggedUser = loggedUserDao.getUser() ?: throw IllegalStateException("No logged user found")
+
+        val orderSelection = paymentDao.getOrderSelections()
+        // Convert the list of "OrderSelection" into a list of "OrderSelectionDto"
+        val orderSelectionDtos = orderSelection.toDtoList()
+
+        // Sum of prices
+        val totalPriceInCentsFromLocal = orderSelectionDtos.sumOf { it.historicalUnitPriceInCents * it.quantity }
+
+        // Add the list of "OrderSelectionDto" into a "sendOrderReadyToBePaidDto"
+        val payload = createSendOrderDto(   // TODO: change it to a function that only receives the request and logged user directly to make it looks better
+            requestId = readyRequest.requestId,
+            restaurantId = readyRequest.restaurantId,
+            userId = loggedUser.id,
+            userName = loggedUser.name,
+            arrivalTime = readyRequest.arrivalTimeInMinutes,
+            groupSize = loggedUser.companySize + 1,
+            selections = orderSelectionDtos
+        )
+
+        Log.d("MyActivity", "⏫  Payload of the request: $payload")
+
+        // POST the sendOrderReadyToBePaidDto with the api function "selectOrder"
+        val response = yummiziApi.selectOrder(payload)
+
+        if (response.isSuccessful) {    // TODO: Also return the time when the customer should arrive, the client-side doesn't decide that  /// perhaps also the time when the waiting started
+
+
+            requestDao.updateRequestStatus(readyRequest.requestId, RequestStatusToken.PAID)
+
+            // Receive the response with the total price and return it
+            val totalPriceInCentsFromRemote = response.body()?.totalPriceInCents
+                ?: throw IllegalStateException("Empty response body")
+
+            val officialOrder = Order(   // TODO: Move it above and create a mapper for it
+                orderId = readyRequest.requestId,   /// Is it ok that I use the request ID here?
+                paymentImageRelativePath = paymentImageRelativePath,
+                expectedArrivalDatetime = Clock.System.now() + readyRequest.arrivalTimeInMinutes.minutes,
+                requestId = readyRequest.requestId,
+                localOrderCreationTimestamp = Clock.System.now(),
+                totalPriceInCentsFromBackend = totalPriceInCentsFromRemote,
+            )
+
+            orderDao.updateOrder(officialOrder)
+
+            if (totalPriceInCentsFromLocal != totalPriceInCentsFromRemote) {
+                Log.d("MyActivity", "\n🚩💲  The local price doesn't match with the remote price:\n  Local: $totalPriceInCentsFromLocal\n  Remote: $totalPriceInCentsFromRemote")
+            }
+            else{
+                Log.d("MyActivity", "✅💲  The local price matches with the remote price")
+            }
+
+            val presignedUrl = response.body()?.paymentImageReferences?.uploadUrl
+            val fileKey = response.body()?.paymentImageReferences?.publicUrl    // TODO: Pass to the Room and use it in the next screen
+
+            Log.d("MyActivity", "🔎⏫  Presigned URL: $presignedUrl")
+
+            try{
+                if (imageUri != null && presignedUrl != null){
+                    uploadImage(imageUri, presignedUrl.replace("172.18.0.2", "localhost"))
+
+                    Log.d("MyActivity", "✅⏫  Image uploaded successfully")
+
+                    return@withContext Result.success(Unit)
+                }
+                else{
+                    return@withContext Result.failure(Exception("🚩  Image URI or Presigned URL is null"))
+                }
+            }
+            catch (e: Exception){
+                // TODO: Let know to the restaurant that the image payment wasn't successfully sent (But depend in what part of the Lambda the error occured)
+                return@withContext Result.failure(Exception("🚩  Image Uploading to S3 failed: ${e.message}"))
+            }
+
+        } else {
+            return@withContext Result.failure(Exception("API call failed: ${response.code()} ${response.message()}"))
+        }
+    }
+    private suspend fun uploadImage(uri: Uri, presignedUrl: String) {
+        val contentResolver = context.contentResolver
+        
+        // 1. Determine MIME type and exact size. 
+        // S3 Presigned URLs REQUIRE Content-Length and do not support 'Transfer-Encoding: chunked'.
+        val mimeType = when {
+            uri.path?.endsWith(".webp") == true -> "image/webp"
+            uri.path?.endsWith(".png") == true -> "image/png"
+            uri.path?.endsWith(".jpg") == true || uri.path?.endsWith(".jpeg") == true -> "image/jpeg"
+            else -> contentResolver.getType(uri) ?: "image/jpeg"
+        }
+
+        val size = when (uri.scheme) {
+            "file" -> uri.path?.let { File(it).length() } ?: -1L
+            "content" -> {
+                contentResolver.openAssetFileDescriptor(uri, "r")?.use { it.length } ?: -1L
+            }
+            else -> -1L
+        }
+
+        Log.d("MyActivity", "🔎⏫🖼️  Uploading to S3: MIME=$mimeType, Size=$size bytes")
+
+        // 2. Efficiently stream image from Uri while providing the mandatory Content-Length
+        val requestBody = object : RequestBody() {
+            override fun contentType() = mimeType.toMediaTypeOrNull()
+            
+            override fun contentLength() = size
+
+            override fun writeTo(sink: BufferedSink) {
+                contentResolver.openInputStream(uri)?.use { inputStream ->
+                    sink.writeAll(inputStream.source())
+                } ?: throw IllegalStateException("🚩  Could not open InputStream for Uri")
+            }
+        }
+
+        // 3. Upload directly to S3
+        val uploadResponse = yummiziApi.uploadToPresignedUrl(presignedUrl, mimeType, requestBody)
+        if (!uploadResponse.isSuccessful) {
+            Log.d("MyActivity", "🚩uploadFile: API call failed: ${uploadResponse.code()} ${uploadResponse.message()}")
+            throw IllegalStateException("S3 Upload failed with code: ${uploadResponse.code()}")
+        }
+    }
+
+    override fun observeLatestOrder(): Flow<Order> = orderDao.observeLatestOrder()
+
+    override fun observeCurrentOrderSelections(): Flow<List<OrderSelection>> = paymentDao.observeOrderSelections()
+
+    override suspend fun getCurrentOrderSelections(): List<OrderSelection> = paymentDao.getOrderSelections()
+
+    /**
+     * Retrieves the image handle from internal storage.
+     * Tries resolving with .png extension first; if not found or empty, falls back to .jpg.
+     */
+    override suspend fun getImageFile(): Result<File> = runCatching {    /// Maybe it will be better to remove it later because the cleanest way to handle it is with the path in the repo
+        withContext(ioDispatcher) {
+
+            val readyRequest = requestDao.getLatestReadyRequest()
+                ?: throw IllegalStateException("No READY request found when retrieving image")
+
+            // Extracts base name regardless of whether 'fileName' contains an extension or not
+            val baseName = "current_payment_image_${readyRequest.requestId}"
+
+            // 1. Primary Attempt: Check for .webp candidate (Preferred)
+            val webpCandidate = File(context.filesDir, "$baseName.webp")
+            if (webpCandidate.isValidImageFile()) {
+                return@withContext webpCandidate
+            }
+
+            // 2. Fallback Attempt: Check for .png candidate
+            val pngCandidate = File(context.filesDir, "$baseName.png")
+            if (pngCandidate.isValidImageFile()) {
+                return@withContext pngCandidate
+            }
+
+            // 3. Fallback Attempt: Check for .jpg candidate
+            val jpgCandidate = File(context.filesDir, "$baseName.jpg")
+            if (jpgCandidate.isValidImageFile()) {
+                return@withContext jpgCandidate
+            }
+
+            throw FileNotFoundException(
+                "Image file for '$baseName' (tried .webp, .png, .jpg) does not exist in filesDir."
+            )
+        }
+    }
+    /**
+     * Internal extension for atomic file integrity check.
+     */
+    private fun File.isValidImageFile(): Boolean = exists() && length() > 0L
+
+    // ... removeCurrenImageFromInternalStorage() ...
+    // TODO
+
+    override suspend fun savePaymentImageToInternalStorage(uri: Uri): Result<File> = withContext(ioDispatcher) {
+        runCatching {
+            val readyRequest = requestDao.getLatestReadyRequest()
+                ?: throw IllegalStateException("No READY request found when saving image")
+
+            // Shaping output - always WebP for performance and size
+            val targetFile = File(context.filesDir, "current_payment_image_${readyRequest.requestId}.webp")
+
+            // Convert and save as WebP
+            uri.convertToWebp(context, targetFile, quality = 80)
+
+            targetFile
+        }
+    }
+}
+
+
+//            // Create the entity using the file's absolute path   // TODO
+//            val payment = PaymentEntity(
+//                amountInCents = amountCents,
+//                imagePath = targetFile.absolutePath //  "Houses/cache/payment_xyz.jpg"
+//            )
+//
+//            // Save the text path to Room
+//            paymentDao.insertPayment(payment)
