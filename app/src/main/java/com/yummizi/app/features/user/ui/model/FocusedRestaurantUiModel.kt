@@ -1,0 +1,15 @@
+package com.yummizi.app.features.user.ui.model
+
+import kotlin.uuid.Uuid
+
+data class FocusedRestaurantUiModel(
+    val restaurantId: Uuid,
+    val restaurantLogoUrl: String,
+    val waitingState: PendingRequestUiStatus,
+    val distanceKm: Int,
+    val name: String,
+    val customerArrivalTimeInMinutes: Int,
+    val maxWaitingTimeInMinutesByRestaurant: Int,
+    val latitude: Double,
+    val longitude: Double
+)
