@@ -58,7 +58,7 @@ interface RestaurantRepository {
 
     suspend fun getRestaurantById(id: Uuid): Restaurant?
 
-    suspend fun getReferencesByDishIds(dishIds: List<Uuid>): List<DishIdentifier>
+    suspend fun getAvailableReferencesByDishIds(dishIds: List<Uuid>): List<DishIdentifier>
 
     /**
      * Synchronizes the remote menu with local storage.

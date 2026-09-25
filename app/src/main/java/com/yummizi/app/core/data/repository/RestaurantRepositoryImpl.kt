@@ -123,7 +123,8 @@ class RestaurantRepositoryImpl @Inject constructor(
 
     override suspend fun getDishNameById(dishId: Uuid) = menuDao.getDishNameById(dishId)
 
-    override suspend fun getReferencesByDishIds(dishIds: List<Uuid>) = menuDao.getReferencesByDishIds(dishIds)
+    // It doesn't bring out-of-stock dishes
+    override suspend fun getAvailableReferencesByDishIds(dishIds: List<Uuid>) = menuDao.getAvailableReferencesByDishIds(dishIds)
 
     override suspend fun getComplementaryDishesById(dishId: Uuid) = menuDao.getComplementaryDishIdsByDishId(dishId)
 

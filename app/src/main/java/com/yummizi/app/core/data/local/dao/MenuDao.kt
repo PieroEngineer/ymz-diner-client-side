@@ -80,8 +80,8 @@ interface MenuDao {
     @Query("SELECT name FROM dishes WHERE id = :dishId")
     suspend fun getDishNameById(dishId: Uuid): String
 
-    @Query("SELECT id AS dishId, name FROM dishes WHERE id IN (:dishIds)")
-    suspend fun getReferencesByDishIds(dishIds: List<Uuid>): List<DishIdentifier>
+    @Query("SELECT id AS dishId, name FROM dishes WHERE id IN (:dishIds) AND isOutOfStock = 0")
+    suspend fun getAvailableReferencesByDishIds(dishIds: List<Uuid>): List<DishIdentifier>
 
     @Query("SELECT availableComplementaryDishIds FROM dishes WHERE id = :dishId")
     suspend fun getComplementaryDishIdsByDishId(dishId: Uuid): List<Uuid>

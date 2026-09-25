@@ -172,9 +172,9 @@ class FoodSelectionViewModel @Inject constructor(   //TODO: Change the way of ho
     fun tryToIncludeASelection(dishId: Uuid){
         viewModelScope.launch {
             // Check if the dish have possible complementaries
-            val complementaryDishIds = restaurantRepository.getComplementaryDishesById(dishId)
+            val complementaryDishIds = restaurantRepository.getComplementaryDishesById(dishId)  // TODO (#492): Consider unify these repo's functions
 
-            val complementaryDishReferences = restaurantRepository.getReferencesByDishIds(complementaryDishIds)
+            val complementaryDishReferences = restaurantRepository.getAvailableReferencesByDishIds(complementaryDishIds)  // TODO (#492)
 
             // If have complementaries -> Open modal to select them
             if (complementaryDishReferences.isNotEmpty()) {
