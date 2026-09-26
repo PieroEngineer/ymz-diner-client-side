@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -44,7 +45,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.yummizi.app.core.ui.components.NavigationBar
 import com.yummizi.app.core.ui.components.FeedbackModal
 import com.yummizi.app.features.contact.ui.contact.components.ShareYummiziModal
-import com.yummizi.app.core.ui.components.SquareButton
+import com.yummizi.app.core.ui.components.YummiziButton
 import com.yummizi.app.core.ui.components.YummiziSnackbar
 
 //@Preview()
@@ -156,55 +157,54 @@ fun ContactScreen(
                     .padding(spacing.smallSeparation)
             )
 
-//            Spacer(Modifier.weight(1f))
+            Spacer(Modifier.height(spacing.regularSeparation))
+
+            LazyColumn(
+                modifier = Modifier
+                    .weight(1f),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ){
+                item(contentType = "buttons"){
+                    Row(
+                        modifier = Modifier
+                            .align(Alignment.CenterHorizontally)
+                    ){
+                        YummiziButton(
+                            ownImageId = R.drawable.conversation_icon,
+                            ownText = "Tengo\ncomentarios",
+                            onClick = { wantToGiveFeedback = true }
+                        )
+
+                        Spacer(Modifier.width(spacing.mediumSeparation))
+
+                        YummiziButton(
+                            ownImageId = R.drawable.handshake_icon,
+                            ownText = "Compartir a\nusuario/restaurante",
+                            onClick = { userWantToShare = true }
+                        )
+                    }
+
+                    Spacer(Modifier.height(spacing.mediumSeparation))
+
+                    Row(
+                        modifier = Modifier
+                            .align(Alignment.CenterHorizontally)
+                    ){
+                        Spacer(Modifier.weight(1f))
+
+                        YummiziButton(
+                            ownImageId = R.drawable.italic_info_icon,
+                            ownText = "¿Cómo funciona\nesto?",
+                            iconSize = spacing.bigIconSize,
+                            onClick = { viewModel.onTryToSeeVideo() }
+                        )
+
+                        Spacer(Modifier.weight(1f))
+                    }
+                }
+            }
 
             Spacer(Modifier.height(spacing.smallSeparation))
-
-            Row(
-                modifier = Modifier
-                    .weight(2f)
-                    .align(Alignment.CenterHorizontally)
-            ){
-                SquareButton(
-                    modifier = Modifier
-                        .weight(1f),
-                    ownImageId = R.drawable.conversation_icon,
-                    ownText = "Tengo\ncomentarios",
-                    onClick = { wantToGiveFeedback = true }
-                )
-
-                Spacer(Modifier.width(spacing.mediumSeparation))
-
-                SquareButton(
-                    modifier = Modifier
-                        .weight(1f),
-                    ownImageId = R.drawable.handshake_icon,
-                    ownText = "Compartir a\nusuario/restaurante",
-                    onClick = { userWantToShare = true }
-                )
-            }
-
-            Spacer(Modifier.height(spacing.mediumSeparation))
-
-            Row(
-                modifier = Modifier
-                    .weight(2f)
-                    .align(Alignment.CenterHorizontally)
-            ){
-                Spacer(Modifier.weight(1f))
-
-                SquareButton(
-                    ownImageId = R.drawable.italic_info_icon,
-                    ownText = "¿Cómo funciona\nesto?",
-                    iconSize = spacing.bigIconSize,
-                    onClick = { viewModel.onTryToSeeVideo() }
-                )
-
-                Spacer(Modifier.weight(1f))
-            }
-
-
-            Spacer(Modifier.weight(1f))
 
             NavigationBar(
                 Modifier

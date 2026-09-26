@@ -52,6 +52,9 @@ data class YummiziSpacing (
     val frameHeight: Dp = 200.dp,
     val bigBarHeight: Dp = 260.dp,
 
-)
+    val buttonHeight: Dp = 200.dp,
+    val buttonWidth: Dp = 160.dp,
+
+    )
 
 val LocalYummiziSpacing = staticCompositionLocalOf { YummiziSpacing() }

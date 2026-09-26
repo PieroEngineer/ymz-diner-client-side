@@ -6,10 +6,10 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -23,12 +23,15 @@ import androidx.compose.ui.unit.Dp
 import com.yummizi.app.core.designsystem.theme.YummiziTheme
 
 @Composable
-fun SquareButton(    // TODO: Move to the core
+fun YummiziButton(    // TODO: Move to the core
     modifier: Modifier = Modifier,
 
     ownImageId: Int,
     ownText: String,
     iconSize: Dp = YummiziTheme.spacing.hugeIconSize,
+
+    height: Dp = YummiziTheme.spacing.buttonHeight,
+    width: Dp = YummiziTheme.spacing.buttonWidth,
 
     textColor: Color = YummiziTheme.colors.yummiziDarkBlue2,
     iconColor: Color = YummiziTheme.colors.yummiziDarkBlue,
@@ -40,7 +43,8 @@ fun SquareButton(    // TODO: Move to the core
 
     Column(
         modifier = modifier
-            .aspectRatio(1f)
+            .height(height)
+            .width(width)
             .clip(RoundedCornerShape(spacing.mediumCornerRadius))
             .border(
                 width = spacing.smallLineThickness,
@@ -61,7 +65,7 @@ fun SquareButton(    // TODO: Move to the core
                 .size(iconSize)
         )
 
-        Spacer(Modifier.height(spacing.hugeSeparation))
+        Spacer(Modifier.height(spacing.regularSeparation))
 
         Text(
             text = ownText,

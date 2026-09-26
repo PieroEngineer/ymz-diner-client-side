@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
@@ -36,7 +37,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.yummizi.app.core.designsystem.theme.YummiziTheme
 import com.yummizi.app.R
 import com.yummizi.app.core.ui.components.NavigationBar
-import com.yummizi.app.core.ui.components.SquareButton
+import com.yummizi.app.core.ui.components.YummiziButton
 import kotlin.collections.plus
 
 //@Preview( showBackground = true)
@@ -69,7 +70,6 @@ fun ProfileScreen(
             .background(YummiziTheme.colors.yummiziWhite),
         horizontalAlignment = Alignment.CenterHorizontally
     ){
-
         Box(    // Image container
             modifier = Modifier
                 .fillMaxWidth()
@@ -142,153 +142,157 @@ fun ProfileScreen(
             }
         }
 
-        Spacer(Modifier.weight(1f))
-
-        Box(
+        LazyColumn(
             modifier = Modifier
-                .padding(horizontal = spacing.bigPadding),
-            contentAlignment = Alignment.Center
+                .weight(1f),
+            horizontalAlignment = Alignment.CenterHorizontally
         ){
-
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally
-            ){
-                Box(    // Top button
+            item( contentType = "Main buttons" ){
+                Box(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .dropShadow( /// Apply the intense drop shadow
-                            shape = RoundedCornerShape(spacing.mediumCornerRadius),
-                            shadow = Shadow(
-                                color = YummiziTheme.colors.yummiziBlack,
-                                radius = 30.dp,                        // High radius for a wide, soft spread
-                                offset = DpOffset(x = 15.dp, y = 20.dp), // Offset only to the bottom
-                            )
-                        )
-                        .clip(RoundedCornerShape(spacing.mediumCornerRadius))
-                        .background(
-                            brush = Brush.horizontalGradient(
-                                colors = List(4){ YummiziTheme.colors.yummiziLightOrange} + YummiziTheme.colors.yummiziYellow
-                            )
-                        ),
+                        .padding(horizontal = spacing.mediumPadding),
                     contentAlignment = Alignment.Center
                 ){
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = spacing.bigPadding, horizontal = spacing.regularPadding),
-                        verticalAlignment = Alignment.CenterVertically
+
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ){
-                        Image(
-                            painter = painterResource(R.drawable.people_icon),
-                            contentDescription = null,
+                        Box(    // Top button
                             modifier = Modifier
-                                .size(spacing.hugeIconSize)
-                        )
+                                .width(spacing.buttonWidth*2)
+                                .dropShadow( /// Apply the intense drop shadow
+                                    shape = RoundedCornerShape(spacing.mediumCornerRadius),
+                                    shadow = Shadow(
+                                        color = YummiziTheme.colors.yummiziBlack,
+                                        radius = 30.dp,                        // High radius for a wide, soft spread
+                                        offset = DpOffset(x = 15.dp, y = 20.dp), // Offset only to the bottom
+                                    )
+                                )
+                                .clip(RoundedCornerShape(spacing.mediumCornerRadius))
+                                .background(
+                                    brush = Brush.horizontalGradient(
+                                        colors = List(4){ YummiziTheme.colors.yummiziLightOrange} + YummiziTheme.colors.yummiziYellow
+                                    )
+                                ),
+                            contentAlignment = Alignment.Center
+                        ){
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = spacing.bigPadding, horizontal = spacing.regularPadding),
+                                verticalAlignment = Alignment.CenterVertically
+                            ){
+                                Image(
+                                    painter = painterResource(R.drawable.people_icon),
+                                    contentDescription = null,
+                                    modifier = Modifier
+                                        .size(spacing.hugeIconSize)
+                                )
 
-                        Spacer(Modifier.width(spacing.mediumSeparation))
+                                Spacer(Modifier.width(spacing.mediumSeparation))
 
+                                Text(
+                                    text = "Comunidad",
+                                    color = YummiziTheme.colors.yummiziWhite,
+                                    style = YummiziTheme.typography.teacherFontVar7,
+                                    textAlign = TextAlign.Center,
+                                    modifier = Modifier
+                                        .clickable{
+                                            // TODO: Allow user to modifiy its name
+                                        }
+                                )
+                            }
+                        }
+
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ){
+                            YummiziButton(
+                                modifier = Modifier
+                                    .dropShadow( /// Apply the intense drop shadow
+                                        shape = RoundedCornerShape(spacing.mediumCornerRadius),
+                                        shadow = Shadow(
+                                            color = YummiziTheme.colors.yummiziBlack,
+                                            radius = 30.dp,                        // High radius for a wide, soft spread
+                                            offset = DpOffset(
+                                                x = 15.dp,
+                                                y = 20.dp
+                                            ), // Offset only to the bottom
+                                        )
+                                    ),
+                                ownImageId = R.drawable.save_button,
+                                ownText = "A tu estilo",
+                                textColor = YummiziTheme.colors.yummiziLightOrange,
+                                iconColor = YummiziTheme.colors.yummiziBlue2,
+                                textStyle = YummiziTheme.typography.teacherFontVar5
+
+                            )
+
+                            YummiziButton(
+                                modifier = Modifier
+                                    .dropShadow( /// Apply the intense drop shadow
+                                        shape = RoundedCornerShape(spacing.mediumCornerRadius),
+                                        shadow = Shadow(
+                                            color = YummiziTheme.colors.yummiziBlack,
+                                            radius = 30.dp,                        // High radius for a wide, soft spread
+                                            offset = DpOffset(
+                                                x = 15.dp,
+                                                y = 20.dp
+                                            ), // Offset only to the bottom
+                                        )
+                                    ),
+                                ownImageId = R.drawable.timing_icon,
+                                ownText = "Historia",
+                                textColor = YummiziTheme.colors.yummiziLightOrange,
+                                iconColor = YummiziTheme.colors.yummiziBlue2,
+                                textStyle = YummiziTheme.typography.teacherFontVar5
+                            )
+                        }
+                    }
+
+                    Box(
+                        modifier = Modifier
+                            .matchParentSize()
+                            .clip(RoundedCornerShape(spacing.mediumCornerRadius))
+                            .background(YummiziTheme.colors.yummiziBlack.copy(alpha = 0.8f)),
+                        contentAlignment = Alignment.Center
+                    ){
                         Text(
-                            text = "Comunidad",
+                            text = "Próximamente",
                             color = YummiziTheme.colors.yummiziWhite,
-                            style = YummiziTheme.typography.teacherFontVar7,
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier
-                                .clickable{
-                                    // TODO: Allow user to modifiy its name
-                                }
+                            style = YummiziTheme.typography.leaguespartanFontVar2
                         )
                     }
-                }
 
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
+                }
+            }
+
+            item( contentType = "Secondary buttons" ){
+                // TODO (#502): Include an if statement to toggle between loading and not loading
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                        .clip(
+                            RoundedCornerShape(spacing.smallCornerRadius)
+                        )
+                        .background(YummiziTheme.colors.yummiziGray)
+                        .clickable {
+                            viewModel.onLogoutClicked()
+                        }
                 ){
-                    SquareButton(
+                    Text(
+                        text = "Salir de cuenta",
+                        textAlign = TextAlign.Center,
+                        color = YummiziTheme.colors.yummiziWhite,
+                        style = YummiziTheme.typography.teacherFontVar1,
                         modifier = Modifier
-                            .weight(1f)
-                            .dropShadow( /// Apply the intense drop shadow
-                                shape = RoundedCornerShape(spacing.mediumCornerRadius),
-                                shadow = Shadow(
-                                    color = YummiziTheme.colors.yummiziBlack,
-                                    radius = 30.dp,                        // High radius for a wide, soft spread
-                                    offset = DpOffset(
-                                        x = 15.dp,
-                                        y = 20.dp
-                                    ), // Offset only to the bottom
-                                )
-                            ),
-                        ownImageId = R.drawable.save_button,
-                        ownText = "A tu estilo",
-                        textColor = YummiziTheme.colors.yummiziLightOrange,
-                        iconColor = YummiziTheme.colors.yummiziBlue2,
-                        textStyle = YummiziTheme.typography.teacherFontVar5
-
-                    )
-
-                    SquareButton(
-                        modifier = Modifier
-                            .weight(1f)
-                            .dropShadow( /// Apply the intense drop shadow
-                                shape = RoundedCornerShape(spacing.mediumCornerRadius),
-                                shadow = Shadow(
-                                    color = YummiziTheme.colors.yummiziBlack,
-                                    radius = 30.dp,                        // High radius for a wide, soft spread
-                                    offset = DpOffset(
-                                        x = 15.dp,
-                                        y = 20.dp
-                                    ), // Offset only to the bottom
-                                )
-                            ),
-                        ownImageId = R.drawable.timing_icon,
-                        ownText = "Historia",
-                        textColor = YummiziTheme.colors.yummiziLightOrange,
-                        iconColor = YummiziTheme.colors.yummiziBlue2,
-                        textStyle = YummiziTheme.typography.teacherFontVar5
+                            .padding(horizontal = spacing.regularPadding)
+                            .padding(vertical = spacing.mediumPadding)
+                            .align(Alignment.Center)
                     )
                 }
             }
-
-            Box(
-                modifier = Modifier
-                    .matchParentSize()
-                    .clip(RoundedCornerShape(spacing.mediumCornerRadius))
-                    .background(YummiziTheme.colors.yummiziBlack.copy(alpha = 0.8f)),
-                contentAlignment = Alignment.Center
-            ){
-                Text(
-                    text = "Próximamente",
-                    color = YummiziTheme.colors.yummiziWhite,
-                    style = YummiziTheme.typography.leaguespartanFontVar2
-                )
-            }
-
         }
-
-        // TODO (#502): Include an if statement to toggle between loading and not loading
-        Box(
-            modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-                .clip(
-                    RoundedCornerShape(spacing.smallCornerRadius)
-                )
-                .background(YummiziTheme.colors.yummiziGray)
-                .clickable {
-                    viewModel.onLogoutClicked()
-                }
-        ){
-            Text(
-                text = "Salir de cuenta",
-                textAlign = TextAlign.Center,
-                color = YummiziTheme.colors.yummiziWhite,
-                style = YummiziTheme.typography.teacherFontVar1,
-                modifier = Modifier
-                    .padding(horizontal = spacing.regularPadding)
-                    .padding(vertical = spacing.mediumPadding)
-                    .align(Alignment.Center)
-            )
-        }
-
-        Spacer(Modifier.weight(1f))
 
         NavigationBar(
             Modifier
