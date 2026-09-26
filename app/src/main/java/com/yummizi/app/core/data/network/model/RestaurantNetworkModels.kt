@@ -45,7 +45,7 @@ data class MenuPageDto(
 data class DishDto(
     val id: String,
     val availableComplementaryDishIds: List<String> = emptyList(),  // In order to adapt the previous version
-    val type: String = "MAIN",                                                          //
+    val dishType: String = "MAIN",                                                          //
     val name: String,
     val imageUrl: String,
     val priceCents: Int,
@@ -78,7 +78,7 @@ fun DishDto.toEntity(): Dish {
         imageUrl = this.imageUrl,
         priceCents = this.priceCents,
         availableComplementaryDishIds = this.availableComplementaryDishIds.map { Uuid.parse(it) },
-        type = DishTypeToken.entries.find { it.name == this.type } ?: DishTypeToken.COMPLEMENTARY,
+        type = DishTypeToken.entries.find { it.name == this.dishType } ?: DishTypeToken.COMPLEMENTARY,
         prepTime = this.prepTime,
         isOutOfStock = this.isOutOfStock,
         menuPageId = Uuid.parse(this.menuPageId),
