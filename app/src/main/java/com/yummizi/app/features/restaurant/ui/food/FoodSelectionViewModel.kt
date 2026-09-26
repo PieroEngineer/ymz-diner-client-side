@@ -171,14 +171,22 @@ class FoodSelectionViewModel @Inject constructor(   //TODO: Change the way of ho
 
     fun tryToIncludeASelection(dishId: Uuid){
         viewModelScope.launch {
-            // Check if the dish have possible complementaries
-            val complementaryDishIds = restaurantRepository.getComplementaryDishesById(dishId)  // TODO (#492): Consider unify these repo's functions
+            Log.d("FoodSelectionViewModel", "🔎🍽️  A food was selected")
+            // Check if the dish have possible complementary
+            val complementaryDishIds = restaurantRepository.getComplementaryDishesById(dishId)  // TODO (#492): Consider unify these repo's functions   -> "getAvailableComplementaryDishReferencesById"
+//            Log.d("FoodSelectionViewModel", "🔎🍽️  Selected dish have these complement dish IDs $complementaryDishIds")
 
             val complementaryDishReferences = restaurantRepository.getAvailableReferencesByDishIds(complementaryDishIds)  // TODO (#492)
+//            Log.d("FoodSelectionViewModel", "🔎🍽️  Complement dish references $complementaryDishReferences")
 
-            // If have complementaries -> Open modal to select them
+            // If have complementary -> Open modal to select them
             if (complementaryDishReferences.isNotEmpty()) {
+
+                Log.d("FoodSelectionViewModel", "🔎🍽️  Complementary found")
+
                 val mainDishName = restaurantRepository.getDishNameById(dishId)
+
+//                Log.d("FoodSelectionViewModel", "🔎🍽️  Main dish name $mainDishName")
 
                 _complementSelectionUiState.update {
                     ComplementSelectionUiState(
@@ -194,6 +202,8 @@ class FoodSelectionViewModel @Inject constructor(   //TODO: Change the way of ho
                     )
                 }
             } else {   // If not -> Add to selection directly (Handle the situation of adding the same dish with the same complement)
+                Log.d("FoodSelectionViewModel", "🔎🍽️  No complementary found")
+
                 restaurantRepository.includeASelection(dishId)
             }
         }

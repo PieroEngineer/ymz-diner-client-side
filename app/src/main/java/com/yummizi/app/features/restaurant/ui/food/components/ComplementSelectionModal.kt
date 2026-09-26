@@ -122,7 +122,15 @@ fun ComplementSelectionModal(
 
                 Spacer(Modifier.height(spacing.mediumSeparation))
 
-                LazyColumn(    // Current selected restaurants
+                HorizontalDivider(
+                    thickness = spacing.mediumLineThickness,
+                    color = YummiziTheme.colors.yummiziDarkOrange,
+                    modifier = Modifier.fillMaxWidth(.5f)
+                )
+
+                Spacer(Modifier.height(spacing.regularSeparation))
+
+                LazyColumn(    // Current selected restaurants  // TODO: Include a background to clarify that its a selectable list visually
                     state = listState,
                     verticalArrangement = Arrangement.spacedBy(spacing.smallSeparation),
                     modifier = Modifier

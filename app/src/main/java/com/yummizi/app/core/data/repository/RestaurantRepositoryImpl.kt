@@ -80,32 +80,41 @@ class RestaurantRepositoryImpl @Inject constructor(
 
     override suspend fun includeASelection(dishId: Uuid, complementaryDishId: Uuid?) = withContext(ioDispatcher) {
 
+        Log.d("FoodSelectionViewModel", "🔎🍽️  A food was selected with complementary dish ID $complementaryDishId")
+
         // TODO: If "complementaryDishId" arrives as "NIL", use the conditional price
 
         val hasComplementaryDish = complementaryDishId != null
+        Log.d("FoodSelectionViewModel", "🔎🍽️  Has complementary dish? $hasComplementaryDish")
+
         val temporalComplementaryDishIId = if(hasComplementaryDish) complementaryDishId else Uuid.NIL
 
         // Check if the selection already exists
-        val isSelectionExisting = orderDao.checkIfSelectionExists(dishId, temporalComplementaryDishIId)
+        val doesSelectionAlreadyExist = orderDao.checkIfSelectionExists(dishId, temporalComplementaryDishIId)
 
         // If it exists, just increase one unit
-        if (isSelectionExisting) {
+        if (doesSelectionAlreadyExist) {
+            Log.d("FoodSelectionViewModel", "🔎🍽️  Selection already exists")
+
             orderDao.updateSelectionQuantityById(dishId, temporalComplementaryDishIId, 1)
         }
         else{
-            val currentOrderId = orderDao.getCurrentOrderId()
-                ?: throw IllegalStateException("No order found when generating order order")
+            Log.d("FoodSelectionViewModel", "🔎🍽️  Selection doesn't exist")
 
+            val currentOrderId = orderDao.getCurrentOrderId()
+                ?: throw IllegalStateException("No order found when generating order")
+
+            Log.d("FoodSelectionViewModel", "🔎🍽️  Current order ID $currentOrderId")
 
             val mainDish = menuDao.getDishCostingById(dishId)
+
+            Log.d("FoodSelectionViewModel", "🔎🍽️  Main dish $mainDish")
 
             /// Check the types if necessary. I didn't put it jet because it was verified before.
 
             val mainDishName = mainDish.name
 
-            val complementaryDishName = menuDao.getDishNameById(temporalComplementaryDishIId)
-
-            val selectionName = if(hasComplementaryDish) mainDishName else "$mainDishName + $complementaryDishName"
+            val selectionName = if(hasComplementaryDish) "$mainDishName + ${menuDao.getDishNameById(temporalComplementaryDishIId)}" else mainDishName
 
             val newOrderSelection = OrderSelection(
                 orderId = currentOrderId,
@@ -123,10 +132,12 @@ class RestaurantRepositoryImpl @Inject constructor(
 
     override suspend fun getDishNameById(dishId: Uuid) = menuDao.getDishNameById(dishId)
 
+    override suspend fun getComplementaryDishesById(dishId: Uuid): List<Uuid> {
+        return menuDao.getComplementaryDishIdsByDishId(dishId)?.availableComplementaryDishIds ?: emptyList()
+    }
+
     // It doesn't bring out-of-stock dishes
     override suspend fun getAvailableReferencesByDishIds(dishIds: List<Uuid>) = menuDao.getAvailableReferencesByDishIds(dishIds)
-
-    override suspend fun getComplementaryDishesById(dishId: Uuid) = menuDao.getComplementaryDishIdsByDishId(dishId)
 
     override suspend fun clearAllRestaurantsAndRequests() {
         /// Does it need a transaction?

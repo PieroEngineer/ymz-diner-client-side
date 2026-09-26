@@ -7,6 +7,7 @@ import androidx.room.Query
 import androidx.room.Transaction
 import com.yummizi.app.core.data.local.entities.Dish
 import com.yummizi.app.core.data.local.entities.MenuPage
+import com.yummizi.app.features.restaurant.domain.model.ComplementaryDishIdsProjection
 import com.yummizi.app.features.restaurant.domain.model.DishCostingProjection
 import com.yummizi.app.features.restaurant.domain.model.DishIdentifier
 import kotlinx.coroutines.flow.Flow
@@ -84,5 +85,5 @@ interface MenuDao {
     suspend fun getAvailableReferencesByDishIds(dishIds: List<Uuid>): List<DishIdentifier>
 
     @Query("SELECT availableComplementaryDishIds FROM dishes WHERE id = :dishId")
-    suspend fun getComplementaryDishIdsByDishId(dishId: Uuid): List<Uuid>
+    suspend fun getComplementaryDishIdsByDishId(dishId: Uuid): ComplementaryDishIdsProjection?
 }
