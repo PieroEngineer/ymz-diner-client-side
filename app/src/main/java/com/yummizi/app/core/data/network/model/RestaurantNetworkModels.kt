@@ -44,8 +44,8 @@ data class MenuPageDto(
 @Serializable
 data class DishDto(
     val id: String,
-    val availableComplementaryDishIds: List<String>,
-    val type: String,
+    val availableComplementaryDishIds: List<String> = emptyList(),  // In order to adapt the previous version
+    val type: String = "MAIN",                                                          //
     val name: String,
     val imageUrl: String,
     val priceCents: Int,
