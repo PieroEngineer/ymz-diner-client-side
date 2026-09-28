@@ -29,7 +29,8 @@ object DatabaseModule {
             YummiziDatabase::class.java,
             "yummizi_db"
         )
-            .fallbackToDestructiveMigration(true)   // FIXME: Remove in production when the app is realized
+//            .addMigrations(MIGRATION_2_3) // For manual migrations
+//            .fallbackToDestructiveMigration(true) // For testing
             .build()
     }
 
