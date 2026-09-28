@@ -54,7 +54,7 @@ class RestaurantRepositoryImpl @Inject constructor(
 
     override suspend fun generateNewOrder() = withContext(ioDispatcher) {
 
-        /// is it necessary to delete all the previous orders here? Maybe not because the I already remove the request later.
+        /// is it necessary to delete all the previous orders here? Maybe not because I already remove the request later.
 
         val readyRequest = requestDao.getLatestReadyRequest()
             ?: throw IllegalStateException("🚩  No READY request found when generating order order")

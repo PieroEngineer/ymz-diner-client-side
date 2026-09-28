@@ -73,7 +73,6 @@ class RequestRepositoryImpl @Inject constructor(
 
         try {
             // 4. NETWORK SYNC
-//X            val response = yummiziApi.createRequest(newRequest.toDto())
             val response = yummiziApi.createRequest(mapToJoinQueueDto(loggedUser, newRequest))
 
             if (response.isSuccessful) {
