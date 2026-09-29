@@ -32,7 +32,8 @@ import com.yummizi.app.core.data.local.entities.Restaurant
         Order::class
     ],
     // version = 5 will be treated like the first version
-    version = 5,    /// Last modification: 27-Sep 2026 at 2pm
+//    version = 5,    /// Last modification: 27-Sep 2026 at 2pm
+    version = 1,       ///Last modification: 28-Sep 2026 at 2pm
     exportSchema = true,
 
 //    autoMigrations = [

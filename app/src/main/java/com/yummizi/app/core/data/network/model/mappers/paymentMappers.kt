@@ -21,7 +21,8 @@ fun List<OrderSelection>.toDtoList(): List<OrderSelectionDto> {
 }
 
 fun createSendOrderDto(
-    requestId: Uuid,
+    orderId: String,
+    requestId: String,
     restaurantId: Uuid,
     userId: Uuid,
     userName: String,
@@ -30,7 +31,8 @@ fun createSendOrderDto(
     selections: List<OrderSelectionDto>
 ): SendOrderReadyToBePaidDto {
     return SendOrderReadyToBePaidDto(
-        requestId = requestId.toString(),
+        orderId = orderId,
+        requestId = requestId,
         restaurantId = restaurantId.toString(),
         userId = userId.toString(),
         userName = userName,

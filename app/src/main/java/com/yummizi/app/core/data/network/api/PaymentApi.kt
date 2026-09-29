@@ -12,8 +12,8 @@ import retrofit2.http.Url
 
 interface PaymentApi {
     @POST("payments/confirm")
-    suspend fun selectOrder(
-//        @Path("requestId") requestId: String, /// Shold I put something in the path?
+    suspend fun confirmOrder(
+//        @Path("requestId") requestId: String, /// Should I put something in the path?
         @Body readyOrderData: SendOrderReadyToBePaidDto
     ): Response<SendOrderReadyToBePaidResponseDto>
 

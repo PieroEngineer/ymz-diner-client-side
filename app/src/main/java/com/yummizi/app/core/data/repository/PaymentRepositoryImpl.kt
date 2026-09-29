@@ -28,6 +28,7 @@ import okio.BufferedSink
 import okio.source
 import java.io.File
 import java.io.FileNotFoundException
+import kotlin.random.Random
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.minutes
 
@@ -45,52 +46,12 @@ class PaymentRepositoryImpl @Inject constructor(    // TODO: Change the name of 
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ) : PaymentRepository {
 
-    //X
-//    override suspend fun selectOrder(orderMap: Map<Uuid, Int>) = withContext(ioDispatcher) {
-////        runCatching { /// Should I use runCatching?
-//            // Get the current "READY" request and extract its ID and the Restaurant ID
-//        val readyRequest = requestDao.getLatestReadyRequest()
-//            ?: throw IllegalStateException("No READY request found when selecting an order")
-//
-//        // Get dish details to get historical price
-//        val dishIds = orderMap.keys.toList()
-//        val dishes = menuDao.getDishesByIds(dishIds)
-//        val dishPriceMap = dishes.associateBy({ it.id }, { it.priceCents }) // TODO: Optimze this double association
-//        val dishNameMap = dishes.associateBy({ it.id }, { it.name })
-//
-//        val newBaseOrder = Order(   // TODO: Move it above and create a mapper for it
-//            orderId = readyRequest.requestId,   /// (#294) Is it ok that I use the request ID here?
-//            requestId = readyRequest.requestId,
-////            totalPriceInCentsFromBackend = totalPriceInCentsFromRemote, //TODO: Bring this value from remote
-//        )
-//
-//        // Convert the map into a list of "OrderSelection" entities
-//        val orderSelections = orderMap.map { (dishId, quantity) ->  // TODO: Move it into a mapper in another file
-//            OrderSelection(
-//                selectionId = Uuid.random(),
-//                orderId = readyRequest.requestId,   /// (#294)
-//                dishId = dishId,
-//                dishName = dishNameMap[dishId] ?: "unnamed dish",
-//                quantity = quantity,
-//                historicalUnitPriceInCents = dishPriceMap[dishId] ?: 0
-//            )
-//        }
-//
-//        // TODO: Include these DAO actions as a transacton
-//
-//        // Save locally
-//        orderDao.insertOrderWithSelections(
-//            OrderWithSelectionsRelation(
-//                newBaseOrder,
-//                orderSelections
-//            )
-//        )
-////        }
-//    }
-
     override suspend fun confirmSelectedOrder(paymentImageRelativePath: String, imageUri: Uri?): Result<Unit> = withContext(ioDispatcher) {
         // Get the current "READY" request and extract its ID and the Restaurant ID
         val readyRequest = requestDao.getLatestReadyRequest()
+            ?: throw IllegalStateException("No READY request found when confirming an order")
+
+        val pendingOrderId = orderDao.getCurrentOrderId()
             ?: throw IllegalStateException("No READY request found when confirming an order")
 
         val loggedUser = loggedUserDao.getUser() ?: throw IllegalStateException("No logged user found")
@@ -105,6 +66,7 @@ class PaymentRepositoryImpl @Inject constructor(    // TODO: Change the name of 
         // Add the list of "OrderSelectionDto" into a "sendOrderReadyToBePaidDto"
         val payload =
             createSendOrderDto(   // TODO: change it to a function that only receives the request and logged user directly to make it looks better
+                orderId = pendingOrderId,
                 requestId = readyRequest.requestId,
                 restaurantId = readyRequest.restaurantId,
                 userId = loggedUser.id,
@@ -117,7 +79,7 @@ class PaymentRepositoryImpl @Inject constructor(    // TODO: Change the name of 
         Log.d("MyActivity", "⏫  Payload of the request: $payload")
 
         // POST the sendOrderReadyToBePaidDto with the api function "selectOrder"
-        val response = yummiziApi.selectOrder(payload)
+        val response = yummiziApi.confirmOrder(payload) // TODO (#521): Bring the order ID here
 
         if (response.isSuccessful) {    // TODO: Also return the time when the customer should arrive, the client-side doesn't decide that  /// perhaps also the time when the waiting started
 
@@ -130,7 +92,7 @@ class PaymentRepositoryImpl @Inject constructor(    // TODO: Change the name of 
 
             val officialOrder = Order(
                 // TODO: Move it above and create a mapper for it
-                orderId = readyRequest.requestId,   /// Is it ok that I use the request ID here?
+                orderId = pendingOrderId,   /// Is it ok that I use the request ID here?
                 paymentImageRelativePath = paymentImageRelativePath,
                 expectedArrivalDatetime = Clock.System.now() + readyRequest.arrivalTimeInMinutes.minutes,
                 requestId = readyRequest.requestId,

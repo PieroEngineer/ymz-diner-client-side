@@ -21,7 +21,7 @@ interface RequestDao {
     suspend fun insertRequest(request: Request)
 
     @Query("DELETE FROM requests WHERE requestId = :requestId")
-    suspend fun deleteRequestById(requestId: Uuid)
+    suspend fun deleteRequestById(requestId: String)
 
     // --- UI OBSERVATION (REACTIVE) ---
 
@@ -53,7 +53,7 @@ interface RequestDao {
     suspend fun getAllRequests(): List<Request>
 
     @Query("SELECT * FROM requests WHERE requestId = :requestId")
-    suspend fun getRequestById(requestId: Uuid): Request?
+    suspend fun getRequestById(requestId: String): Request?
 
     @Query("""
         SELECT EXISTS(
@@ -66,37 +66,26 @@ interface RequestDao {
     """)
     suspend fun containsPendingRestaurant(restaurantId: Uuid): Boolean
 
-    // X
-//    @Query("""
-//        SELECT * FROM requests
-//        WHERE restaurantId = :restaurantId
-//        AND userId = (SELECT id FROM logged_user LIMIT 1)
-//        AND status NOT IN ('CANCELLED', 'PAID')
-//        LIMIT 1
-//    """)
-//    suspend fun getRequestByRestaurantAndUser(restaurantId: Uuid): Request?
-
     @Query("SELECT * FROM requests WHERE status IN ('READY', 'PAY_TRIED') ORDER BY localCreationTimestamp DESC LIMIT 1")
     suspend fun getLatestReadyRequest(): Request?   // TODO: Include an expiration cheking like an attribute or creating a new status in "RequestStatusToken" // Maybe not because the request is locally removed
 
     @Query("SELECT * FROM requests WHERE status = 'PAID' ORDER BY localCreationTimestamp DESC LIMIT 1")
     suspend fun getLatestPaidRequest(): Request?   // TODO: Include an expiration cheking like an attribute or creating a new status in "RequestStatusToken" // Maybe not because the request is locally removed
 
-//X    @Query("UPDATE requests SET status = :status WHERE requestId = :requestId")
     @Query("UPDATE requests SET status = :status, localConfirmationTimestamp = :confirmationTimestamp WHERE requestId = :requestId")
-    suspend fun updateRequestStatus(requestId: Uuid, status: RequestStatusToken, confirmationTimestamp: Instant? = null)
+    suspend fun updateRequestStatus(requestId: String, status: RequestStatusToken, confirmationTimestamp: Instant? = null)
 
     @Query("DELETE FROM requests WHERE requestId != :requestId")
-    suspend fun deleteOtherRequests(requestId: Uuid)
+    suspend fun deleteOtherRequests(requestId: String)
 
     @Query("SELECT * FROM requests WHERE requestId != :requestId")
-    suspend fun getOtherRequests(requestId: Uuid): List<Request>
+    suspend fun getOtherRequests(requestId: String): List<Request>
 
     @Query("DELETE FROM requests")
     suspend fun clearAll()
 
     @Transaction
-    suspend fun confirmAcceptance(requestId: Uuid, confirmationTimestamp: Instant) {
+    suspend fun confirmAcceptance(requestId: String, confirmationTimestamp: Instant) {
         updateRequestStatus(requestId, RequestStatusToken.READY, confirmationTimestamp)
         deleteOtherRequests(requestId)  // TODO: Consider don't remove them, but just update the status (Assign as "past")
     }

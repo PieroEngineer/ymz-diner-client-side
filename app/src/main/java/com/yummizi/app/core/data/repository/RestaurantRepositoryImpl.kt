@@ -65,7 +65,7 @@ class RestaurantRepositoryImpl @Inject constructor(
 //            totalPriceInCentsFromBackend = totalPriceInCentsFromRemote, //TODO: Bring this value from remote
         )
 
-        orderDao.createOrder(newBaseOrder)
+        orderDao.createOrderBase(newBaseOrder)
     }
 
     override fun observeOrderSelections() = orderDao.observeOrderSelections()
@@ -323,7 +323,7 @@ class RestaurantRepositoryImpl @Inject constructor(
                                 // 🛡️ STEP 2: Write to Room DB safely
                                 try {
                                     val requestUpdate = dto.toDomain()
-                                    requestDao.deleteRequestById(Uuid.parse(requestUpdate.requestId))
+                                    requestDao.deleteRequestById(requestUpdate.requestId)
                                 }
                                 catch (e: Exception){
                                     Log.e("MyActivity", "🚩  Error when trying to remove a value from the room", e)

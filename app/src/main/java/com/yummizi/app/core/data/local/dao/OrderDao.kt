@@ -16,26 +16,27 @@ import kotlin.uuid.Uuid
 interface OrderDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun createOrder(order: Order)
+    suspend fun createOrderBase(order: Order)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertOrderSelections(selections: List<OrderSelection>)
 
-    @Transaction
-    suspend fun insertOrderWithSelections(orderWithSelections: OrderWithSelectionsRelation) {
-        createOrder(orderWithSelections.order)
-        insertOrderSelections(orderWithSelections.selections)
-    }
+    //X
+//    @Transaction
+//    suspend fun insertOrderWithSelections(orderWithSelections: OrderWithSelectionsRelation) {
+//        createOrder(orderWithSelections.order)
+//        insertOrderSelections(orderWithSelections.selections)
+//    }
 
 //    @Query("SELECT * FROM orders ORDER BY localOrderCreationTimestamp DESC LIMIT 1")
 //    suspend fun getLatestOrder(): Order
 
     @Query("SELECT orderId FROM orders ORDER BY localOrderCreationTimestamp DESC LIMIT 1")  // TODO: Remove the "ORDER BY localOrderCreationTimestamp" because it's not necessary due there is only one order at the time
-    suspend fun getCurrentOrderId(): Uuid
+    suspend fun getCurrentOrderId(): String
 
-    @Transaction
-    @Query("SELECT * FROM orders WHERE orderId = :orderId")
-    fun observeOrderWithSelections(orderId: Uuid): Flow<OrderWithSelectionsRelation?>
+//    @Transaction
+//    @Query("SELECT * FROM orders WHERE orderId = :orderId")
+//    fun observeOrderWithSelections(orderId: String): Flow<OrderWithSelectionsRelation?>
 
     @Query("SELECT * FROM orders ORDER BY localOrderCreationTimestamp DESC LIMIT 1")
     fun observeLatestOrder(): Flow<Order>

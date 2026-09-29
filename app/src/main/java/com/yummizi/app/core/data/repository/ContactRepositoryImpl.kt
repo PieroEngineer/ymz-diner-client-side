@@ -30,7 +30,7 @@ class ContactRepositoryImpl @Inject constructor(
 
             val lastRequest = requestDao.getLatestPaidRequest() // TODO: Change it by a function that get a READY or a PAID request
 
-            val associatedRequestId = lastRequest?.requestId?.toString()
+            val associatedRequestId = lastRequest?.requestId    // Should it be request ID or order ID?
                 ?: ""  // it determines if the feedback is related to a request or not
 
             try {

@@ -13,7 +13,7 @@ import kotlin.uuid.Uuid
 import kotlin.time.Instant
 
 
-//X @Serializable
+
 @Entity(tableName = "logged_user")
 data class LoggedUser(
     @PrimaryKey val id: Uuid, // The "userId"
@@ -32,7 +32,7 @@ data class LoggedUser(
 //    val companySize: Int,
 //)
 
-//X @Serializable
+
 @Entity(tableName = "restaurants")
 data class Restaurant(  // TODO: This is the entity. And the domain should be another with the status
     @PrimaryKey val id: Uuid,
@@ -65,8 +65,7 @@ data class Restaurant(  // TODO: This is the entity. And the domain should be an
     indices = [Index(value = ["orderId"])] // Indexing FK column speeds up child joins
 )
 data class OrderSelection(
-//X    @PrimaryKey val selectionId: Uuid,
-    val orderId: Uuid,
+    val orderId: String,
     val complementaryDishId: Uuid= Uuid.NIL,
     val dishId: Uuid,
     val dishName: String,   // TODO: Change it by "selectionName"
@@ -87,8 +86,8 @@ data class OrderSelection(
     indices = [Index(value = ["requestId"], unique = true)] // Enforces 1-to-1 relationship & speeds up queries
 )
 data class Order(   // TODO: Include a some kind of "OrderStatus" that defines if the order is ready (no null values on its attributes) or not
-    @PrimaryKey val orderId: Uuid,
-    val requestId: Uuid,
+    @PrimaryKey val orderId: String,
+    val requestId: String,
     val expectedArrivalDatetime: Instant? = null,
     val paymentImageRelativePath: String? = null,
     val localOrderCreationTimestamp: Instant? = null,   // TODO: Consider the possibility that the time starts since the user enters to the food selection
@@ -102,9 +101,8 @@ data class Order(   // TODO: Include a some kind of "OrderStatus" that defines i
         Index(value = ["restaurantId", "userId", "status"]) // 🚀 The "Speed" Button
     ]
 )
-//X @Serializable
 data class Request(
-    @PrimaryKey val requestId: Uuid,
+    @PrimaryKey val requestId: String,
     val restaurantId: Uuid,
     val status: RequestStatusToken,
     val userId: Uuid,   // TODO: Remove this parameter, so it's only lives in "LoggedUser". This change also incude modification in DAOs, because they shouldn't depen of the user ID
@@ -115,12 +113,12 @@ data class Request(
 )
 
 data class RequestUpdate(
-    val requestId: Uuid,
+    val requestId: String,
 //    val restaurantId: Uuid,
     val newStatus: RequestStatusToken
 )
 
-//X @Serializable
+
 @Entity(
     tableName = "menu_pages",
     foreignKeys = [
@@ -140,7 +138,7 @@ data class MenuPage(
     val pageNumber: Int // Used for sorting in the Pager
 )
 
-//X @Serializable
+
 @Entity(
     tableName = "dishes",
     foreignKeys = [
@@ -169,7 +167,7 @@ data class Dish(
 //    val conditionalPiceCents: Int? = null, /// Use it when different complementary dishes set a different price to the main dish   /// It defines the price of "MAIN" + "COMPLEMENTARY". This means that the complementary dish decides the set price.
 )
 
-//X @Serializable
+
 @Entity(
     tableName = "preferences",
     indices = [Index(value = ["userId"])] // High Performance Index

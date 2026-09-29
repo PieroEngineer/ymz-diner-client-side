@@ -18,6 +18,7 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import kotlin.uuid.Uuid
 import kotlinx.coroutines.NonCancellable
+import kotlin.random.Random
 import kotlin.time.Clock
 
 class RequestRepositoryImpl @Inject constructor(
@@ -57,7 +58,7 @@ class RequestRepositoryImpl @Inject constructor(
         }
 
         // 2. PREPARE ENTITY
-        val requestId = Uuid.random()   // TODO (#521): Remember that client shouldn't generate the request ID. Backend responds with request
+        val requestId = "${Clock.System.now()}_${Random.nextInt(1000, 10000)}"   // TODO (#521): Client shouldn't generate the request ID. Backend responds with request
         val newRequest = Request(
             requestId = requestId,
             restaurantId = restaurantId,
@@ -106,14 +107,14 @@ class RequestRepositoryImpl @Inject constructor(
             // The UI (observing via Flow) will instantly see the "Join" button again.
             requestDao.deleteRequestById(currentRequest.requestId)
 
-            Log.d("Yummizi", "🔎  currentRequest.requestId.toString(): ${currentRequest.requestId.toString()}")
-            Log.d("Yummizi", "🔎  restaurantId.toString(): ${restaurantId.toString()}")
-            Log.d("Yummizi", "🔎  userId.toString(): ${userId.toString()}")
+            Log.d("Yummizi", "🔎  currentRequest.requestId.toString(): ${currentRequest.requestId}")
+            Log.d("Yummizi", "🔎  restaurantId.toString(): ${restaurantId}")
+            Log.d("Yummizi", "🔎  userId.toString(): ${userId}")
 
             // 3. NETWORK CALL: Tell the cloud
             // We use the requestId from our 'backup' variable.
             val response = yummiziApi.cancelRequest(
-                requestId = currentRequest.requestId.toString(),
+                requestId = currentRequest.requestId,
                 cancelData = LeaveQueueDto(
                     restaurantId = restaurantId.toString(),
                     userId = userId.toString(),
@@ -152,7 +153,7 @@ class RequestRepositoryImpl @Inject constructor(
             val updateResponse = yummiziApi.updateRequestStatus(
                 restaurantId = restaurantId.toString(),
                 confirmData = UpdateStatusDto(
-                    requestId = currentRequest.requestId.toString(),
+                    requestId = currentRequest.requestId,
                     userId = userId.toString(),
                     newState = RequestStatusToken.READY.name
                 )
@@ -179,18 +180,6 @@ class RequestRepositoryImpl @Inject constructor(
 
             Log.e("RequestRepository", "❌ Failed to confirm acceptance", e)
             Result.failure(e)
-
-            //X
-//            // ROLLBACK: Restore everything
-//            withContext(NonCancellable) { // TODO: Try it without "withContext(NonCancellable)", because now it's in repo /// Gemini: Warning: Do NOT use NonCancellable to start long-running network or database calls in a ViewModel. It is strictly designed for immediate, lightweight cleanup operations in a finally block.
-//                requestDao.updateRequestStatus(currentRequest.requestId, currentRequest.status)
-//                if(otherRequests.isNotEmpty()){
-//                    otherRequests.forEach { requestDao.insertRequest(it) }
-//                }
-//            }
-//
-//            Log.e("RequestRepository", "❌ Failed to confirm acceptance, rolling back local state", e)
-//            throw e
         }
     }
 
@@ -213,7 +202,7 @@ class RequestRepositoryImpl @Inject constructor(
                 val remoteMap = remoteActiveRequests.associateBy { it.requestId }
 
                 requests.forEach { localRequest ->
-                    val remoteRequest = remoteMap[localRequest.requestId.toString()]
+                    val remoteRequest = remoteMap[localRequest.requestId]
 
                     if(remoteRequest != null){
                         val newStatus = RequestStatusToken.fromString(remoteRequest.state)?: return@forEach
@@ -256,7 +245,7 @@ class RequestRepositoryImpl @Inject constructor(
                 yummiziApi.updateRequestStatus(
                     restaurantId = restaurantId.toString(),
                     confirmData = UpdateStatusDto(
-                        requestId = currentRequest.requestId.toString(),
+                        requestId = currentRequest.requestId,
                         userId = userId.toString(),
                         newState = RequestStatusToken.PAY_TRIED.name
                     )

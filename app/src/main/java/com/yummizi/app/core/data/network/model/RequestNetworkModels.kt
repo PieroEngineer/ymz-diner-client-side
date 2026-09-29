@@ -105,7 +105,7 @@ data class UpdateRequestStatusMessageDto(
             throw IllegalArgumentException("Invalid status: $newStatus")    // TODO: Handle it in another way
         }
         return RequestUpdate(
-            requestId = Uuid.parse(requestId),
+            requestId = requestId,
             newStatus = newLocalStatus
         )
     }

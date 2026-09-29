@@ -4,6 +4,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class SendOrderReadyToBePaidDto(
+    val orderId: String,
     val requestId: String,
     val restaurantId: String,
     val userId: String,
@@ -24,6 +25,7 @@ data class OrderSelectionDto(
 
 @Serializable
 data class SendOrderReadyToBePaidResponseDto(
+   // val orderId: String,
     val message: String,
     val totalPriceInCents: Int,
     val paymentImageReferences: PaymentImageReferencesDto

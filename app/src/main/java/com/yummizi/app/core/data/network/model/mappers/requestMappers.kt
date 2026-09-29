@@ -12,7 +12,7 @@ fun mapToJoinQueueDto(loggedUser: LoggedUser, request: Request): JoinQueueDto {
     return JoinQueueDto(
         restaurantId = request.restaurantId.toString(),
         userId = loggedUser.id.toString(),
-        requestId = request.requestId.toString(),
+        requestId = request.requestId,
         groupSize = loggedUser.companySize + 1,
         userName = loggedUser.name,
         arrivalTime = request.arrivalTimeInMinutes
@@ -24,7 +24,7 @@ fun mapToGetUpdatedRequestStatusesDto(requests: List<Request>): GetUpdatedReques
         requestsToUpdate = requests.map {
             RequestUpdateDto(
                 restaurantId = it.restaurantId.toString(),
-                requestId = it.requestId.toString()
+                requestId = it.requestId
             )
         }
     )
@@ -35,7 +35,7 @@ fun mapToBatchRequestCancellationDto(requests: List<Request>): BatchRequestCance
         requestsToCancel = requests.map {
             BatchRequestCancellationItemDto(
                 restaurantId = it.restaurantId.toString(),
-                requestId = it.requestId.toString()
+                requestId = it.requestId
             )
         }
     )
