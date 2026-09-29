@@ -108,8 +108,8 @@ class RequestRepositoryImpl @Inject constructor(
             requestDao.deleteRequestById(currentRequest.requestId)
 
             Log.d("Yummizi", "🔎  currentRequest.requestId.toString(): ${currentRequest.requestId}")
-            Log.d("Yummizi", "🔎  restaurantId.toString(): ${restaurantId}")
-            Log.d("Yummizi", "🔎  userId.toString(): ${userId}")
+            Log.d("Yummizi", "🔎  restaurantId.toString(): $restaurantId")
+            Log.d("Yummizi", "🔎  userId.toString(): $userId")
 
             // 3. NETWORK CALL: Tell the cloud
             // We use the requestId from our 'backup' variable.

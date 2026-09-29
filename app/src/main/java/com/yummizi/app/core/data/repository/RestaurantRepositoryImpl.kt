@@ -201,12 +201,12 @@ class RestaurantRepositoryImpl @Inject constructor(
         try {
             // Network Call
             val remoteMenu = yummiziApi.getRestaurantMenu(restaurantId.toString())
+            Log.d("MyActivity", "🔎📃 The remote data is: $remoteMenu")
 
             // Mapping DTOs to Entities (The "Transformation")
-            Log.d("MyActivity", "🔎 The remote data is: $remoteMenu")
             val pageEntities = remoteMenu.menuPages.map { it.toEntity(restaurantId.toString()) }    /// Is it necessary to include a the restaurant ID? isn't it already in the arrived data?
             val dishEntities = remoteMenu.dishes.map { it.toEntity() }
-            Log.d("MyActivity", "✅🍽️  Syncing menu for restaurant: $restaurantId was succesful")
+            Log.d("MyActivity", "🔎📃  The mapped data is: $dishEntities")
 
 
             // Database Insertion (Atomic Transaction)
