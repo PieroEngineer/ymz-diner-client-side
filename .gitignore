@@ -14,3 +14,6 @@
 .cxx
 local.properties
 app/src/main/res/raw/amplifyconfiguration.json
+*.aab
+*.apk
+**/build/
