@@ -30,7 +30,7 @@ object DatabaseModule {
             "yummizi_db"
         )
 //            .addMigrations(MIGRATION_2_3) // For manual migrations
-            .fallbackToDestructiveMigration(true) // For testing
+//            .fallbackToDestructiveMigration(true) // For testing
             .build()
     }
 

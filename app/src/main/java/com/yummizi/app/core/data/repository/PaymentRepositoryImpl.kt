@@ -46,6 +46,8 @@ class PaymentRepositoryImpl @Inject constructor(    // TODO: Change the name of 
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ) : PaymentRepository {
 
+    override suspend fun updateExtraCommentaries(extraCommentaries: String) = orderDao.updateExtraCommentaries(extraCommentaries)
+
     override suspend fun confirmSelectedOrder(paymentImageRelativePath: String, imageUri: Uri?): Result<Unit> = withContext(ioDispatcher) {
         // Get the current "READY" request and extract its ID and the Restaurant ID
         val readyRequest = requestDao.getLatestReadyRequest()
@@ -63,17 +65,20 @@ class PaymentRepositoryImpl @Inject constructor(    // TODO: Change the name of 
         // Sum of prices
         val totalPriceInCentsFromLocal = orderSelectionDtos.sumOf { it.historicalUnitPriceInCents * it.quantity }
 
+        val orderCommentaries = orderDao.getOrderCommentaries()
+
         // Add the list of "OrderSelectionDto" into a "sendOrderReadyToBePaidDto"
         val payload =
             createSendOrderDto(   // TODO: change it to a function that only receives the request and logged user directly to make it looks better
-                orderId = pendingOrderId,
+                orderId = orderCommentaries.orderId,
                 requestId = readyRequest.requestId,
                 restaurantId = readyRequest.restaurantId,
                 userId = loggedUser.id,
                 userName = loggedUser.name,
                 arrivalTime = readyRequest.arrivalTimeInMinutes,
                 groupSize = loggedUser.companySize + 1,
-                selections = orderSelectionDtos
+                selections = orderSelectionDtos,
+                extraCommentaries = orderCommentaries.extraCommentaries?: ""
             )
 
         Log.d("MyActivity", "⏫  Payload of the request: $payload")
@@ -89,6 +94,7 @@ class PaymentRepositoryImpl @Inject constructor(    // TODO: Change the name of 
             // Receive the response with the total price and return it
             val totalPriceInCentsFromRemote = response.body()?.totalPriceInCents
                 ?: throw IllegalStateException("Empty response body")
+
 
             val officialOrder = Order(
                 // TODO: Move it above and create a mapper for it

@@ -29,8 +29,9 @@ android {
         applicationId = "com.yummizi.app"
         minSdk = 24
         targetSdk = 36
-        versionCode = 3 // Updated in 28-sept at 9 pm
-        versionName = "3.0.0"
+//        versionCode = 3 // Updated in 28-sept at 9 pm
+        versionCode = 4 // Updated in 01-Oct 2026 at 8:30pm
+        versionName = "4.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 

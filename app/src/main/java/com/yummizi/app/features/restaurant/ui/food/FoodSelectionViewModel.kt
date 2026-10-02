@@ -12,6 +12,7 @@ import com.yummizi.app.features.payment.domain.repository.PaymentRepository
 import com.yummizi.app.features.request.domain.repository.RequestRepository
 import com.yummizi.app.features.restaurant.domain.repository.RestaurantRepository
 import com.yummizi.app.features.restaurant.ui.model.ComplementSelectionUiState
+import com.yummizi.app.features.restaurant.ui.model.ExtraCommentariesUiState
 import com.yummizi.app.features.restaurant.ui.model.ComplementaryDishUiModel
 import com.yummizi.app.features.restaurant.ui.model.CoordinatesInPage
 import com.yummizi.app.features.restaurant.ui.model.FoodSelectionUiModel
@@ -54,7 +55,8 @@ class FoodSelectionViewModel @Inject constructor(   //TODO: Change the way of ho
     private val _complementSelectionUiState = MutableStateFlow(ComplementSelectionUiState())
     val complementSelectionUiState: StateFlow<ComplementSelectionUiState> = _complementSelectionUiState.asStateFlow()
 
-//    private val _orderMap = MutableStateFlow<Map<Uuid, Int>>(emptyMap())
+    private val _extraCommentariesUiState = MutableStateFlow(ExtraCommentariesUiState())
+    val extraCommentariesUiState: StateFlow<ExtraCommentariesUiState> = _extraCommentariesUiState.asStateFlow()
 
     init {
         viewModelScope.launch {
@@ -62,8 +64,6 @@ class FoodSelectionViewModel @Inject constructor(   //TODO: Change the way of ho
             refreshMenu()
 
             generateOrder()
-//X            initializeOrder()   // To allow us to use a local map and minimize room overhead when update the order frequently
-
         }
     }
 
@@ -74,16 +74,6 @@ class FoodSelectionViewModel @Inject constructor(   //TODO: Change the way of ho
     private suspend fun generateOrder(){
         restaurantRepository.generateNewOrder()
     }
-
-    //X
-//    private suspend fun initializeOrder() {
-//        val currentOrder = paymentRepository.getCurrentOrderSelections()
-//        if (currentOrder.isNotEmpty()) {
-//            _orderMap.update {
-//                currentOrder.associate { it.dishId to it.quantity }
-//            }
-//        }
-//    }
 
     // Create an observer that give the "localCreationTimestamp" of "Request" entity and return it to the UI for the clock
      val selectionFinishedTimestamp: StateFlow<Instant> = requestRepository.observeRequestByRestaurantId(restaurantId)
@@ -114,45 +104,46 @@ class FoodSelectionViewModel @Inject constructor(   //TODO: Change the way of ho
         }
     }
 
-    fun selectOrder(){
+    fun tryToSelectOrder(){
         viewModelScope.launch {
-
 
             if(foodSelectionState.value.isEmpty()){
                 _effect.send(FoodSelectionUiEvents.ShowSnackbar(message = "Por favor, seleccione al menos un plato"))
             }
             else{
-                requestRepository.notifyAttemptOfPayment(restaurantId)   // It also works as a tester of good connection before go to pay
-                    .onSuccess{
-                        Log.d("RequestRepository", "🔎☝️  Notification was sent")
-                        _effect.send(FoodSelectionUiEvents.NavigateToPayment(restaurantId) )    /// Should I send this contained in the entity or here?
-                    }
-                    .onFailure{ throwable ->
-                        Log.e("FoodSelectionViewModel", "🚩 Error confirming order", throwable)
-                        _effect.send(FoodSelectionUiEvents.ShowSnackbar(message = "Hubo un problema de conexión")) // TODO: Use a better message
-                    }
+                // Open a modal to include diner's commentaries
+                _extraCommentariesUiState.update {
+                    it.copy(isModalOpen = !it.isModalOpen)
+                }
             }
+        }
+    }
 
+    fun selectOrder(){
+        viewModelScope.launch {
+            paymentRepository.updateExtraCommentaries(_extraCommentariesUiState.value.extraCommentaries)
 
-//X
-//            Log.d("FoodSelectionViewModel", "Confirming order ${_orderMap.value}")
-//            if(_orderMap.value.isEmpty()){
-//                _effect.send(FoodSelectionUiEvents.ShowSnackbar(message = "Por favor, seleccione al menos un plato"))
-////                return@launch
-//            }
-//            else{
-//                paymentRepository.selectOrder(_orderMap.value)
-//
-//                requestRepository.notifyAttemptOfPayment(restaurantId)   // It also works as a tester of good connection before go to pay
-//                    .onSuccess{
-//                        Log.d("RequestRepository", "🔎☝️  Notification was sent")
-//                        _effect.send(FoodSelectionUiEvents.NavigateToPayment(restaurantId) )    /// Should I send this contained in the entity or here?
-//                    }
-//                    .onFailure{ throwable ->
-//                        Log.e("FoodSelectionViewModel", "🚩 Error confirming order", throwable)
-//                        _effect.send(FoodSelectionUiEvents.ShowSnackbar(message = "Hubo un problema de conexión")) // TODO: Use a better message
-//                    }
-//            }
+            requestRepository.notifyAttemptOfPayment(restaurantId)   // It also works as a tester of good connection before go to pay
+                .onSuccess{
+                    Log.d("RequestRepository", "🔎☝️  Notification was sent")
+                    _effect.send(FoodSelectionUiEvents.NavigateToPayment(restaurantId) )    /// Should I send this contained in the entity or here?
+                }
+                .onFailure{ throwable ->
+                    Log.e("FoodSelectionViewModel", "🚩 Error confirming order", throwable)
+                    _effect.send(FoodSelectionUiEvents.ShowSnackbar(message = "Hubo un problema de conexión")) // TODO: Use a better message
+                }
+        }
+    }
+
+    fun toggleExtraCommentariesModalOpening(){
+        _extraCommentariesUiState.update {
+            it.copy(isModalOpen = !it.isModalOpen)
+        }
+    }
+
+    fun updateExtraCommentaries(extraCommentaries: String){
+        _extraCommentariesUiState.update {
+            it.copy(extraCommentaries = extraCommentaries)
         }
     }
 

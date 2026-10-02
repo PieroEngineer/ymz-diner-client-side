@@ -1,5 +1,6 @@
 package com.yummizi.app.core.data.local.db
 
+import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
@@ -31,9 +32,13 @@ import com.yummizi.app.core.data.local.entities.Restaurant
         OrderSelection::class,
         Order::class
     ],
-    // version = 5 will be treated like the first version
-    version = 5,    //FIXME: In the version 6, remove "fallbackToDestructiveMigration"" /// Last modification: 27-Sep 2026 at 2pm
+    // version 5 will be treated like the first version
+//    version = 5,  /// Last modification: 27-Sep 2026 at 2pm
+    version = 6,  /// Last modification: 01-Oct 2026 at 8:30pm
     exportSchema = true,
+    autoMigrations = [
+        AutoMigration(from = 5, to = 6) // Room auto-detects the new nullable column
+    ]
 
 //    autoMigrations = [
 //        // AutoMigration works for adding new columns/tables without custom SQL

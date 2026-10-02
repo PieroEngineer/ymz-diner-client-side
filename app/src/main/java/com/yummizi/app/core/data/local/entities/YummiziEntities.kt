@@ -91,7 +91,8 @@ data class Order(   // TODO: Include a some kind of "OrderStatus" that defines i
     val expectedArrivalDatetime: Instant? = null,
     val paymentImageRelativePath: String? = null,
     val localOrderCreationTimestamp: Instant? = null,   // TODO: Consider the possibility that the time starts since the user enters to the food selection
-    val totalPriceInCentsFromBackend: Int? = null
+    val totalPriceInCentsFromBackend: Int? = null,
+    val extraCommentaries: String? = null
 //    val paymentMethod: String // TODO
 )
 

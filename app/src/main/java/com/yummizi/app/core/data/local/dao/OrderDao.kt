@@ -9,6 +9,7 @@ import androidx.room.Update
 import com.yummizi.app.core.data.local.entities.Order
 import com.yummizi.app.core.data.local.entities.OrderSelection
 import com.yummizi.app.core.data.local.model.OrderWithSelectionsRelation
+import com.yummizi.app.features.payment.domain.model.OrderExtraCommentariesProjection
 import kotlinx.coroutines.flow.Flow
 import kotlin.uuid.Uuid
 
@@ -18,8 +19,8 @@ interface OrderDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun createOrderBase(order: Order)
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertOrderSelections(selections: List<OrderSelection>)
+//    @Insert(onConflict = OnConflictStrategy.REPLACE)
+//    suspend fun insertOrderSelections(selections: List<OrderSelection>)
 
     //X
 //    @Transaction
@@ -31,8 +32,11 @@ interface OrderDao {
 //    @Query("SELECT * FROM orders ORDER BY localOrderCreationTimestamp DESC LIMIT 1")
 //    suspend fun getLatestOrder(): Order
 
-    @Query("SELECT orderId FROM orders ORDER BY localOrderCreationTimestamp DESC LIMIT 1")  // TODO: Remove the "ORDER BY localOrderCreationTimestamp" because it's not necessary due there is only one order at the time
+    @Query("SELECT orderId FROM orders ORDER BY localOrderCreationTimestamp DESC LIMIT 1")  // TODO: Remove the "ORDER BY localOrderCreationTimestamp" because it's not necessary due there is only one order at the time /// Consider that this timestamp is going to be used later
     suspend fun getCurrentOrderId(): String
+
+    @Query("SELECT orderId, extraCommentaries FROM orders ORDER BY localOrderCreationTimestamp DESC LIMIT 1")
+    suspend fun getOrderCommentaries(): OrderExtraCommentariesProjection
 
 //    @Transaction
 //    @Query("SELECT * FROM orders WHERE orderId = :orderId")
@@ -70,4 +74,7 @@ interface OrderDao {
 
     @Update
     suspend fun updateOrder(order: Order)
+
+    @Query("UPDATE orders SET extraCommentaries = :extraCommentaries WHERE orderId = (SELECT orderId FROM orders ORDER BY localOrderCreationTimestamp DESC LIMIT 1)")
+    suspend fun updateExtraCommentaries(extraCommentaries: String)
 }

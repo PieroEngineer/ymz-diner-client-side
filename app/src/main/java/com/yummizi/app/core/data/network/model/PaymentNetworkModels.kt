@@ -11,7 +11,8 @@ data class SendOrderReadyToBePaidDto(
     val userName: String,
     val arrivalTimeInMinutes: Int,
     val groupSize: Int,
-    val orderSelections: List<OrderSelectionDto>
+    val orderSelections: List<OrderSelectionDto>,
+    val extraCommentaries: String
 )
 
 @Serializable

@@ -51,7 +51,7 @@ class PaymentPreparationViewModel @Inject constructor(
         restaurantRepository.fetchPaymentInfo(restaurantId)
     }
 
-    fun onSendPaymentClicked() {
+    fun onSendPaymentWithOrderClicked() {
         viewModelScope.launch {
             val currentPickedImageUiState = _pickedImageUiState.value
             if (currentPickedImageUiState is PickedPaymentImageUiState.ImageAlreadySelected) {

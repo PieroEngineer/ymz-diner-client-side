@@ -28,7 +28,8 @@ fun createSendOrderDto(
     userName: String,
     arrivalTime: Int,
     groupSize: Int,
-    selections: List<OrderSelectionDto>
+    selections: List<OrderSelectionDto>,
+    extraCommentaries: String
 ): SendOrderReadyToBePaidDto {
     return SendOrderReadyToBePaidDto(
         orderId = orderId,
@@ -38,6 +39,7 @@ fun createSendOrderDto(
         userName = userName,
         arrivalTimeInMinutes = arrivalTime,
         groupSize = groupSize,
-        orderSelections = selections
+        orderSelections = selections,
+        extraCommentaries = extraCommentaries
     )
 }

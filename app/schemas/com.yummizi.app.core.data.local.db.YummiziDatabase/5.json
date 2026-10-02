@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 5,
-    "identityHash": "eb3cd0e598ce588e080a4d982ae333a7",
+    "identityHash": "1be8bb41b46c34e685627eedd9c419ba",
     "entities": [
       {
         "tableName": "restaurants",
@@ -490,7 +490,7 @@
       },
       {
         "tableName": "orders",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`orderId` TEXT NOT NULL, `requestId` TEXT NOT NULL, `expectedArrivalDatetime` INTEGER, `paymentImageRelativePath` TEXT, `localOrderCreationTimestamp` INTEGER, `totalPriceInCentsFromBackend` INTEGER, PRIMARY KEY(`orderId`), FOREIGN KEY(`requestId`) REFERENCES `requests`(`requestId`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`orderId` TEXT NOT NULL, `requestId` TEXT NOT NULL, `expectedArrivalDatetime` INTEGER, `paymentImageRelativePath` TEXT, `localOrderCreationTimestamp` INTEGER, `totalPriceInCentsFromBackend` INTEGER, `extraCommentaries` TEXT, PRIMARY KEY(`orderId`), FOREIGN KEY(`requestId`) REFERENCES `requests`(`requestId`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "orderId",
@@ -523,6 +523,11 @@
             "fieldPath": "totalPriceInCentsFromBackend",
             "columnName": "totalPriceInCentsFromBackend",
             "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "extraCommentaries",
+            "columnName": "extraCommentaries",
+            "affinity": "TEXT"
           }
         ],
         "primaryKey": {
@@ -559,7 +564,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'eb3cd0e598ce588e080a4d982ae333a7')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '1be8bb41b46c34e685627eedd9c419ba')"
     ]
   }
 }

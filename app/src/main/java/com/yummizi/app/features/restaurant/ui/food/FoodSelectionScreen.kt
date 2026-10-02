@@ -42,6 +42,7 @@ import com.yummizi.app.core.ui.components.CautionConfirmationModal
 import com.yummizi.app.core.ui.components.YummiziSnackbar
 import com.yummizi.app.features.payment.ui.arrival.components.RemainingTimeText
 import com.yummizi.app.features.restaurant.ui.food.components.ComplementSelectionModal
+import com.yummizi.app.features.restaurant.ui.food.components.ExtraCommentariesModal
 import com.yummizi.app.features.restaurant.ui.food.components.MenuSettingArea
 import com.yummizi.app.features.restaurant.ui.model.MenuSetting
 import kotlin.uuid.Uuid
@@ -64,6 +65,7 @@ fun FoodSelectionScreen(    // TODO: Correct the prop-drilling of this and other
     val restaurantIdentityUiState by viewModel.restaurantIdentityUiState.collectAsStateWithLifecycle()
 
     val complementSelectionUiState by viewModel.complementSelectionUiState.collectAsStateWithLifecycle()
+    val extraComentariesUiState by viewModel.extraCommentariesUiState.collectAsStateWithLifecycle()
 
     val selectionFinishedTimestamp by viewModel.selectionFinishedTimestamp.collectAsStateWithLifecycle()
 
@@ -259,12 +261,12 @@ fun FoodSelectionScreen(    // TODO: Correct the prop-drilling of this and other
                             )
                             .background(YummiziTheme.colors.yummiziBlue)
                             .clickable {
-                                viewModel.selectOrder()
+                                viewModel.tryToSelectOrder()
                             }
 
                     ){
                         Text(
-                            text = "Ir a pago",
+                            text = "Listo",
                             textAlign = TextAlign.Center,
                             color = YummiziTheme.colors.yummiziWhite,
                             style = YummiziTheme.typography.teacherFontVar2,
@@ -308,6 +310,16 @@ fun FoodSelectionScreen(    // TODO: Correct the prop-drilling of this and other
                 viewModel.includeASelection(dishId, complementaryDishId)
                 viewModel.toggleComplementSelectionModalOpening()
             }
+        )
+
+        ExtraCommentariesModal(
+            modifier = Modifier,
+
+            uiState = extraComentariesUiState,
+            onCommentariesChanged = viewModel::updateExtraCommentaries,
+
+            onCancel = viewModel::toggleExtraCommentariesModalOpening,
+            onContinue = viewModel::selectOrder
         )
 
         YummiziSnackbar(
