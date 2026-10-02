@@ -107,8 +107,8 @@ data class Request(
     val restaurantId: Uuid,
     val status: RequestStatusToken,
     val userId: Uuid,   // TODO: Remove this parameter, so it's only lives in "LoggedUser". This change also incude modification in DAOs, because they shouldn't depen of the user ID
-    val localCreationTimestamp: Long,   // TODO: Convert to Instant type
-    val localConfirmationTimestamp: Instant? = null,
+    val onQueuedTimestamp: Long? = null,   // TODO: Convert to Instant type
+    val onContinueAcceptanceLocalTimestamp: Instant? = null,
     val arrivalTimeInMinutes: Int,
     // val specifics: List<AvailableSpecificsToken>, // TODO
 )

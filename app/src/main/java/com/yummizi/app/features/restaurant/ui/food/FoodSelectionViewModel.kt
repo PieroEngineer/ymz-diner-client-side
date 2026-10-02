@@ -78,8 +78,8 @@ class FoodSelectionViewModel @Inject constructor(   //TODO: Change the way of ho
     // Create an observer that give the "localCreationTimestamp" of "Request" entity and return it to the UI for the clock
      val selectionFinishedTimestamp: StateFlow<Instant> = requestRepository.observeRequestByRestaurantId(restaurantId)
       .map { request ->
-          if(request != null && request.localConfirmationTimestamp != null) {
-            request.localConfirmationTimestamp.plus(5.minutes)
+          if(request != null && request.onContinueAcceptanceLocalTimestamp != null) {
+            request.onContinueAcceptanceLocalTimestamp.plus(5.minutes)
           }
           else {
             Clock.System.now()

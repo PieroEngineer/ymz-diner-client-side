@@ -13,6 +13,7 @@ import com.yummizi.app.core.data.network.model.mappers.mapToBatchRequestCancella
 import com.yummizi.app.core.data.network.model.mappers.mapToGetUpdatedRequestStatusesDto
 import com.yummizi.app.core.data.network.model.mappers.mapToJoinQueueDto
 import com.yummizi.app.features.request.domain.repository.RequestRepository
+import com.yummizi.app.features.restaurant.domain.repository.helpers.syncRequests
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -27,6 +28,8 @@ class RequestRepositoryImpl @Inject constructor(
     private val requestDao: RequestDao,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
 ): RequestRepository {
+
+    override suspend fun deleteExpiredRequests() = requestDao.deleteExpiredRequests(System.currentTimeMillis())//TODO: Clock.System.now())
 
     override suspend fun getRequestStatusByRestaurantId(restaurantId: Uuid): RequestStatusToken {
 
@@ -64,7 +67,7 @@ class RequestRepositoryImpl @Inject constructor(
             restaurantId = restaurantId,
             userId = loggedUser.id,
             status = RequestStatusToken.QUEUED,
-            localCreationTimestamp = System.currentTimeMillis(),    // TODO: Change by "Instant" type
+//X            creationTimestamp = System.currentTimeMillis(),    // TODO: Change by "Instant" type
             arrivalTimeInMinutes = arrivalTimeInMinutes,
         )
 
@@ -78,6 +81,11 @@ class RequestRepositoryImpl @Inject constructor(
 
             if (response.isSuccessful) {
                 Log.d("Yummizi", "✅☁️ Sync successful: $requestId")
+
+                val remoteTimestamp = response.body()?.onQueuedTimestamp?: return@withContext
+
+                requestDao.updateRequestDatetimeById(requestId, remoteTimestamp)
+
                 // TODO (#521): Here the request ID should be returned from the Cloud and subscribe to the request's channel.
                 ///Result.success(Unit)
             } else {
@@ -185,11 +193,11 @@ class RequestRepositoryImpl @Inject constructor(
 
     override suspend fun fetchUpdatedRequestStatuses() = withContext(ioDispatcher) {
         // 1. Get all the current requests from DAO
-        val requests = requestDao.getAllRequests()
-        if (requests.isEmpty()) return@withContext
+        val localRequests = requestDao.getAllRequests()
+        if (localRequests.isEmpty()) return@withContext
 
         // 2. Map to DTO
-        val dto = mapToGetUpdatedRequestStatusesDto(requests)
+        val dto = mapToGetUpdatedRequestStatusesDto(localRequests)
 
         try {
             // 3. Send the result to the API
@@ -197,25 +205,35 @@ class RequestRepositoryImpl @Inject constructor(
 
             if (response.isSuccessful) {
                 /// Consider increase the performance of the following lines
-                val remoteActiveRequests = response.body()?.statuses?: return@withContext
+                val remoteActiveRequests = response.body()?.activeRequests?: return@withContext
 
-                val remoteMap = remoteActiveRequests.associateBy { it.requestId }
 
-                requests.forEach { localRequest ->
-                    val remoteRequest = remoteMap[localRequest.requestId]
-
-                    if(remoteRequest != null){
-                        val newStatus = RequestStatusToken.fromString(remoteRequest.state)?: return@forEach
-
-                        requestDao.updateRequestStatus(
-                            requestId = localRequest.requestId,
-                            status = newStatus
-                        )
-                    }
-                    else{
-                        requestDao.deleteRequestById(localRequest.requestId)
-                    }
+                val syncRequestContent = syncRequests(
+                    localRequests = localRequests,
+                    remoteRequests = remoteActiveRequests
+                )
+                if( syncRequestContent != null){
+                    requestDao.syncRequestsTransaction(syncRequestContent)
                 }
+
+                //X
+//                val remoteMap = remoteActiveRequests.associateBy { it.requestId }
+//
+//                localRequests.forEach { localRequest ->
+//                    val remoteRequest = remoteMap[localRequest.requestId]
+//
+//                    if(remoteRequest != null){
+//                        val newStatus = RequestStatusToken.fromString(remoteRequest.state)?: return@forEach
+//
+//                        requestDao.updateRequestStatus(
+//                            requestId = localRequest.requestId,
+//                            status = newStatus
+//                        )
+//                    }
+//                    else{
+//                        requestDao.deleteRequestById(localRequest.requestId)
+//                    }
+//                }
             } else {
                 Log.e("RequestRepository", "🚩 Cloud failed to return updated statuses")
             }

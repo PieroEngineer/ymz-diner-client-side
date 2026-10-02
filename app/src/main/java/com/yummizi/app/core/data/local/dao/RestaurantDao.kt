@@ -26,14 +26,16 @@ interface RestaurantDao {   // TODO: Remove the Uuid of their arguments because 
     @Query("SELECT * FROM restaurants WHERE id IN (:restaurantIds)")
     fun observeRestaurantsByIds(restaurantIds: List<Uuid>): Flow<List<Restaurant>>
 
-    @Query("""
+    @Query(
+        """
         SELECT restaurants.*, requests.status as requestStatus 
         FROM restaurants 
         JOIN requests ON restaurants.id = requests.restaurantId 
         WHERE requests.userId = (SELECT id FROM logged_user LIMIT 1) 
         AND requests.status IN (:pendingStatuses)
-        ORDER BY requests.localCreationTimestamp ASC
-    """)
+        ORDER BY requests.onQueuedTimestamp ASC
+    """
+    )
     fun observePendingRestaurantsWithStatus(
         pendingStatuses: List<RequestStatusToken> = listOf(RequestStatusToken.QUEUED, RequestStatusToken.ACCEPTED)
     ): Flow<List<RestaurantWithStatus>>
@@ -71,13 +73,15 @@ interface RestaurantDao {   // TODO: Remove the Uuid of their arguments because 
      * Even though we JOIN with the requests table to filter the results,
      * we only SELECT restaurants.*, so Room maps it directly to a List<Restaurant>.
      */
-    @Query("""
+    @Query(
+        """
         SELECT restaurants.* FROM restaurants 
         JOIN requests ON restaurants.id = requests.restaurantId 
         WHERE requests.userId = (SELECT id FROM logged_user LIMIT 1) 
         AND requests.status IN ('QUEUED', 'ACCEPTED')
-        ORDER BY requests.localCreationTimestamp ASC
-    """)
+        ORDER BY requests.onQueuedTimestamp ASC
+    """
+    )
     fun observePendingRestaurants(): Flow<List<Restaurant>>
 
 //    @Query("""

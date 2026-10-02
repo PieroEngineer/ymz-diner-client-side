@@ -6,7 +6,6 @@ import com.yummizi.app.core.data.local.entities.RequestUpdate
 import com.yummizi.app.core.data.local.model.RequestStatusToken
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlin.uuid.Uuid
 
 @Serializable
 data class JoinQueueDto(
@@ -23,6 +22,7 @@ data class JoinQueueDto(
 data class CreateRequestResponseDto(
     val message: String,
     val requestId: String,
+    val onQueuedTimestamp: Long,
 )
 
 @Serializable
@@ -38,18 +38,18 @@ data class RequestUpdateDto(
 
 @Serializable
 data class GetUpdatedRequestStatusesResponseDto(
-    val statuses: List<UpdatedRequestStatusDto>
+    val activeRequests: List<UpdatedRequestStatusDto>
 )
 @Serializable
 data class UpdatedRequestStatusDto(
     val requestId: String,
-//    val restaurantId: String,
+    val restaurantId: String,
     val state: String,
-//    val userId: String,
+    val userId: String,
+    val onQueuedTimestamp: Long,
+    val arrivalTimeInMinutes: Int
 //    val groupSize: String,
-//    val onQueuedTimestamp: String,
 //    val specifics: String,
-//    val arrivlaTime: Int
 )
 
 @Serializable

@@ -38,16 +38,13 @@ class HomeViewModel @Inject constructor(
     init {
         viewModelScope.launch { /// I guess this launch scope is unnecessary because the functions included already have it.
 
-//            _effect.send(HomeUiEvents.SnackBar("📧  Las nuevas actualizaciones de la app llegarán a tu correo electrónico\n\n¡Muchas gracias por usar Yummizi! 🧡"))
-
-            // TODO: Remove every request that has more than 2 hours
+            // TODO: If there is a ready request, navigate to food selection directly
 
             // Clean all restaurants
             Log.d("MyActivity", "🧹  Cleaning all restaurants...\n")
 //            clearFeed()   //TODO: Remove this in production. The behavior should cover certain situations. Consider that the cleaning is when the user doesn't enter after a long while
 
             Log.d("MyActivity", "🎨  Trying to initialize data for user and restaurant...\n")
-//X            userRepository.seedUser()
             //TODO: Update the existing requests in the cloud, so the orange frame will be received, but we already made a logic to avoid it asks for all request every time the user enters from the same phone
             syncFeed()  // TODO: Put a time comparation so the sync is not all time but every certain amount of minute
             observeFeed()

@@ -44,12 +44,18 @@ class SpecificationViewModel @Inject constructor(
 
     init{
         viewModelScope.launch {
+            deleteExpiredRequests()
+
             getUpdatedRequestStatus()
         }
     }
 
     private suspend fun getUpdatedRequestStatus(){
         requestRepository.fetchUpdatedRequestStatuses()
+    }
+
+    private suspend fun deleteExpiredRequests(){
+        requestRepository.deleteExpiredRequests()
     }
 
     private val restaurantIdString: String? = savedStateHandle["restaurantId"]
@@ -69,7 +75,7 @@ class SpecificationViewModel @Inject constructor(
                 flowOf(RestaurantIdentityUiModel())
             }
             else{
-                restaurantRepository    /// Modify this state if more attributes of the restaurant is needed
+                restaurantRepository    /// Modify this state if more attributes of the restaurant are needed
                     .observeRestaurantById(restaurantId)
                     .map { restaurant ->
                         if(restaurant == null) {
@@ -135,7 +141,9 @@ class SpecificationViewModel @Inject constructor(
                 restaurantRepository.observePendingRestaurantWithStatusById(restaurantId)   /// Is it necessary to have an "observePendingRestaurantWithStatusById" if instead of a generic "observeRestaurantWithStatusById"
                     .combine(requestRepository.observeRequestByRestaurantId(restaurantId)) { currentRestaurant, associatedRequest ->
                         if (currentRestaurant == null) {
-                            RestaurantSpecificationUiState.Error("Restaurant data allocation corrupted or missing.")
+                            Log.w("MyActivity", "🖐️  No pending restaurants")
+                            //TODO: Include a snackbar saying that the time expired
+                            RestaurantSpecificationUiState.Error("Restaurant data allocation corrupted or missing. It's possible the time was expired")
                         } else {
                             RestaurantSpecificationUiState.FocusingRestaurant(
                                 currentRestaurant.restaurant.toFocusedRestaurantUiModel(
@@ -162,6 +170,10 @@ class SpecificationViewModel @Inject constructor(
         }
         .catch { error ->
             Log.e("YummiziVM", "🚩 Operational pipeline failure", error)
+
+            _effect.send(SpecificationUiEvents.NavigateToHome)
+            //TODO: Include a snackbar saying that the time expired
+
             emit(RestaurantSpecificationUiState.Error(error.message ?: "An unexpected layout error occurred."))
         }
         .stateIn(
