@@ -170,7 +170,7 @@ fun ExtraCommentariesModal(
                             )
                             .background(YummiziTheme.colors.yummiziBlue)
                             .clickable {
-                                onContinue()
+                                onContinue()    // TODO: Include a verification of availabiity in the step
                             }
 
                     ){

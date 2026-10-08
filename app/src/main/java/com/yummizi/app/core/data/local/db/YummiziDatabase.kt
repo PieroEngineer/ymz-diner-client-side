@@ -37,32 +37,33 @@ import com.yummizi.app.core.data.local.entities.Restaurant
     // version 5 will be treated like the first version
 //    version = 5,  /// Last modification: 27-Sep 2026 at 2pm
 //    version = 6,  /// Last modification: 01-Oct 2026 at 8:30pm
-    version = 7,  /// Last modification: 02-Oct 2026 at 4:00pm
+//    version = 7,  /// Last modification: 02-Oct 2026 at 4:00pm
+    version = 1,  /// Last modification: 08-Oct 2026 at 8:00am
     exportSchema = true,
-    autoMigrations = [
-        AutoMigration(from = 5, to = 6), // Room auto-detects the new nullable column
-        AutoMigration(
-            from = 6,
-            to = 7,
-            spec = YummiziDatabase.RequestColumnRename6To7Spec::class
-        )
-    ]
+//    autoMigrations = [
+//        AutoMigration(from = 5, to = 6), // Room auto-detects the new nullable column
+//        AutoMigration(
+//            from = 6,
+//            to = 7,
+//            spec = YummiziDatabase.RequestColumnRename6To7Spec::class
+//        )
+//    ]
 )
 @TypeConverters(YummiziConverters::class)
 abstract class YummiziDatabase : RoomDatabase() {
 
     // Explicitly mapping renamed columns to prevent Room from dropping and recreating them
-    @RenameColumn(
-        tableName = "requests",
-        fromColumnName = "localCreationTimestamp",
-        toColumnName = "onQueuedTimestamp"
-    )
-    @RenameColumn(
-        tableName = "requests",
-        fromColumnName = "localConfirmationTimestamp",
-        toColumnName = "onContinueAcceptanceLocalTimestamp"
-    )
-    class RequestColumnRename6To7Spec : AutoMigrationSpec
+//    @RenameColumn(
+//        tableName = "requests",
+//        fromColumnName = "localCreationTimestamp",
+//        toColumnName = "onQueuedTimestamp"
+//    )
+//    @RenameColumn(
+//        tableName = "requests",
+//        fromColumnName = "localConfirmationTimestamp",
+//        toColumnName = "onContinueAcceptanceLocalTimestamp"
+//    )
+//    class RequestColumnRename6To7Spec : AutoMigrationSpec
 
     abstract fun restaurantDao(): RestaurantDao
     abstract fun loggedUserDao(): LoggedUserDao

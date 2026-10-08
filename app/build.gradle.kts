@@ -31,8 +31,9 @@ android {
         targetSdk = 36
 //        versionCode = 3 // Updated in 28-sept at 9 pm
 //        versionCode = 4 // Updated in 01-Oct 2026 at 8:30pm
-        versionCode = 5 // Updated in 02-Oct 2026 at 4:15pm
-        versionName = "5.0.0"
+//        versionCode = 5 // Updated in 02-Oct 2026 at 4:15pm
+        versionCode = 6 // Updated in 08-Oct 2026 at 8:00am
+        versionName = "6.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
