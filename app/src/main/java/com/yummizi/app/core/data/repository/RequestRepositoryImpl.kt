@@ -21,6 +21,7 @@ import kotlin.uuid.Uuid
 import kotlinx.coroutines.NonCancellable
 import kotlin.random.Random
 import kotlin.time.Clock
+import kotlin.time.Duration.Companion.hours
 
 class RequestRepositoryImpl @Inject constructor(
     private val yummiziApi: RequestApi,
@@ -61,7 +62,7 @@ class RequestRepositoryImpl @Inject constructor(
         }
 
         // 2. PREPARE ENTITY
-        val requestId = "${Clock.System.now()}_${Random.nextInt(1000, 10000)}"   // TODO (#521): Client shouldn't generate the request ID. Backend responds with request
+        val requestId = "${Clock.System.now() - 5.hours /* TODO: Change this for a proper time zone function */}_${Random.nextInt(1000, 10000)}"   // TODO (#521): Client shouldn't generate the request ID. Backend responds with request
         val newRequest = Request(
             requestId = requestId,
             restaurantId = restaurantId,

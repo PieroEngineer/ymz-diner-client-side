@@ -13,6 +13,8 @@ import kotlin.uuid.Uuid
 import kotlin.time.Instant
 
 
+// FIXME: Use "@ColumnInfo(name = "...")" to decouple your Kotlin codebase from the physical SQLite disk schema, allowing you to refactor JVM variable names without breaking database compatibility.
+
 
 @Entity(tableName = "logged_user")
 data class LoggedUser(
