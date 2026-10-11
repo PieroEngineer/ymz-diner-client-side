@@ -88,7 +88,7 @@ fun NavigationBar(  //TODO: Change the visual part for the other nice style (Fro
                 Spacer(Modifier.height(spacing.mediumLineThickness))
 
                 Text(
-                    text = "Home",
+                    text = "Inicio",
                     color = YummiziTheme.colors.yummiziWhite,    //TODO: Transparency depend of the selection
                     style = YummiziTheme.typography.teacherFontVar4
                 )
@@ -113,7 +113,7 @@ fun NavigationBar(  //TODO: Change the visual part for the other nice style (Fro
                 Spacer(Modifier.height(spacing.tinySeparation))
 
                 Text(
-                    text = "You",
+                    text = "Tú",
                     color = YummiziTheme.colors.yummiziWhite,
                     style = YummiziTheme.typography.teacherFontVar4
                 )
@@ -138,7 +138,7 @@ fun NavigationBar(  //TODO: Change the visual part for the other nice style (Fro
                 Spacer(Modifier.height(spacing.tinySeparation))
 
                 Text(
-                    text = "Contact",
+                    text = "Contacto",
                     color = YummiziTheme.colors.yummiziWhite,
                     style = YummiziTheme.typography.teacherFontVar4
                 )

@@ -187,6 +187,7 @@ fun HomeScreen(
 
                 Column( // X // TODO (#830)
                     modifier = Modifier.weight(1f),
+//                    modifier = Modifier,
                     verticalArrangement = Arrangement.spacedBy(spacing.mediumSeparation),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
@@ -277,14 +278,11 @@ fun HomeScreen(
                                 }
                             }
 
-                            Spacer(Modifier.height(spacing.barHeight))
+//                            Spacer(Modifier.height(spacing.barHeight))
                             ///
 
                         }
                     }
-
-
-
                 }
 
 //                        }
@@ -302,6 +300,18 @@ fun HomeScreen(
                     )
                 }
             }
+
+            // Options part
+            NavigationBar(
+                Modifier
+                    .fillMaxWidth()
+                    .height(spacing.barHeight),
+//                            .align(Alignment.BottomCenter),
+                homeHighlighted = true,
+                onYouClicked = { viewModel.onYouClicked() },
+                onContactClicked = { viewModel.onContactClicked() },
+                // onMoreClicked = { viewModel.onMoreClicked()}  //TODO
+            )
         }
 
         draggingRestaurant?.let { restaurant ->
@@ -313,17 +323,6 @@ fun HomeScreen(
             )
         }
 
-        // Options part
-        NavigationBar(
-            Modifier
-                .fillMaxWidth()
-                .height(spacing.barHeight)
-                .align(Alignment.BottomCenter),
-            homeHighlighted = true,
-            onYouClicked = { viewModel.onYouClicked() },
-            onContactClicked = { viewModel.onContactClicked() },
-            // onMoreClicked = { viewModel.onMoreClicked()}  //TODO
-        )
 
         YummiziSnackbar(
             snackbarHostState = snackbarHostState,
