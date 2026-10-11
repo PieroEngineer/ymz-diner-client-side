@@ -96,6 +96,31 @@ fun NavigationBar(  //TODO: Change the visual part for the other nice style (Fro
 
             Spacer(Modifier.weight(3f))
 
+            Column( // More Icon
+                modifier = Modifier
+                    .padding(vertical = spacing.smallPadding)
+                    .clickable { onContactClicked() },
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Image(
+                    painter = painterResource(R.drawable.cloud_icon),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(spacing.mediumIconSize),
+                    alpha = if (moreHighlighted) 1.0f else .5f
+                )
+
+                Spacer(Modifier.height(spacing.tinySeparation))
+
+                Text(
+                    text = "Ayuda",
+                    color = YummiziTheme.colors.yummiziWhite,
+                    style = YummiziTheme.typography.teacherFontVar4
+                )
+            }
+
+            Spacer(Modifier.weight(3f))
+
             Column( // You Icon
                 modifier = Modifier
                     .padding(vertical = spacing.smallPadding)
@@ -114,31 +139,6 @@ fun NavigationBar(  //TODO: Change the visual part for the other nice style (Fro
 
                 Text(
                     text = "Tú",
-                    color = YummiziTheme.colors.yummiziWhite,
-                    style = YummiziTheme.typography.teacherFontVar4
-                )
-            }
-
-            Spacer(Modifier.weight(3f))
-
-            Column( // More Icon
-                modifier = Modifier
-                    .padding(vertical = spacing.smallPadding)
-                    .clickable { onContactClicked() },
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Image(
-                    painter = painterResource(R.drawable.cloud_icon),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .size(spacing.mediumIconSize),
-                    alpha = if (moreHighlighted) 1.0f else .5f
-                )
-
-                Spacer(Modifier.height(spacing.tinySeparation))
-
-                Text(
-                    text = "Contacto",
                     color = YummiziTheme.colors.yummiziWhite,
                     style = YummiziTheme.typography.teacherFontVar4
                 )
