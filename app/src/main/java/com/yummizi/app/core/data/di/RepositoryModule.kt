@@ -1,5 +1,6 @@
 package com.yummizi.app.core.data.di
 
+import com.yummizi.app.core.data.repository.AppConfigRepositoryImpl
 import com.yummizi.app.core.data.repository.AuthRepositoryImpl
 import com.yummizi.app.core.data.repository.ContactRepositoryImpl
 import com.yummizi.app.core.data.repository.PaymentRepositoryImpl
@@ -11,6 +12,7 @@ import javax.inject.Singleton
 import com.yummizi.app.core.data.repository.RestaurantRepositoryImpl
 import com.yummizi.app.core.data.repository.UserRepositoryImpl
 import com.yummizi.app.core.data.repository.RequestRepositoryImpl
+import com.yummizi.app.features.appconfig.domain.AppConfigRepository
 import com.yummizi.app.features.auth.domain.repository.AuthRepository
 import com.yummizi.app.features.contact.domain.repository.ContactRepository
 import com.yummizi.app.features.payment.domain.repository.PaymentRepository
@@ -62,4 +64,10 @@ abstract class RepositoryModule {
     abstract fun bindAuthRepository(
         impl: AuthRepositoryImpl
     ): AuthRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindAppConfigRepository(
+        impl: AppConfigRepositoryImpl
+    ): AppConfigRepository
 }

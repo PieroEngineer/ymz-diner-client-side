@@ -123,6 +123,9 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     debugImplementation(libs.androidx.compose.ui.tooling)
 
+    // DataStore
+    implementation(libs.androidx.datastore.preferences)
+
     // Compose navigation
     implementation(libs.androidx.navigation.compose)
 
