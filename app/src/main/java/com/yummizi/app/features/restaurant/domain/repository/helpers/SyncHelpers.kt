@@ -11,7 +11,7 @@ import kotlin.uuid.Uuid
 //Exists in local but not in remote -> remove it
 //Doesn't exist in local, but exists in remote -> insert it
 //Doesn't exists in both -> do nothing
-suspend fun syncRequests(
+suspend fun syncPendingRequests(
     localRequests: List<Request>,
     remoteRequests: List<UpdatedRequestStatusDto>,
     ): SyncRequestContent? {

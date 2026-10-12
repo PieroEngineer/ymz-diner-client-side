@@ -44,7 +44,7 @@ interface RequestDao {
     // Remove all the requests whose "localCreationTimestamp" is at least 30 minutes old and whose status is "QUEUED" or "ACCEPTED"
 
     @Query("DELETE FROM requests WHERE (:currentTimestamp - onQueuedTimestamp) > :expirationThreshold AND status IN ('QUEUED', 'ACCEPTED')")
-    suspend fun deleteExpiredRequests(currentTimestamp: Long, expirationThreshold: Long = 30 * 60 * 1000)
+    suspend fun deleteExpiredPendingRequests(currentTimestamp: Long, expirationThreshold: Long = 30 * 60 * 1000)
 
     @Query("UPDATE requests SET onQueuedTimestamp = :newDatetime WHERE requestId = :requestId")
     suspend fun updateRequestDatetimeById(requestId: String, newDatetime: Long)

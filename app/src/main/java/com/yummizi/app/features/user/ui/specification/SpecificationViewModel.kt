@@ -55,7 +55,7 @@ class SpecificationViewModel @Inject constructor(
     }
 
     private suspend fun deleteExpiredRequests(){
-        requestRepository.deleteExpiredRequests()
+        requestRepository.deleteExpiredPendingRequests()
     }
 
     private val restaurantIdString: String? = savedStateHandle["restaurantId"]

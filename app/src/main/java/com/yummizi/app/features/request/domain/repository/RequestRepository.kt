@@ -7,7 +7,7 @@ import kotlin.uuid.Uuid
 
 interface RequestRepository {
 
-    suspend fun deleteExpiredRequests()
+    suspend fun deleteExpiredPendingRequests()
 
     /**
      * Creates a new queue request.
