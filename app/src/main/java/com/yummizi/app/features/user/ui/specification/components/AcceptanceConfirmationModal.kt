@@ -129,7 +129,7 @@ fun AcceptanceConfirmationModal(
                     Spacer(modifier = Modifier.height(spacing.smallSeparation))
 
                     Text(
-                        text = "Tendrás +5 minutos extra para escoger y realizar el pago",
+                        text = "Tendrás +5 minutos extra para escoger la comida",
                         color = YummiziTheme.colors.yummiziLightOrange,
                         style = YummiziTheme.typography.teacherFontVar9,
                         textAlign = TextAlign.Center

@@ -22,6 +22,7 @@ import kotlinx.coroutines.NonCancellable
 import kotlin.random.Random
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.hours
+import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Instant
 
 class RequestRepositoryImpl @Inject constructor(
@@ -32,6 +33,21 @@ class RequestRepositoryImpl @Inject constructor(
 ): RequestRepository {
 
     override suspend fun deleteExpiredPendingRequests() = requestDao.deleteExpiredPendingRequests(System.currentTimeMillis())//TODO: Clock.System.now())
+
+    override suspend fun isReadyRequestExpired(restaurantId: Uuid, timeBeforeExpiration: Int) = withContext(ioDispatcher) {
+        val currentRequest = requestDao.getRequestByRestaurantId(restaurantId) ?: return@withContext true
+
+        if(currentRequest.onContinueAcceptanceLocalTimestamp != null){
+            val expirationTimestamp = currentRequest.onContinueAcceptanceLocalTimestamp + timeBeforeExpiration.minutes
+            val isExpired = expirationTimestamp < Clock.System.now()
+
+            return@withContext isExpired
+        }
+        else{
+            return@withContext true
+        }
+        // It's expired if the selection take more than 7 minutes
+    }
 
     override suspend fun getRequestStatusByRestaurantId(restaurantId: Uuid): RequestStatusToken {
 

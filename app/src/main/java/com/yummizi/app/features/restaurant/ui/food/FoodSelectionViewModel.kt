@@ -48,6 +48,9 @@ class FoodSelectionViewModel @Inject constructor(   //TODO: Change the way of ho
     private val _effect = Channel<FoodSelectionUiEvents>(Channel.BUFFERED)
     val navEffect = _effect.receiveAsFlow()
 
+    private val _isFinishedTimeOpen = MutableStateFlow(false)
+    val isFinishedTimeOpen: StateFlow<Boolean> = _isFinishedTimeOpen.asStateFlow()
+
     // Extract the ID safely
     private val restaurantIdString: String = checkNotNull(savedStateHandle["restaurantId"])
     private val restaurantId = Uuid.parse(restaurantIdString)
@@ -121,17 +124,22 @@ class FoodSelectionViewModel @Inject constructor(   //TODO: Change the way of ho
 
     fun selectOrder(){
         viewModelScope.launch {
-            paymentRepository.updateExtraCommentaries(_extraCommentariesUiState.value.extraCommentaries)
+            if(requestRepository.isReadyRequestExpired(restaurantId)){
+                _isFinishedTimeOpen.update{ true }
+            }
+            else{
+                paymentRepository.updateExtraCommentaries(_extraCommentariesUiState.value.extraCommentaries)
 
-            requestRepository.notifyAttemptOfPayment(restaurantId)   // It also works as a tester of good connection before go to pay
-                .onSuccess{
-                    Log.d("RequestRepository", "🔎☝️  Notification was sent")
-                    _effect.send(FoodSelectionUiEvents.NavigateToPayment(restaurantId) )    /// Should I send this contained in the entity or here?
-                }
-                .onFailure{ throwable ->
-                    Log.e("FoodSelectionViewModel", "🚩 Error confirming order", throwable)
-                    _effect.send(FoodSelectionUiEvents.ShowSnackbar(message = "Hubo un problema de conexión")) // TODO: Use a better message
-                }
+                requestRepository.notifyAttemptOfPayment(restaurantId)   // It also works as a tester of good connection before go to pay
+                    .onSuccess{
+                        Log.d("RequestRepository", "🔎☝️  Notification was sent")
+                        _effect.send(FoodSelectionUiEvents.NavigateToPayment(restaurantId) )    /// Should I send this contained in the entity or here?
+                    }
+                    .onFailure{ throwable ->
+                        Log.e("FoodSelectionViewModel", "🚩 Error confirming order", throwable)
+                        _effect.send(FoodSelectionUiEvents.ShowSnackbar(message = "Hubo un problema de conexión")) // TODO: Use a better message
+                    }
+            }
         }
     }
 

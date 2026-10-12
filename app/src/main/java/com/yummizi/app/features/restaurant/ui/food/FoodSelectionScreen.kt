@@ -43,6 +43,7 @@ import com.yummizi.app.core.ui.components.YummiziSnackbar
 import com.yummizi.app.features.payment.ui.arrival.components.RemainingTimeText
 import com.yummizi.app.features.restaurant.ui.food.components.ComplementSelectionModal
 import com.yummizi.app.features.restaurant.ui.food.components.ExtraCommentariesModal
+import com.yummizi.app.features.restaurant.ui.food.components.FinishedTimeModal
 import com.yummizi.app.features.restaurant.ui.food.components.MenuSettingArea
 import com.yummizi.app.features.restaurant.ui.model.MenuSetting
 import kotlin.uuid.Uuid
@@ -69,6 +70,7 @@ fun FoodSelectionScreen(    // TODO: Correct the prop-drilling of this and other
 
     val selectionFinishedTimestamp by viewModel.selectionFinishedTimestamp.collectAsStateWithLifecycle()
 
+    val isFinishedTimeOpen by viewModel.isFinishedTimeOpen.collectAsStateWithLifecycle()
 
     var isTryingToCancelRequest by rememberSaveable { mutableStateOf(false) }
 
@@ -320,6 +322,13 @@ fun FoodSelectionScreen(    // TODO: Correct the prop-drilling of this and other
 
             onCancel = viewModel::toggleExtraCommentariesModalOpening,
             onContinue = viewModel::selectOrder
+        )
+
+        FinishedTimeModal(
+
+            isOpen = isFinishedTimeOpen,
+
+            onAcceptFinishedTime = { viewModel.cancelRequest() }
         )
 
         YummiziSnackbar(

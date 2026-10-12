@@ -19,6 +19,9 @@ interface RequestDao {
 
     // --- REPOSITORY / BACKGROUND ACTIONS ---
 
+    @Query("SELECT onContinueAcceptanceLocalTimestamp FROM requests WHERE requestId = :requestId")
+    suspend fun getTimestampOfCurrentReadyRequest(requestId: String): Instant?
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(requests: List<Request>)
 

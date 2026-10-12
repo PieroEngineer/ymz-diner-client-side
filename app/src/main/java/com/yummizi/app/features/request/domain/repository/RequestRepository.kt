@@ -31,6 +31,8 @@ interface RequestRepository {
 
     suspend fun cancelRequest(restaurantId: Uuid)
 
+    suspend fun isReadyRequestExpired(restaurantId: Uuid, timeBeforeExpiration: Int = 5): Boolean
+
     suspend fun getRequestStatusByRestaurantId(restaurantId: Uuid): RequestStatusToken
     fun observeRequestByRestaurantId(restaurantId: Uuid): Flow<Request?>
 
