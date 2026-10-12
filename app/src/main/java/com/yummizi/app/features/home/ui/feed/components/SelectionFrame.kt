@@ -96,7 +96,7 @@ fun SelectionFrame(
                             val selectedRestaurants = state.restaurants
 
                             Text(   // Information message
-                                text = if (selectedRestaurants.isNotEmpty()) "Haciendo cola\nen ${selectedRestaurants.size} local${if (selectedRestaurants.size>1) "es" else ""}" else "Mantén presionado\n y arrastra restaurantes\naquí...",
+                                text = if (selectedRestaurants.isNotEmpty()) "Haciendo cola\nen ${selectedRestaurants.size} local${if (selectedRestaurants.size>1) "es" else ""}" else "Soltar restaurantes\nsolcitados aquí",
                                 color = YummiziTheme.colors.yummiziWhite.copy(alpha = if (selectedRestaurants.isNotEmpty()) 1f else .6f),
                                 style = YummiziTheme.typography.teacherFontVar2
                             )

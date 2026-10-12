@@ -32,8 +32,9 @@ android {
 //        versionCode = 3 // Updated in 28-sept at 9 pm
 //        versionCode = 4 // Updated in 01-Oct 2026 at 8:30pm
 //        versionCode = 5 // Updated in 02-Oct 2026 at 4:15pm
-        versionCode = 6 // Updated in 08-Oct 2026 at 8:00am
-        versionName = "6.0.0"
+//        versionCode = 6 // Updated in 08-Oct 2026 at 8:00am
+        versionCode = 7 // Updated in 11-Oct 2026 at 9:00pm
+        versionName = "6.1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -166,6 +167,9 @@ dependencies {
     // Google services (Firebase)
     implementation(platform(libs.firebase.bom)) // Import the Firebase BoM using the catalog reference
     implementation(libs.firebase.analytics) // Add Firebase Analytics without specifying a version
+
+    // Datetime
+    implementation(libs.kotlinx.datetime)
 }
 
 configurations.all {

@@ -46,6 +46,9 @@ amplify = "2.21.0"
 # Splash screen
 androidx-core-splashscreen = "1.0.1"
 
+# Time
+kotlinx-datetime = "0.8.0"
+
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -105,6 +108,9 @@ androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscree
 # Firebase
 firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
 firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics" } # No version needed when using BoM
+
+# Time
+kotlinx-datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime", version.ref = "kotlinx-datetime" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

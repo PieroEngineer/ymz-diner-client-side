@@ -44,6 +44,7 @@ import com.yummizi.app.core.ui.components.DiffRoundedCornersRect
 import com.yummizi.app.core.ui.components.YummiziSnackbar
 import com.yummizi.app.features.home.ui.feed.components.DragOverlay
 import com.yummizi.app.features.home.ui.feed.components.FeedSection
+import com.yummizi.app.features.home.ui.feed.components.MiniTutorialModal
 import com.yummizi.app.features.home.ui.feed.components.RestaurantBlock
 import com.yummizi.app.features.home.ui.feed.components.RestaurantScrollable
 import kotlin.collections.forEach
@@ -94,6 +95,7 @@ fun HomeScreen(
 
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val activeRestaurantsUiState by viewModel.activeRestaurantsUiState.collectAsStateWithLifecycle()
+    val miniTutorialUiState by viewModel.miniTutorialUiState.collectAsStateWithLifecycle()
 
     // Hoisted State: Controlled completely at the Screen Orchestration Layer
     var currentControlledSectionId by rememberSaveable { mutableStateOf<Int?>(null) }
@@ -323,12 +325,19 @@ fun HomeScreen(
             )
         }
 
-
         YummiziSnackbar(
             snackbarHostState = snackbarHostState,
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .padding(bottom = 24.dp, start = 32.dp, end = 32.dp)
+        )
+
+        MiniTutorialModal(
+            isOpen = miniTutorialUiState.isOpen,
+            isNotShowAgainChecked = miniTutorialUiState.isNotShowAgainChecked,
+            onDismissRequest = { viewModel.onMiniTutorialClosed() },
+            onNotShowAgainChange = { checked -> viewModel.onMiniTutorialNotShowAgainChanged(checked) },
+            onCloseClicked = { viewModel.onMiniTutorialClosed() }
         )
     }
 }

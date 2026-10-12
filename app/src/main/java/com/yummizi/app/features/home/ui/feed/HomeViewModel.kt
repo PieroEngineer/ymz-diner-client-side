@@ -5,7 +5,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yummizi.app.core.data.local.entities.Restaurant
 import com.yummizi.app.core.data.local.model.RequestStatusToken
+import com.yummizi.app.features.appconfig.domain.AppConfigRepository
 import com.yummizi.app.features.home.domain.usecase.GetCategorizedFeedUseCase
+import com.yummizi.app.features.home.ui.model.MiniTutorialUiState
 import com.yummizi.app.features.home.ui.model.SectionUiModel
 import com.yummizi.app.features.restaurant.domain.repository.RestaurantRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,8 +17,10 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.uuid.Uuid
@@ -26,6 +30,7 @@ import kotlin.uuid.Uuid
 class HomeViewModel @Inject constructor(
     private val getCategorizedFeed: GetCategorizedFeedUseCase,
     private val restaurantRepository: RestaurantRepository,
+    private val appConfigRepository: AppConfigRepository
 ) : ViewModel() {
 
     // Navigation handler
@@ -34,6 +39,9 @@ class HomeViewModel @Inject constructor(
 
     private val _uiState = MutableStateFlow<HomeUiState>(HomeUiState.Loading)   /// Is this way a bad practice?
     val uiState = _uiState.asStateFlow()
+
+    private val _miniTutorialUiState = MutableStateFlow(MiniTutorialUiState())
+    val miniTutorialUiState: StateFlow<MiniTutorialUiState> = _miniTutorialUiState.asStateFlow()
 
     init {
         viewModelScope.launch { /// I guess this launch scope is unnecessary because the functions included already have it.
@@ -47,7 +55,32 @@ class HomeViewModel @Inject constructor(
             Log.d("MyActivity", "🎨  Trying to initialize data for user and restaurant...\n")
             //TODO: Update the existing requests in the cloud, so the orange frame will be received, but we already made a logic to avoid it asks for all request every time the user enters from the same phone
             syncFeed()  // TODO: Put a time comparation so the sync is not all time but every certain amount of minute
+            tryToOpenMiniTutorial()
             observeFeed()
+
+        }
+    }
+
+    private suspend fun tryToOpenMiniTutorial() {
+        val shouldShow = appConfigRepository.shouldShowMinitutorial().first()
+        Log.d("MyActivity", "🔎  Should show mini tutorial? $shouldShow")
+        if (shouldShow) {
+            appConfigRepository.recordMinitutorialDisplayed()
+            _miniTutorialUiState.update { it.copy(isOpen = true) }
+        }
+    }
+
+    fun onMiniTutorialNotShowAgainChanged(checked: Boolean) {
+        _miniTutorialUiState.update { it.copy(isNotShowAgainChecked = checked) }
+    }
+
+    fun onMiniTutorialClosed() {
+        viewModelScope.launch {
+            if (_miniTutorialUiState.value.isNotShowAgainChecked) {
+                Log.d("MyActivity", "🔎  Minitutorial is completed")
+                appConfigRepository.setMinitutorialCompleted(true)
+            }
+            _miniTutorialUiState.update { it.copy(isOpen = false) }
         }
     }
 

@@ -197,17 +197,11 @@ fun SelectionSection(
                     .align(Alignment.CenterHorizontally),
                 horizontalAlignment = Alignment.CenterHorizontally
             ){
-                Image(
-                    painter = painterResource(R.drawable.minitutorial_icon),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .weight(1f)
-                )
 
-                Spacer(Modifier.width(spacing.mediumPadding))
+                Spacer(Modifier.height(spacing.mediumPadding))
 
                 Text(   /// Perhaps it looks better if the text is aligned to the right side
-                    text = "Mantén presionado y arrástra\nun restaurante hacia el bloque superior\npara unirte a la cola",
+                    text = "En la pantalla inicial, mantén presionado y arrastra el restaurante que desees hacia el bloque superior ",
                     textAlign = TextAlign.Center,
                     color = YummiziTheme.colors.yummiziWhite,
                     style = YummiziTheme.typography.teacherFontVar1
