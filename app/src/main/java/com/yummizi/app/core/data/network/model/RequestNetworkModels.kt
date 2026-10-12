@@ -92,6 +92,7 @@ data class UpdateStatusDto( /// It's subject to changes due the observation that
 @Serializable
 data class UpdateStatusResponseDto(
     val message: String,
+    val onUpdateRequestStateTimestamp: Long
 )
 
 @Serializable

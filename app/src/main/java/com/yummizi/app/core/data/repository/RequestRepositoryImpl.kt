@@ -22,6 +22,7 @@ import kotlinx.coroutines.NonCancellable
 import kotlin.random.Random
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.hours
+import kotlin.time.Instant
 
 class RequestRepositoryImpl @Inject constructor(
     private val yummiziApi: RequestApi,
@@ -180,8 +181,10 @@ class RequestRepositoryImpl @Inject constructor(
 
             Log.d("RequestRepository", "✅☁️ Batch cancellation successful")
 
+            val onReadyTimestamp = updateResponse.body()?.onUpdateRequestStateTimestamp?: return@withContext Result.failure(Exception(" No timestamp found "))
+
             // Update status to READY and remove other requests
-            requestDao.confirmAcceptance(currentRequest.requestId, Clock.System.now())  /// In future update, maybe the completly delete won't the best option to get the history of histories. (Maybe just include a DAO function that notify to everyone that there is a READY request)
+            requestDao.confirmAcceptance(currentRequest.requestId, Instant.fromEpochMilliseconds(onReadyTimestamp))  /// In future update, maybe the completly delete won't the best option to get the history of histories. (Maybe just include a DAO function that notify to everyone that there is a READY request)
 
             Result.success(Unit)
 

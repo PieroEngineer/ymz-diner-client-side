@@ -178,7 +178,7 @@ data class Request(
     val onQueuedTimestamp: Long? = null,   // TODO: Convert to Instant type
 
     @ColumnInfo(name ="onContinueAcceptanceLocalTimestamp")
-    val onContinueAcceptanceLocalTimestamp: Instant? = null,
+    val onContinueAcceptanceLocalTimestamp: Instant? = null,    //TODO: Change the meaning of its name to "onReadyRemoteTimeStamp"
 
     @ColumnInfo(name ="arrivalTimeInMinutes")
     val arrivalTimeInMinutes: Int,
