@@ -1,3 +1,16 @@
+# What is Yummizi (ymz)?
+Yummizi was a foodtech startup project that allowed restaurants to prepare diners' food while they were on their way to the establishment. Although I didn't continue with the project due to validation issues, it taught me a lot about marketing, sales, and full-stack development.
+
+I think that the best way to be grateful for what I have is to share it. Here, I share with you what I learned by building a stable, real-time platform that connects diners with restaurants the Yummizi way.
+
+# Sub-systems of the platform
++ [AWS Lambda with hono](https://github.com/PieroEngineer/ymz-aws-lambda-with-hono) (TS) 
++ [AWS serverless configuration with AWS SAM](https://github.com/PieroEngineer/ymz-iac-with-aws-sam) (yaml) 
++ [Client for process observability](https://github.com/PieroEngineer/ymz-admin-client-with-python) (Python) 
++ [Landing page](https://github.com/PieroEngineer/ymz-landing-page) (HTML + JS + CSS) 
++ [Restaurant Web app](https://github.com/PieroEngineer/ymz-restaurant-client-side) (TS + Vite + React) 
++ [Diner Android app](https://github.com/PieroEngineer/ymz-diner-client-side) (Kotlin)
+
 # 🍽️ YummiziApp
 
 **YummiziApp** is a modern, high-performance Android mobile application built for seamless restaurant discovery, interactive food ordering, digital payment check-ins, and real-time order tracking.
@@ -105,3 +118,9 @@ KEY_PASSWORD=your_key_password
 ## 📄 License
 
 This project is proprietary and confidential. All rights reserved.
+
+---
+
+# Author
+
+Made with 💙 by **Piero Olivas Tuesta**
