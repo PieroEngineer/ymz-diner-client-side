@@ -15,6 +15,13 @@ import com.yummizi.app.core.designsystem.theme.YummiziTheme
 import com.yummizi.app.theme.YummiziAppTheme
 import dagger.hilt.android.AndroidEntryPoint
 
+/*
+----------------------------------------------------------------
+Credits: Made by Piero Olivas Tuesta 😉
+LinkedIn: /pieroengineerperu
+----------------------------------------------------------------
+*/
+
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 

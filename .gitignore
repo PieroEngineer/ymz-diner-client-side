@@ -17,3 +17,6 @@ app/src/main/res/raw/amplifyconfiguration.json
 *.aab
 *.apk
 **/build/
+# Google Services / Firebase configuration
+app/google-services.json
+**/google-services.json
