@@ -102,22 +102,6 @@ KEY_PASSWORD=your_key_password
 
 ---
 
-## 🔒 Security Audit Notice for GitHub
-
-When publishing or pushing this project to public GitHub repositories, take note of the following security items:
-
-1. **`app/google-services.json`**:
-   - **Current Status**: Present in the repository under `app/google-services.json` and **not** ignored in `.gitignore`.
-   - **Action Needed**: If pushing to a public repository, consider adding `app/google-services.json` to `.gitignore` or ensure API Key restrictions are configured in Google Cloud Console / Firebase Console.
-
-2. **`amplifyconfiguration.json`**:
-   - **Current Status**: Correctly ignored via `.gitignore` (`app/src/main/res/raw/amplifyconfiguration.json`).
-
-3. **`local.properties`**:
-   - **Current Status**: Correctly ignored via `.gitignore`. Contains sensitive build fields (`API_GATEWAY_URL`, `ABLY_API_KEY`, Keystore secrets).
-
----
-
 ## 📄 License
 
 This project is proprietary and confidential. All rights reserved.
